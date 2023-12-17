@@ -1,4 +1,4 @@
-import { Employees } from "./employee";
+import { Employees } from "./employees";
 import { Departments } from "./departments";
 import { SchoolYearLevels } from "./school-year-levels";
 import { Schools } from "./schools";
