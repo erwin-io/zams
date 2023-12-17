@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap, catchError, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Employees } from '../model/Employees';
+import { Employees } from 'src/app/model/employees';
 import { ApiResponse } from '../model/api-response.model';
 import { AppConfigService } from './app-config.service';
 import { IServices } from './interface/iservices';

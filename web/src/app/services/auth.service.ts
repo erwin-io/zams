@@ -10,8 +10,8 @@ import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { ApiResponse } from '../model/api-response.model';
 import { Users } from '../model/users';
-import { Employees } from '../model/Employees';
-import { Operators } from '../model/Operators';
+import { Operators } from '../model/operators';
+import { Employees } from '../model/employees';
 
 @Injectable({
   providedIn: 'root'

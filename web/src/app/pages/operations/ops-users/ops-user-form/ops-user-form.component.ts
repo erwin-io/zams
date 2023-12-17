@@ -4,7 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SpinnerVisibilityService } from 'ng-http-loader';
 import { Subscription, forkJoin } from 'rxjs';
-import { Operators } from 'src/app/model/Operators';
+import { Operators } from 'src/app/model/operators';
 import { OperatorsService } from 'src/app/services/operatros.service';
 import { AlertDialogModel } from 'src/app/shared/alert-dialog/alert-dialog-model';
 import { AlertDialogComponent } from 'src/app/shared/alert-dialog/alert-dialog.component';

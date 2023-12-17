@@ -12,7 +12,7 @@ import { AlertDialogModel } from 'src/app/shared/alert-dialog/alert-dialog-model
 import { AlertDialogComponent } from 'src/app/shared/alert-dialog/alert-dialog.component';
 import { MyErrorStateMatcher } from 'src/app/shared/form-validation/error-state.matcher';
 import { MatTableDataSource } from '@angular/material/table';
-import { Operators } from 'src/app/model/Operators';
+import { Operators } from 'src/app/model/operators';
 
 @Component({
   selector: 'app-ops-school-management-details',

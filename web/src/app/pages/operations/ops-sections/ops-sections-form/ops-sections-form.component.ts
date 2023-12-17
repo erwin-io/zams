@@ -4,7 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SpinnerVisibilityService } from 'ng-http-loader';
 import { Subscription, forkJoin } from 'rxjs';
-import { Employees } from 'src/app/model/Employees';
+import { Employees } from 'src/app/model/employees';
 import { Departments } from 'src/app/model/departments';
 import { SchoolYearLevels } from 'src/app/model/school-year-levels';
 import { Schools } from 'src/app/model/schools';

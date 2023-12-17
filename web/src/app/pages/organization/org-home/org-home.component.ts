@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Employees } from 'src/app/model/Employees';
-import { Operators } from 'src/app/model/Operators';
+import { Employees } from 'src/app/model/employees';
+import { Operators } from 'src/app/model/operators';
 import { Users } from 'src/app/model/users';
 import { StorageService } from 'src/app/services/storage.service';
 

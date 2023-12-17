@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { ApiResponse } from '../model/api-response.model';
 import { AppConfigService } from './app-config.service';
 import { IServices } from './interface/iservices';
-import { Operators } from '../model/Operators';
+import { Operators } from '../model/operators';
 
 @Injectable({
   providedIn: 'root'

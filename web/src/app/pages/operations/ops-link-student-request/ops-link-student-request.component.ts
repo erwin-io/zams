@@ -17,7 +17,7 @@ import { Location } from '@angular/common';
 import { OpsParentDetailsComponent } from '../../parents/ops-parent-details/ops-parent-details.component';
 import { OpsLinkStudentRequestDetailsComponent } from './ops-link-student-request-details/ops-link-student-request-details.component';
 import { OpsStudentFormComponent } from '../ops-students/ops-students-form/ops-students-form.component';
-import { Operators } from 'src/app/model/Operators';
+import { Operators } from 'src/app/model/operators';
 
 @Component({
   selector: 'app-ops-link-student-request',

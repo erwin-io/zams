@@ -15,9 +15,9 @@ import { MyErrorStateMatcher } from 'src/app/shared/form-validation/error-state.
 import { SelectDepartmentDialogComponent } from 'src/app/shared/select-department-dialog/select-department-dialog.component';
 import { SelectSchoolYearLevelDialogComponent } from 'src/app/shared/select-school-year-level-dialog/select-school-year-level-dialog.component';
 import { DepartmentsService } from 'src/app/services/departments.service';
-import { Employees } from 'src/app/model/Employees';
 import { EmployeeTitles } from 'src/app/model/employee-titles';
 import { SelectEmployeeTitleDialogComponent } from 'src/app/shared/select-employee-title-dialog/select-employee-title-dialog.component';
+import { Employees } from 'src/app/model/employees';
 
 @Component({
   selector: 'app-ops-employees-form',
