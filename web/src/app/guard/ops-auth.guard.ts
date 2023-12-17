@@ -15,7 +15,7 @@ export class OpsAuthGuard implements CanActivate {
       let canActivate = false;
     const profile = this.storageService.getLoginProfile();
     if(!profile) {
-      this.router.navigate(['auth']);
+      this.router.navigate(['auth/ops']);
     }
     // if(!profile.user.access) {
     //   this.router.navigate(['auth']);

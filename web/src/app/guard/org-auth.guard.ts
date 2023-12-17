@@ -15,7 +15,7 @@ export class OrgAuthGuard implements CanActivate {
       let canActivate = false;
     const profile = this.storageService.getLoginProfile();
     if(!profile) {
-      this.router.navigate(['auth']);
+      this.router.navigate(['auth/org']);
     }
     if(profile.user && profile.user.userId && profile.user.userType.toUpperCase() ==="EMPLOYEE") {
       canActivate = true;
