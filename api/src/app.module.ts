@@ -1,0 +1,50 @@
+import { Module } from "@nestjs/common";
+import { AppService } from "./app.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { TypeOrmConfigService } from "./db/typeorm/typeorm.service";
+import { ConfigModule } from "@nestjs/config";
+import { AuthModule } from "./controller/auth/auth.module";
+import * as Joi from "@hapi/joi";
+import { getEnvPath } from "./common/utils/utils";
+import { EmployeeRolesModule } from "./controller/employees-roles/employees-roles.module";
+import { SchoolsModule } from "./controller/schools/schools.module";
+import { DepartmentsModule } from "./controller/departments/departments.module";
+import { CoursesModule } from "./controller/courses/courses.module";
+import { SchoolYearLevelsModule } from "./controller/school-year-levels/school-year-levels.module";
+import { SectionsModule } from "./controller/sections/sections.module";
+import { EmployeeTitlesModule } from "./controller/employee-titles/employee-titles.module";
+import { StudentsModule } from "./controller/students/students.module";
+import { EmployeesModule } from "./controller/employees/employees.module";
+import { OperatorsModule } from "./controller/operators/operators.module";
+import { ParentsModule } from "./controller/parents/parents.module";
+import { LinkStudentRequestModule } from "./controller/link-student-request/link-student-request.module";
+const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath,
+      isGlobal: true,
+      validationSchema: Joi.object({
+        UPLOADED_FILES_DESTINATION: Joi.string().required(),
+      }),
+    }),
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+    AuthModule,
+    SchoolsModule,
+    EmployeeRolesModule,
+    EmployeeTitlesModule,
+    DepartmentsModule,
+    CoursesModule,
+    SchoolYearLevelsModule,
+    SectionsModule,
+    OperatorsModule,
+    EmployeesModule,
+    StudentsModule,
+    ParentsModule,
+    LinkStudentRequestModule,
+  ],
+  providers: [AppService],
+  controllers: [],
+})
+export class AppModule {}
