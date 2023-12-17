@@ -1,0 +1,341 @@
+
+<h4 mat-dialog-title>{{title}}</h4>
+
+<div mat-dialog-content>
+  <div fxFlex="100" class="content-inner" fxLayout="column">
+    <form
+    [formGroup]="studentForm"
+    fxLayout="row wrap"
+    id="studentForm"
+    [ngClass]="{ 'readonly': studentForm.disabled }"
+    (ngSubmit)="onSubmit()">
+      <fieldset fxFlex="100" fxLayout="column">
+        <div
+          fxLayout="column"
+          fxFlex="100"
+          style="gap: 16px">
+          <div
+          fxLayout="column"
+          fxFlex="100">
+            <mat-form-field
+              appearance="outline">
+              <mat-label>Department &nbsp;</mat-label>
+              <input
+                matInput
+                readonly
+                [value]="department?.departmentName"
+                placeholder="Department"/>
+                <mat-icon
+                  class="icon-right"
+                  style="cursor: pointer;"
+                  matSuffix
+                  matTooltip="Department"
+                  *ngIf="studentForm.enabled"
+                  (click)="showSelectDepartmentDialog()">
+                  search
+                </mat-icon>
+            </mat-form-field>
+            <span
+              style="color: #f44336;font-size: 14px!important;"
+              *ngIf="f['departmentId'].touched && f['departmentId'].dirty && f['departmentId'].errors">Please select Department</span>
+          </div>
+          <div
+          fxLayout="column"
+          fxFlex="100">
+            <mat-form-field
+              appearance="outline">
+              <mat-label>School year level &nbsp;</mat-label>
+              <input
+                matInput
+                readonly
+                [value]="schoolYearLevel?.name"
+                placeholder="School year level"/>
+                <mat-icon
+                  class="icon-right"
+                  style="cursor: pointer;"
+                  matSuffix
+                  matTooltip="School year level"
+                  *ngIf="studentForm.enabled"
+                  (click)="showSelectSchoolYearLevelDialog()">
+                  search
+                </mat-icon>
+            </mat-form-field>
+            <span
+              style="color: #f44336;font-size: 14px!important;"
+              *ngIf="f['schoolYearLevelId'].touched && f['schoolYearLevelId'].dirty && f['schoolYearLevelId'].errors">Please select School year level</span>
+          </div>
+          <div
+          fxLayout="column"
+          fxFlex="100">
+            <mat-form-field
+              appearance="outline">
+              <mat-label>Course &nbsp;</mat-label>
+              <input
+                matInput
+                readonly
+                [value]="course?.name"
+                placeholder="Course"/>
+                <mat-icon
+                  class="icon-right"
+                  style="cursor: pointer;"
+                  matSuffix
+                  matTooltip="Course"
+                  *ngIf="studentForm.enabled"
+                  (click)="showSelectCourseDialog()">
+                  search
+                </mat-icon>
+            </mat-form-field>
+            <span
+              style="color: #f44336;font-size: 14px!important;"
+              *ngIf="f['courseId'].touched && f['courseId'].dirty && f['courseId'].errors">Please select Course</span>
+          </div>
+          <div
+            fxLayout="column"
+            fxFlex="100">
+            <mat-form-field
+              appearance="outline">
+              <mat-label>Section &nbsp;</mat-label>
+              <input
+                matInput
+                readonly
+                [value]="section?.sectionName"
+                placeholder="Section"/>
+                <mat-icon
+                  class="icon-right"
+                  style="cursor: pointer;"
+                  matSuffix
+                  matTooltip="Section"
+                  *ngIf="studentForm.enabled"
+                  (click)="showSelectSectionDialog()">
+                  search
+                </mat-icon>
+            </mat-form-field>
+            <span
+              style="color: #f44336;font-size: 14px!important;"
+              *ngIf="f['sectionId'].touched && f['sectionId'].dirty && f['sectionId'].errors">Please select Section</span>
+          </div>
+          <mat-form-field
+            appearance="outline"
+            [ngClass.gt-sm]="{ isLargeScreen: true }">
+            <mat-label>First Name&nbsp;</mat-label>
+            <input
+              matInput
+              placeholder="First Name"
+              formControlName="firstName"
+            />
+            <mat-error
+              *ngIf="getError('firstName') !== (null || undefined)"
+              >{{
+                (getError("firstName") &&
+                getError("firstName")["required"]
+                  ? "Please enter First Name"
+                  : "") ||
+                  (getError("firstName") &&
+                  getError("firstName")["pattern"]
+                    ? "Invalid input"
+                    : "")
+              }}</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            [ngClass.gt-sm]="{ isLargeScreen: true }">
+            <mat-label>Middle Name&nbsp;</mat-label>
+            <input
+              matInput
+              placeholder="Middle Name"
+              formControlName="middleName"
+            />
+            <mat-error
+              *ngIf="getError('middleName') !== (null || undefined)"
+              >{{
+                (getError("middleName") &&
+                getError("middleName")["required"]
+                  ? "Please enter Middle Name"
+                  : "") ||
+                  (getError("middleName") &&
+                  getError("middleName")["pattern"]
+                    ? "Invalid input"
+                    : "")
+              }}</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            [ngClass.gt-sm]="{ isLargeScreen: true }">
+            <mat-label>Last Name &nbsp;</mat-label>
+            <input
+              matInput
+              placeholder="Last Name"
+              formControlName="lastName"
+            />
+            <mat-error
+              *ngIf="getError('lastName') !== (null || undefined)"
+              >{{
+                (getError("lastName") &&
+                getError("lastName")["required"]
+                  ? "Please enter Last Name"
+                  : "") ||
+                  (getError("lastName") &&
+                  getError("lastName")["pattern"]
+                    ? "Invalid input"
+                    : "")
+              }}</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            [ngClass.gt-sm]="{ isLargeScreen: true }">
+            <mat-label>Mobile number &nbsp;</mat-label>
+            <input
+              matInput
+              placeholder="Mobile number"
+              formControlName="mobileNumber"
+            />
+            <mat-error
+              *ngIf="getError('mobileNumber') !== (null || undefined)"
+              >{{
+                (getError("mobileNumber") &&
+                getError("mobileNumber")["required"]
+                  ? "Please enter Mobile number"
+                  : "") ||
+                  (getError("mobileNumber") &&
+                  getError("mobileNumber")["pattern"]
+                    ? "Invalid input"
+                    : "")
+              }}</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            [ngClass.gt-sm]="{ isLargeScreen: true }">
+            <mat-label>LRN &nbsp;</mat-label>
+            <input
+              matInput
+              placeholder="LRN"
+              formControlName="lrn"
+            />
+            <mat-error
+              *ngIf="getError('lrn') !== (null || undefined)"
+              >{{
+                (getError("lrn") &&
+                getError("lrn")["required"]
+                  ? "Please enter LRN"
+                  : "") ||
+                  (getError("lrn") &&
+                  getError("lrn")["pattern"]
+                    ? "Invalid input"
+                    : "")
+              }}</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            [ngClass.gt-sm]="{ isLargeScreen: true }">
+            <mat-label>Card number &nbsp;</mat-label>
+            <input
+              matInput
+              placeholder="Card number"
+              formControlName="cardNumber"
+            />
+            <mat-error
+              *ngIf="getError('cardNumber') !== (null || undefined)"
+              >{{
+                (getError("cardNumber") &&
+                getError("cardNumber")["required"]
+                  ? "Please enter Card number"
+                  : "") ||
+                  (getError("cardNumber") &&
+                  getError("cardNumber")["pattern"]
+                    ? "Invalid input"
+                    : "")
+              }}</mat-error
+            >
+          </mat-form-field>
+          <div fxLayout="row">
+            <mat-form-field
+              appearance="outline"
+              fxFlex="50%"
+              (click)="bdayPicker.open()">
+              <mat-label>Birthdate &nbsp;</mat-label>
+              <input
+                matInput
+                [matDatepicker]="bdayPicker"
+                placeholder="Birthdate"
+                formControlName="birthDate">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="bdayPicker"></mat-datepicker-toggle>
+              <mat-datepicker #bdayPicker></mat-datepicker>
+              <mat-error
+                *ngIf="getError('birthDate') !== (null || undefined)"
+                >{{
+                  (getError("birthDate") &&
+                  getError("birthDate").required
+                    ? "Please enter birthDate"
+                    : "")
+                }}</mat-error>
+            </mat-form-field>
+          </div>
+          <div fxLayout="row">
+            <mat-form-field
+              appearance="outline"
+              fxFlex="50%">
+              <mat-label>Select Gender &nbsp;</mat-label>
+              <mat-select
+                formControlName="gender" required="true">
+                <mat-option value="MALE">Male</mat-option>
+                <mat-option value="FEMALE">Female</mat-option>
+                <mat-option value="OTHERS">Rather not say</mat-option>
+              </mat-select>
+              <mat-error
+                *ngIf="getError('gender') !== (null || undefined)">{{
+                  (getError("gender") &&
+                  getError("gender").required
+                    ? "Please gender"
+                    : "") }}</mat-error>
+            </mat-form-field>
+          </div>
+          <mat-form-field
+            appearance="outline"
+            fxFlex="50%"
+            class="cell"
+            [ngClass.gt-sm]="{ isLargeScreen: true }"
+            class="readonly">
+            <mat-label>Address &nbsp;</mat-label>
+            <textarea
+              matInput
+              placeholder="Address"
+              formControlName="address">
+            </textarea>
+            <mat-error
+              *ngIf="getError('address') !== (null || undefined)">{{
+                (getError("address") && getError("address").required
+                  ? "Please enter address"
+                  : "")}}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      (click)="dialogRef.close(false)">
+      {{studentForm.enabled ? 'Cancel': 'Close'}}
+    </button>
+    <button
+      *ngIf="studentForm.enabled"
+      mat-flat-button
+      [disabled]="!formIsValid || !formIsReady"
+      color="primary"
+      type="submit"
+      form="studentForm">
+      {{isNew ? 'Save' : 'Update'}}
+    </button>
+  </div>
+</div>
