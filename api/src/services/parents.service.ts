@@ -18,6 +18,7 @@ import { UpdateParentUserProfileDto } from "src/core/dto/parents/parents.update.
 import { Departments } from "src/db/entities/Departments";
 import { Parents } from "src/db/entities/Parents";
 import { Schools } from "src/db/entities/Schools";
+import { Students } from "src/db/entities/Students";
 import { Users } from "src/db/entities/Users";
 import { Repository } from "typeorm";
 
@@ -76,7 +77,15 @@ export class ParentsService {
         active: true,
       },
       relations: {
-        parentStudents: true,
+        parentStudents: {
+          student: {
+            school: true,
+            studentCourse: {
+              course: true,
+            },
+            schoolYearLevel: true,
+          },
+        },
         registeredByUser: true,
         updatedByUser: true,
         user: true,
@@ -94,6 +103,29 @@ export class ParentsService {
     return res;
   }
 
+  async getParentStudents(parentCode) {
+    const res = await this.parentRepo.manager.query<Students[]>(`
+    SELECT
+s."StudentId", 
+s."StudentCode", 
+s."DepartmentId", 
+s."FirstName", 
+s."MiddleName", 
+s."LastName", 
+s."LRN", 
+s."CardNumber", 
+s."BirthDate", 
+s."MobileNumber", 
+s."Email", 
+s."Address", 
+s."Gender" 
+from dbo."Students" s
+left join dbo."ParentStudent" ps ON s."StudentId" = ps."StudentId"
+left join dbo."Parents" p ON ps."ParentId" = p."ParentId"
+WHERE p."ParentCode" = '${parentCode}'
+    `);
+    return res;
+  }
   async updateProfile(parentCode, dto: UpdateParentUserProfileDto) {
     return await this.parentRepo.manager.transaction(async (entityManager) => {
       let parent = await entityManager.findOne(Parents, {

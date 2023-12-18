@@ -44,6 +44,23 @@ export class ParentsController {
     }
   }
 
+
+  @Get("getParentStudents/:parentCode")
+  //   @UseGuards(JwtAuthGuard)
+  async getParentStudents(@Param("parentCode") parentCode: string) {
+    const res = {} as any;
+    try {
+      res.data = await this.parentsService.getParentStudents(parentCode);
+      res.success = true;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
+
   @Post("/page")
   //   @UseGuards(JwtAuthGuard)
   async getPaginated(@Body() params: PaginationParamsDto) {

@@ -68,7 +68,15 @@ let ParentsService = class ParentsService {
                 active: true,
             },
             relations: {
-                parentStudents: true,
+                parentStudents: {
+                    student: {
+                        school: true,
+                        studentCourse: {
+                            course: true,
+                        },
+                        schoolYearLevel: true,
+                    },
+                },
                 registeredByUser: true,
                 updatedByUser: true,
                 user: true,
@@ -82,6 +90,29 @@ let ParentsService = class ParentsService {
         if ((_a = res === null || res === void 0 ? void 0 : res.updatedByUser) === null || _a === void 0 ? void 0 : _a.password) {
             delete res.updatedByUser.password;
         }
+        return res;
+    }
+    async getParentStudents(parentCode) {
+        const res = await this.parentRepo.manager.query(`
+    SELECT
+s."StudentId", 
+s."StudentCode", 
+s."DepartmentId", 
+s."FirstName", 
+s."MiddleName", 
+s."LastName", 
+s."LRN", 
+s."CardNumber", 
+s."BirthDate", 
+s."MobileNumber", 
+s."Email", 
+s."Address", 
+s."Gender" 
+from dbo."Students" s
+left join dbo."ParentStudent" ps ON s."StudentId" = ps."StudentId"
+left join dbo."Parents" p ON ps."ParentId" = p."ParentId"
+WHERE p."ParentCode" = '${parentCode}'
+    `);
         return res;
     }
     async updateProfile(parentCode, dto) {

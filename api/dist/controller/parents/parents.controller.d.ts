@@ -8,6 +8,7 @@ export declare class ParentsController {
     private readonly parentsService;
     constructor(parentsService: ParentsService);
     getDetails(parentCode: string): Promise<ApiResponseModel<Parents>>;
+    getParentStudents(parentCode: string): Promise<any>;
     getPaginated(params: PaginationParamsDto): Promise<ApiResponseModel<{
         results: Parents[];
         total: number;

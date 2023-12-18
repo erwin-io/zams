@@ -1,6 +1,7 @@
 import { UpdateUserResetPasswordDto } from "src/core/dto/auth/reset-password.dto";
 import { UpdateParentUserProfileDto } from "src/core/dto/parents/parents.update.dto";
 import { Parents } from "src/db/entities/Parents";
+import { Students } from "src/db/entities/Students";
 import { Repository } from "typeorm";
 export declare class ParentsService {
     private readonly parentRepo;
@@ -15,6 +16,7 @@ export declare class ParentsService {
         total: number;
     }>;
     getByCode(parentCode: any): Promise<Parents>;
+    getParentStudents(parentCode: any): Promise<Students[]>;
     updateProfile(parentCode: any, dto: UpdateParentUserProfileDto): Promise<Parents>;
     resetPassword(parentCode: any, dto: UpdateUserResetPasswordDto): Promise<Parents>;
     delete(parentCode: any): Promise<Parents>;

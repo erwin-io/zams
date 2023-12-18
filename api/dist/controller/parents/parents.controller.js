@@ -37,6 +37,19 @@ let ParentsController = class ParentsController {
             return res;
         }
     }
+    async getParentStudents(parentCode) {
+        const res = {};
+        try {
+            res.data = await this.parentsService.getParentStudents(parentCode);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
     async getPaginated(params) {
         const res = {};
         try {
@@ -114,6 +127,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ParentsController.prototype, "getDetails", null);
+__decorate([
+    (0, common_1.Get)("getParentStudents/:parentCode"),
+    __param(0, (0, common_1.Param)("parentCode")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ParentsController.prototype, "getParentStudents", null);
 __decorate([
     (0, common_1.Post)("/page"),
     __param(0, (0, common_1.Body)()),

@@ -625,6 +625,13 @@ export class AuthService {
         ex["message"].includes("u_user")
       ) {
         throw Error("Username already used!");
+      } else if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_parents_number")
+      ) {
+        throw Error("Number already used!");
       } else {
         throw ex;
       }
