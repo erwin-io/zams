@@ -22,6 +22,7 @@ import { PaginationParamsDto } from "src/core/dto/pagination-params.dto";
 import { ApiResponseModel } from "src/core/models/api-response.model";
 import { Parents } from "src/db/entities/Parents";
 import { ParentsService } from "src/services/parents.service";
+import { UpdateUserResetPasswordDto } from "src/core/dto/auth/reset-password.dto";
 
 @ApiTags("parents")
 @Controller("parents")
@@ -102,6 +103,28 @@ export class ParentsController {
       res.data = await this.parentsService.delete(parentCode);
       res.success = true;
       res.message = `Parent ${DELETE_SUCCESS}`;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
+  @Put("/:parentCode/resetPassword")
+  //   @UseGuards(JwtAuthGuard)
+  async resetPassword(
+    @Param("parentCode") parentCode: string,
+    @Body() updateUserResetPasswordDto: UpdateUserResetPasswordDto
+  ) {
+    const res: ApiResponseModel<Parents> = {} as any;
+    try {
+      res.data = await this.parentsService.resetPassword(
+        parentCode,
+        updateUserResetPasswordDto
+      );
+      res.success = true;
+      res.message = `Parent password ${UPDATE_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;

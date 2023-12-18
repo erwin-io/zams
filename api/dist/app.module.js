@@ -50,6 +50,7 @@ const employees_module_1 = require("./controller/employees/employees.module");
 const operators_module_1 = require("./controller/operators/operators.module");
 const parents_module_1 = require("./controller/parents/parents.module");
 const link_student_request_module_1 = require("./controller/link-student-request/link-student-request.module");
+const user_firebase_token_module_1 = require("./controller/user-firebase-token/user-firebase-token.module");
 const envFilePath = (0, utils_1.getEnvPath)(`${__dirname}/common/envs`);
 let AppModule = class AppModule {
 };
@@ -77,6 +78,7 @@ AppModule = __decorate([
             students_module_1.StudentsModule,
             parents_module_1.ParentsModule,
             link_student_request_module_1.LinkStudentRequestModule,
+            user_firebase_token_module_1.UserFirebaseTokenModule,
         ],
         providers: [app_service_1.AppService],
         controllers: [],

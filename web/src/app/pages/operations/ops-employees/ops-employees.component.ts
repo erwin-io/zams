@@ -71,6 +71,9 @@ export class OpsEmployeesComponent {
         this.selectedDepartment = new Departments();
         this.selectedSchool.schoolCode = this.route.snapshot.paramMap.get('schoolCode');
         this.selectedDepartment.departmentCode = this.route.snapshot.paramMap.get('departmentCode');
+        if(!this.selectedSchool?.schoolCode || this.selectedSchool?.schoolCode === '') {
+          this.selectedSchool.schoolCode = this.storageService.getOpsRecentSchool();
+        }
         if(this.selectedSchool?.schoolCode && this.selectedSchool?.schoolCode !== "" && (!this.selectedDepartment?.departmentCode || this.selectedDepartment?.departmentCode === '')) {
           this.router.navigate(["/ops/employees/find/" +this.selectedSchool?.schoolCode]);
         }

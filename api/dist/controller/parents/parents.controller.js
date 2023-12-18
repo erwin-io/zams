@@ -19,6 +19,7 @@ const api_response_constant_1 = require("../../common/constant/api-response.cons
 const parents_update_dto_1 = require("../../core/dto/parents/parents.update.dto");
 const pagination_params_dto_1 = require("../../core/dto/pagination-params.dto");
 const parents_service_1 = require("../../services/parents.service");
+const reset_password_dto_1 = require("../../core/dto/auth/reset-password.dto");
 let ParentsController = class ParentsController {
     constructor(parentsService) {
         this.parentsService = parentsService;
@@ -91,6 +92,20 @@ let ParentsController = class ParentsController {
             return res;
         }
     }
+    async resetPassword(parentCode, updateUserResetPasswordDto) {
+        const res = {};
+        try {
+            res.data = await this.parentsService.resetPassword(parentCode, updateUserResetPasswordDto);
+            res.success = true;
+            res.message = `Parent password ${api_response_constant_1.UPDATE_SUCCESS}`;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
 };
 __decorate([
     (0, common_1.Get)("/:parentCode"),
@@ -128,6 +143,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ParentsController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Put)("/:parentCode/resetPassword"),
+    __param(0, (0, common_1.Param)("parentCode")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, reset_password_dto_1.UpdateUserResetPasswordDto]),
+    __metadata("design:returntype", Promise)
+], ParentsController.prototype, "resetPassword", null);
 ParentsController = __decorate([
     (0, swagger_1.ApiTags)("parents"),
     (0, common_1.Controller)("parents"),

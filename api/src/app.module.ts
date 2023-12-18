@@ -18,6 +18,7 @@ import { EmployeesModule } from "./controller/employees/employees.module";
 import { OperatorsModule } from "./controller/operators/operators.module";
 import { ParentsModule } from "./controller/parents/parents.module";
 import { LinkStudentRequestModule } from "./controller/link-student-request/link-student-request.module";
+import { UserFirebaseTokenModule } from "./controller/user-firebase-token/user-firebase-token.module";
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
 @Module({
@@ -43,6 +44,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     StudentsModule,
     ParentsModule,
     LinkStudentRequestModule,
+    UserFirebaseTokenModule,
   ],
   providers: [AppService],
   controllers: [],

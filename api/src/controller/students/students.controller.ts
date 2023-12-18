@@ -13,7 +13,10 @@ import {
   SAVING_SUCCESS,
   UPDATE_SUCCESS,
 } from "src/common/constant/api-response.constant";
-import { CreateStudentDto, CreateStudentUserDto } from "src/core/dto/students/students.create.dto";
+import {
+  CreateStudentDto,
+  CreateStudentUserDto,
+} from "src/core/dto/students/students.create.dto";
 import {
   UpdateStudentDto,
   UpdateStudentUserDto,
