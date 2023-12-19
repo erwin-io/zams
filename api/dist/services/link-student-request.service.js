@@ -267,7 +267,7 @@ let LinkStudentRequestService = class LinkStudentRequestService {
             userFireBase.forEach(async (x) => {
                 var _a;
                 if (x.firebaseToken && x.firebaseToken !== "") {
-                    const res = await this.firebaseSendToDevice(x.firebaseToken, "Approved Link to Student Request!", "Request to Link Student " +
+                    const res = await this.firebaseSendToDevice(x.firebaseToken, "Approved Request to Link Student!", "Request to Link Student " +
                         ((_a = linkStudentRequest.student) === null || _a === void 0 ? void 0 : _a.fullName) +
                         " was approved!");
                     console.log(res);

@@ -302,7 +302,7 @@ export class LinkStudentRequestService {
           if (x.firebaseToken && x.firebaseToken !== "") {
             const res = await this.firebaseSendToDevice(
               x.firebaseToken,
-              "Approved Link to Student Request!",
+              "Approved Request to Link Student!",
               "Request to Link Student " +
                 linkStudentRequest.student?.fullName +
                 " was approved!"
