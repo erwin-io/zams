@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const testing_1 = require("@nestjs/testing");
 const firebase_provider_1 = require("./firebase-provider");
-describe('FirebaseProvider', () => {
+describe("FirebaseProvider", () => {
     let provider;
     beforeEach(async () => {
         const module = await testing_1.Test.createTestingModule({
@@ -10,7 +10,7 @@ describe('FirebaseProvider', () => {
         }).compile();
         provider = module.get(firebase_provider_1.FirebaseProvider);
     });
-    it('should be defined', () => {
+    it("should be defined", () => {
         expect(provider).toBeDefined();
     });
 });

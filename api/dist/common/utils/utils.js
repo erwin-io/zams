@@ -153,7 +153,7 @@ const columnDefToTypeORMCondition = (columnDef) => {
             conditionMapping.push((0, exports.convertColumnNotationToObject)(col.apiNotation, col.filter));
         }
         else if (col.type === "not" || col.type === "except") {
-            conditionMapping.push((0, exports.convertColumnNotationToObject)(col.apiNotation, (0, typeorm_1.Not)(col.filter)));
+            conditionMapping.push((0, exports.convertColumnNotationToObject)(col.apiNotation, (0, typeorm_1.ArrayOverlap)(col.filter)));
         }
         else {
             conditionMapping.push((0, exports.convertColumnNotationToObject)(col.apiNotation, (0, typeorm_1.ILike)(`%${col.filter}%`)));

@@ -1,4 +1,4 @@
-import * as firebaseConfig from "./enoerp-9969b-firebase-adminsdk-905uy-4d26d895ee.json";
+import * as firebaseConfig from "./zams-mobile-firebase-adminsdk-xzef4-413d187888.json";
 
 export default {
   type: firebaseConfig.type,

@@ -4,9 +4,13 @@ import { LinkStudentRequestService } from "src/services/link-student-request.ser
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { LinkStudentRequest } from "src/db/entities/LinkStudentRequest";
 import { PusherService } from "src/services/pusher.service";
+import { FirebaseProviderModule } from "src/core/provider/firebase/firebase-provider.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LinkStudentRequest])],
+  imports: [
+    FirebaseProviderModule,
+    TypeOrmModule.forFeature([LinkStudentRequest]),
+  ],
   controllers: [LinkStudentRequestController],
   providers: [LinkStudentRequestService, PusherService],
   exports: [LinkStudentRequestService, PusherService],

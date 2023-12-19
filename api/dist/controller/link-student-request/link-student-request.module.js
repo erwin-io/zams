@@ -13,11 +13,15 @@ const link_student_request_service_1 = require("../../services/link-student-requ
 const typeorm_1 = require("@nestjs/typeorm");
 const LinkStudentRequest_1 = require("../../db/entities/LinkStudentRequest");
 const pusher_service_1 = require("../../services/pusher.service");
+const firebase_provider_module_1 = require("../../core/provider/firebase/firebase-provider.module");
 let LinkStudentRequestModule = class LinkStudentRequestModule {
 };
 LinkStudentRequestModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([LinkStudentRequest_1.LinkStudentRequest])],
+        imports: [
+            firebase_provider_module_1.FirebaseProviderModule,
+            typeorm_1.TypeOrmModule.forFeature([LinkStudentRequest_1.LinkStudentRequest]),
+        ],
         controllers: [link_student_request_controller_1.LinkStudentRequestController],
         providers: [link_student_request_service_1.LinkStudentRequestService, pusher_service_1.PusherService],
         exports: [link_student_request_service_1.LinkStudentRequestService, pusher_service_1.PusherService],

@@ -8,6 +8,7 @@ import {
   ILike,
   Raw,
   Not,
+  ArrayOverlap,
 } from "typeorm";
 import * as bcrypt from "bcrypt";
 import * as fs from "fs";
@@ -172,7 +173,7 @@ export const columnDefToTypeORMCondition = (columnDef) => {
       );
     } else if (col.type === "not" || col.type === "except") {
       conditionMapping.push(
-        convertColumnNotationToObject(col.apiNotation, Not(col.filter))
+        convertColumnNotationToObject(col.apiNotation, ArrayOverlap(col.filter))
       );
     } else {
       conditionMapping.push(

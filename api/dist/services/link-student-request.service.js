@@ -31,10 +31,13 @@ const pusher_service_1 = require("./pusher.service");
 const Parents_1 = require("../db/entities/Parents");
 const ParentStudent_1 = require("../db/entities/ParentStudent");
 const parents_constant_1 = require("../common/constant/parents.constant");
+const firebase_provider_1 = require("../core/provider/firebase/firebase-provider");
+const UserFirebaseToken_1 = require("../db/entities/UserFirebaseToken");
 let LinkStudentRequestService = class LinkStudentRequestService {
-    constructor(linkStudentRequestRepo, pusherService) {
+    constructor(linkStudentRequestRepo, pusherService, firebaseProvoder) {
         this.linkStudentRequestRepo = linkStudentRequestRepo;
         this.pusherService = pusherService;
+        this.firebaseProvoder = firebaseProvoder;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -178,6 +181,7 @@ let LinkStudentRequestService = class LinkStudentRequestService {
     }
     async approve(linkStudentRequestCode, dto) {
         return await this.linkStudentRequestRepo.manager.transaction(async (entityManager) => {
+            var _a, _b;
             let linkStudentRequest = await entityManager.findOne(LinkStudentRequest_1.LinkStudentRequest, {
                 where: {
                     linkStudentRequestCode,
@@ -253,6 +257,22 @@ let LinkStudentRequestService = class LinkStudentRequestService {
                     updatedByUser: true,
                 },
             });
+            const userFireBase = await entityManager.find(UserFirebaseToken_1.UserFirebaseToken, {
+                where: {
+                    user: {
+                        userId: (_b = (_a = linkStudentRequest === null || linkStudentRequest === void 0 ? void 0 : linkStudentRequest.requestedByParent) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.userId,
+                    },
+                },
+            });
+            userFireBase.forEach(async (x) => {
+                var _a;
+                if (x.firebaseToken && x.firebaseToken !== "") {
+                    const res = await this.firebaseSendToDevice(x.firebaseToken, "Approved Link to Student Request!", "Request to Link Student " +
+                        ((_a = linkStudentRequest.student) === null || _a === void 0 ? void 0 : _a.fullName) +
+                        " was approved!");
+                    console.log(res);
+                }
+            });
             delete linkStudentRequest.requestedByParent.user.password;
             delete linkStudentRequest.updatedByUser.password;
             await this.logNotification(linkStudentRequest.requestedByParent.user, linkStudentRequest.linkStudentRequestCode, entityManager, notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_APPROVED, `Link student request was approved`);
@@ -261,6 +281,7 @@ let LinkStudentRequestService = class LinkStudentRequestService {
     }
     async reject(linkStudentRequestCode, dto) {
         return await this.linkStudentRequestRepo.manager.transaction(async (entityManager) => {
+            var _a, _b;
             let linkStudentRequest = await entityManager.findOne(LinkStudentRequest_1.LinkStudentRequest, {
                 where: {
                     linkStudentRequestCode,
@@ -311,6 +332,22 @@ let LinkStudentRequestService = class LinkStudentRequestService {
                     },
                     updatedByUser: true,
                 },
+            });
+            const userFireBase = await entityManager.find(UserFirebaseToken_1.UserFirebaseToken, {
+                where: {
+                    user: {
+                        userId: (_b = (_a = linkStudentRequest === null || linkStudentRequest === void 0 ? void 0 : linkStudentRequest.requestedByParent) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.userId,
+                    },
+                },
+            });
+            userFireBase.forEach(async (x) => {
+                var _a;
+                if (x.firebaseToken && x.firebaseToken !== "") {
+                    const res = await this.firebaseSendToDevice(x.firebaseToken, "Rejected Link to Student Request!", "Request to Link Student " +
+                        ((_a = linkStudentRequest.student) === null || _a === void 0 ? void 0 : _a.fullName) +
+                        " was rejected!");
+                    console.log(res);
+                }
             });
             delete linkStudentRequest.requestedByParent.user.password;
             delete linkStudentRequest.updatedByUser.password;
@@ -385,12 +422,34 @@ let LinkStudentRequestService = class LinkStudentRequestService {
         await entityManager.save(Notifications_1.Notifications, notifcation);
         await this.pusherService.sendNotif([user.userId], title, description);
     }
+    async firebaseSendToDevice(token, title, description) {
+        return await this.firebaseProvoder.app
+            .messaging()
+            .sendToDevice(token, {
+            notification: {
+                title: title,
+                body: description,
+                sound: "notif_alert",
+            },
+        }, {
+            priority: "high",
+            timeToLive: 60 * 24,
+            android: { sound: "notif_alert" },
+        })
+            .then((response) => {
+            console.log("Successfully sent message:", response);
+        })
+            .catch((error) => {
+            throw new common_1.HttpException(`Error sending notif! ${error.message}`, common_1.HttpStatus.BAD_REQUEST);
+        });
+    }
 };
 LinkStudentRequestService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(LinkStudentRequest_1.LinkStudentRequest)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        pusher_service_1.PusherService])
+        pusher_service_1.PusherService,
+        firebase_provider_1.FirebaseProvider])
 ], LinkStudentRequestService);
 exports.LinkStudentRequestService = LinkStudentRequestService;
 //# sourceMappingURL=link-student-request.service.js.map

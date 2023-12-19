@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { LINKSTUDENTREQUEST_ERROR_NOT_FOUND } from "src/common/constant/link-student-request.constant";
 import {
@@ -27,13 +27,17 @@ import { PusherService } from "./pusher.service";
 import { Parents } from "src/db/entities/Parents";
 import { ParentStudent } from "src/db/entities/ParentStudent";
 import { PARENTS_ERROR_NOT_FOUND } from "src/common/constant/parents.constant";
+import { FirebaseProvider } from "src/core/provider/firebase/firebase-provider";
+import { MessagingDevicesResponse } from "firebase-admin/lib/messaging/messaging-api";
+import { UserFirebaseToken } from "src/db/entities/UserFirebaseToken";
 
 @Injectable()
 export class LinkStudentRequestService {
   constructor(
     @InjectRepository(LinkStudentRequest)
     private readonly linkStudentRequestRepo: Repository<LinkStudentRequest>,
-    private pusherService: PusherService
+    private pusherService: PusherService,
+    private firebaseProvoder: FirebaseProvider
   ) {}
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
     const skip =
@@ -287,6 +291,25 @@ export class LinkStudentRequestService {
             updatedByUser: true,
           },
         });
+        const userFireBase = await entityManager.find(UserFirebaseToken, {
+          where: {
+            user: {
+              userId: linkStudentRequest?.requestedByParent?.user?.userId,
+            },
+          },
+        });
+        userFireBase.forEach(async (x) => {
+          if (x.firebaseToken && x.firebaseToken !== "") {
+            const res = await this.firebaseSendToDevice(
+              x.firebaseToken,
+              "Approved Link to Student Request!",
+              "Request to Link Student " +
+                linkStudentRequest.student?.fullName +
+                " was approved!"
+            );
+            console.log(res);
+          }
+        });
         delete linkStudentRequest.requestedByParent.user.password;
         delete linkStudentRequest.updatedByUser.password;
         await this.logNotification(
@@ -364,6 +387,25 @@ export class LinkStudentRequestService {
             },
             updatedByUser: true,
           },
+        });
+        const userFireBase = await entityManager.find(UserFirebaseToken, {
+          where: {
+            user: {
+              userId: linkStudentRequest?.requestedByParent?.user?.userId,
+            },
+          },
+        });
+        userFireBase.forEach(async (x) => {
+          if (x.firebaseToken && x.firebaseToken !== "") {
+            const res = await this.firebaseSendToDevice(
+              x.firebaseToken,
+              "Rejected Link to Student Request!",
+              "Request to Link Student " +
+                linkStudentRequest.student?.fullName +
+                " was rejected!"
+            );
+            console.log(res);
+          }
         });
         delete linkStudentRequest.requestedByParent.user.password;
         delete linkStudentRequest.updatedByUser.password;
@@ -464,5 +506,34 @@ export class LinkStudentRequestService {
     };
     await entityManager.save(Notifications, notifcation);
     await this.pusherService.sendNotif([user.userId], title, description);
+  }
+
+  async firebaseSendToDevice(token, title, description) {
+    return await this.firebaseProvoder.app
+      .messaging()
+      .sendToDevice(
+        token,
+        {
+          notification: {
+            title: title,
+            body: description,
+            sound: "notif_alert",
+          },
+        },
+        {
+          priority: "high",
+          timeToLive: 60 * 24,
+          android: { sound: "notif_alert" },
+        }
+      )
+      .then((response: MessagingDevicesResponse) => {
+        console.log("Successfully sent message:", response);
+      })
+      .catch((error) => {
+        throw new HttpException(
+          `Error sending notif! ${error.message}`,
+          HttpStatus.BAD_REQUEST
+        );
+      });
   }
 }
