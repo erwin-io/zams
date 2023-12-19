@@ -16,6 +16,7 @@ export declare class SchoolsService {
     }>;
     getByCode(schoolCode: any): Promise<Schools>;
     create(dto: CreateSchoolDto): Promise<Schools>;
+    batchCreate(dtos: CreateSchoolDto[]): Promise<any[]>;
     update(schoolCode: any, dto: UpdateSchoolDto): Promise<Schools>;
     delete(schoolCode: any): Promise<Schools>;
 }

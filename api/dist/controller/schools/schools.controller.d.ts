@@ -13,6 +13,7 @@ export declare class SchoolsController {
         total: number;
     }>>;
     create(schoolsDto: CreateSchoolDto): Promise<ApiResponseModel<Schools>>;
+    batchCreate(schoolsDtos: CreateSchoolDto[]): Promise<ApiResponseModel<Schools[]>>;
     update(schoolCode: string, dto: UpdateSchoolDto): Promise<ApiResponseModel<Schools>>;
     delete(schoolCode: string): Promise<ApiResponseModel<Schools>>;
 }

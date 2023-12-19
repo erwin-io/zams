@@ -7,7 +7,7 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
 import {
   DELETE_SUCCESS,
   SAVING_SUCCESS,
@@ -62,6 +62,26 @@ export class SchoolsController {
     const res: ApiResponseModel<Schools> = {} as any;
     try {
       res.data = await this.schoolsService.create(schoolsDto);
+      res.success = true;
+      res.message = `Schools ${SAVING_SUCCESS}`;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
+  @ApiBody({
+    isArray: true,
+    type: CreateSchoolDto,
+  })
+  @Post("batchCreate")
+  //   @UseGuards(JwtAuthGuard)
+  async batchCreate(@Body() schoolsDtos: CreateSchoolDto[]) {
+    const res: ApiResponseModel<Schools[]> = {} as any;
+    try {
+      res.data = await this.schoolsService.batchCreate(schoolsDtos);
       res.success = true;
       res.message = `Schools ${SAVING_SUCCESS}`;
       return res;

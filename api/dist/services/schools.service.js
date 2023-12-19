@@ -88,12 +88,14 @@ let SchoolsService = class SchoolsService {
             schools.studentsAllowableTimeLate = dto.studentsAllowableTimeLate;
             schools.studentsTimeLate = dto.studentsTimeLate;
             schools.restrictGuardianTime = dto.restrictGuardianTime;
-            schools.employeesTimeBeforeSwipeIsAllowed = dto.employeesTimeBeforeSwipeIsAllowed;
+            schools.employeesTimeBeforeSwipeIsAllowed =
+                dto.employeesTimeBeforeSwipeIsAllowed;
             schools.employeesAllowableTimeLate = dto.employeesAllowableTimeLate;
             schools.employeesTimeLate = dto.employeesTimeLate;
             schools.timeBeforeSwipeIsAllowed = dto.timeBeforeSwipeIsAllowed;
             schools.smsNotificationForStaffEntry = dto.smsNotificationForStaffEntry;
-            schools.smsNotificationForStudentBreakTime = dto.smsNotificationForStudentBreakTime;
+            schools.smsNotificationForStudentBreakTime =
+                dto.smsNotificationForStudentBreakTime;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
                 .then((res) => {
@@ -117,6 +119,51 @@ let SchoolsService = class SchoolsService {
             return schools;
         });
     }
+    async batchCreate(dtos) {
+        return await this.schoolsRepo.manager.transaction(async (entityManager) => {
+            const schools = [];
+            for (const dto of dtos) {
+                let school = new Schools_1.Schools();
+                school.schoolName = dto.schoolName;
+                school.schoolAddress = dto.schoolAddress;
+                school.schoolContactNumber = dto.schoolContactNumber;
+                school.schoolEmail = dto.schoolEmail;
+                school.studentsAllowableTimeLate = dto.studentsAllowableTimeLate;
+                school.studentsTimeLate = dto.studentsTimeLate;
+                school.restrictGuardianTime = dto.restrictGuardianTime;
+                school.employeesTimeBeforeSwipeIsAllowed =
+                    dto.employeesTimeBeforeSwipeIsAllowed;
+                school.employeesAllowableTimeLate = dto.employeesAllowableTimeLate;
+                school.employeesTimeLate = dto.employeesTimeLate;
+                school.timeBeforeSwipeIsAllowed = dto.timeBeforeSwipeIsAllowed;
+                school.smsNotificationForStaffEntry = dto.smsNotificationForStaffEntry;
+                school.smsNotificationForStudentBreakTime =
+                    dto.smsNotificationForStudentBreakTime;
+                const timestamp = await entityManager
+                    .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+                    .then((res) => {
+                    return res[0]["timestamp"];
+                });
+                school.dateRegistered = timestamp;
+                const registeredByUser = await entityManager.findOne(Users_1.Users, {
+                    where: {
+                        userId: dto.registeredByUserId,
+                        active: true,
+                    },
+                });
+                if (!registeredByUser) {
+                    throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+                }
+                school.registeredByUser = registeredByUser;
+                school = await entityManager.save(school);
+                school.schoolCode = (0, utils_1.generateIndentityCode)(school.schoolId);
+                school = await entityManager.save(Schools_1.Schools, school);
+                delete school.registeredByUser.password;
+                schools.push(school);
+            }
+            return schools;
+        });
+    }
     async update(schoolCode, dto) {
         return await this.schoolsRepo.manager.transaction(async (entityManager) => {
             var _a, _b;
@@ -136,12 +183,14 @@ let SchoolsService = class SchoolsService {
             schools.studentsAllowableTimeLate = dto.studentsAllowableTimeLate;
             schools.studentsTimeLate = dto.studentsTimeLate;
             schools.restrictGuardianTime = dto.restrictGuardianTime;
-            schools.employeesTimeBeforeSwipeIsAllowed = dto.employeesTimeBeforeSwipeIsAllowed;
+            schools.employeesTimeBeforeSwipeIsAllowed =
+                dto.employeesTimeBeforeSwipeIsAllowed;
             schools.employeesAllowableTimeLate = dto.employeesAllowableTimeLate;
             schools.employeesTimeLate = dto.employeesTimeLate;
             schools.timeBeforeSwipeIsAllowed = dto.timeBeforeSwipeIsAllowed;
             schools.smsNotificationForStaffEntry = dto.smsNotificationForStaffEntry;
-            schools.smsNotificationForStudentBreakTime = dto.smsNotificationForStudentBreakTime;
+            schools.smsNotificationForStudentBreakTime =
+                dto.smsNotificationForStudentBreakTime;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
                 .then((res) => {

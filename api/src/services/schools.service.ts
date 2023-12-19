@@ -90,12 +90,14 @@ export class SchoolsService {
       schools.studentsAllowableTimeLate = dto.studentsAllowableTimeLate;
       schools.studentsTimeLate = dto.studentsTimeLate;
       schools.restrictGuardianTime = dto.restrictGuardianTime;
-      schools.employeesTimeBeforeSwipeIsAllowed = dto.employeesTimeBeforeSwipeIsAllowed;
+      schools.employeesTimeBeforeSwipeIsAllowed =
+        dto.employeesTimeBeforeSwipeIsAllowed;
       schools.employeesAllowableTimeLate = dto.employeesAllowableTimeLate;
       schools.employeesTimeLate = dto.employeesTimeLate;
       schools.timeBeforeSwipeIsAllowed = dto.timeBeforeSwipeIsAllowed;
       schools.smsNotificationForStaffEntry = dto.smsNotificationForStaffEntry;
-      schools.smsNotificationForStudentBreakTime = dto.smsNotificationForStudentBreakTime;
+      schools.smsNotificationForStudentBreakTime =
+        dto.smsNotificationForStudentBreakTime;
       const timestamp = await entityManager
         .query(CONST_QUERYCURRENT_TIMESTAMP)
         .then((res) => {
@@ -121,6 +123,53 @@ export class SchoolsService {
     });
   }
 
+  async batchCreate(dtos: CreateSchoolDto[]) {
+    return await this.schoolsRepo.manager.transaction(async (entityManager) => {
+      const schools = [];
+      for (const dto of dtos) {
+        let school = new Schools();
+        school.schoolName = dto.schoolName;
+        school.schoolAddress = dto.schoolAddress;
+        school.schoolContactNumber = dto.schoolContactNumber;
+        school.schoolEmail = dto.schoolEmail;
+        school.studentsAllowableTimeLate = dto.studentsAllowableTimeLate;
+        school.studentsTimeLate = dto.studentsTimeLate;
+        school.restrictGuardianTime = dto.restrictGuardianTime;
+        school.employeesTimeBeforeSwipeIsAllowed =
+          dto.employeesTimeBeforeSwipeIsAllowed;
+        school.employeesAllowableTimeLate = dto.employeesAllowableTimeLate;
+        school.employeesTimeLate = dto.employeesTimeLate;
+        school.timeBeforeSwipeIsAllowed = dto.timeBeforeSwipeIsAllowed;
+        school.smsNotificationForStaffEntry = dto.smsNotificationForStaffEntry;
+        school.smsNotificationForStudentBreakTime =
+          dto.smsNotificationForStudentBreakTime;
+        const timestamp = await entityManager
+          .query(CONST_QUERYCURRENT_TIMESTAMP)
+          .then((res) => {
+            return res[0]["timestamp"];
+          });
+        school.dateRegistered = timestamp;
+
+        const registeredByUser = await entityManager.findOne(Users, {
+          where: {
+            userId: dto.registeredByUserId,
+            active: true,
+          },
+        });
+        if (!registeredByUser) {
+          throw Error(USER_ERROR_USER_NOT_FOUND);
+        }
+        school.registeredByUser = registeredByUser;
+        school = await entityManager.save(school);
+        school.schoolCode = generateIndentityCode(school.schoolId);
+        school = await entityManager.save(Schools, school);
+        delete school.registeredByUser.password;
+        schools.push(school);
+      }
+      return schools;
+    });
+  }
+
   async update(schoolCode, dto: UpdateSchoolDto) {
     return await this.schoolsRepo.manager.transaction(async (entityManager) => {
       let schools = await entityManager.findOne(Schools, {
@@ -139,12 +188,14 @@ export class SchoolsService {
       schools.studentsAllowableTimeLate = dto.studentsAllowableTimeLate;
       schools.studentsTimeLate = dto.studentsTimeLate;
       schools.restrictGuardianTime = dto.restrictGuardianTime;
-      schools.employeesTimeBeforeSwipeIsAllowed = dto.employeesTimeBeforeSwipeIsAllowed;
+      schools.employeesTimeBeforeSwipeIsAllowed =
+        dto.employeesTimeBeforeSwipeIsAllowed;
       schools.employeesAllowableTimeLate = dto.employeesAllowableTimeLate;
       schools.employeesTimeLate = dto.employeesTimeLate;
       schools.timeBeforeSwipeIsAllowed = dto.timeBeforeSwipeIsAllowed;
       schools.smsNotificationForStaffEntry = dto.smsNotificationForStaffEntry;
-      schools.smsNotificationForStudentBreakTime = dto.smsNotificationForStudentBreakTime;
+      schools.smsNotificationForStudentBreakTime =
+        dto.smsNotificationForStudentBreakTime;
       const timestamp = await entityManager
         .query(CONST_QUERYCURRENT_TIMESTAMP)
         .then((res) => {

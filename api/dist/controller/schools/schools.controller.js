@@ -64,6 +64,20 @@ let SchoolsController = class SchoolsController {
             return res;
         }
     }
+    async batchCreate(schoolsDtos) {
+        const res = {};
+        try {
+            res.data = await this.schoolsService.batchCreate(schoolsDtos);
+            res.success = true;
+            res.message = `Schools ${api_response_constant_1.SAVING_SUCCESS}`;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
     async update(schoolCode, dto) {
         const res = {};
         try {
@@ -114,6 +128,17 @@ __decorate([
     __metadata("design:paramtypes", [schools_create_dto_1.CreateSchoolDto]),
     __metadata("design:returntype", Promise)
 ], SchoolsController.prototype, "create", null);
+__decorate([
+    (0, swagger_1.ApiBody)({
+        isArray: true,
+        type: schools_create_dto_1.CreateSchoolDto,
+    }),
+    (0, common_1.Post)("batchCreate"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], SchoolsController.prototype, "batchCreate", null);
 __decorate([
     (0, common_1.Put)("/:schoolCode"),
     __param(0, (0, common_1.Param)("schoolCode")),
