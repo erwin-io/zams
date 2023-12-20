@@ -33,11 +33,13 @@ const typeorm_2 = require("typeorm");
 const pusher_service_1 = require("./pusher.service");
 const Machines_1 = require("../db/entities/Machines");
 const machines_constant_1 = require("../common/constant/machines.constant");
+const firebase_cloud_messaging_service_1 = require("./firebase-cloud-messaging.service");
 let TapLogsService = class TapLogsService {
-    constructor(tapLogsRepo, pusherService, firebaseProvoder) {
+    constructor(tapLogsRepo, pusherService, firebaseProvoder, firebaseCloudMessagingService) {
         this.tapLogsRepo = tapLogsRepo;
         this.pusherService = pusherService;
         this.firebaseProvoder = firebaseProvoder;
+        this.firebaseCloudMessagingService = firebaseCloudMessagingService;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -151,7 +153,7 @@ let TapLogsService = class TapLogsService {
                 }
                 userFireBase.forEach(async (x) => {
                     if (x.firebaseToken && x.firebaseToken !== "") {
-                        const res = await this.firebaseSendToDevice(x.firebaseToken, title, desc);
+                        const res = await this.firebaseCloudMessagingService.sendToDevice(x.firebaseToken, title, desc);
                         console.log(res);
                     }
                 });
@@ -174,34 +176,14 @@ let TapLogsService = class TapLogsService {
         });
         await entityManager.save(Notifications_1.Notifications, notifcations);
     }
-    async firebaseSendToDevice(token, title, description) {
-        return await this.firebaseProvoder.app
-            .messaging()
-            .sendToDevice(token, {
-            notification: {
-                title: title,
-                body: description,
-                sound: "notif_alert",
-            },
-        }, {
-            priority: "high",
-            timeToLive: 60 * 24,
-            android: { sound: "notif_alert" },
-        })
-            .then((response) => {
-            console.log("Successfully sent message:", response);
-        })
-            .catch((error) => {
-            throw new common_1.HttpException(`Error sending notif! ${error.message}`, common_1.HttpStatus.BAD_REQUEST);
-        });
-    }
 };
 TapLogsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(TapLogs_1.TapLogs)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         pusher_service_1.PusherService,
-        firebase_provider_1.FirebaseProvider])
+        firebase_provider_1.FirebaseProvider,
+        firebase_cloud_messaging_service_1.FirebaseCloudMessagingService])
 ], TapLogsService);
 exports.TapLogsService = TapLogsService;
 //# sourceMappingURL=tap-logs.service.js.map

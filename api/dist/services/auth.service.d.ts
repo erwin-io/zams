@@ -22,7 +22,7 @@ export declare class AuthService {
     getByCredentials({ userName, password }: {
         userName: any;
         password: any;
-    }): Promise<Employees | Operators | Parents>;
+    }): Promise<Employees | Parents | Operators>;
     getUserById(userId: any): Promise<Users>;
     registerEmployee(dto: RegisterEmployeeUserDto): Promise<Employees>;
     registerParent(dto: RegisterParentUserDto): Promise<Parents>;

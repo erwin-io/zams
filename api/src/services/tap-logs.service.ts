@@ -31,6 +31,7 @@ import { Repository, EntityManager } from "typeorm";
 import { PusherService } from "./pusher.service";
 import { Machines } from "src/db/entities/Machines";
 import { MACHINES_ERROR_NOT_FOUND } from "src/common/constant/machines.constant";
+import { FirebaseCloudMessagingService } from "./firebase-cloud-messaging.service";
 
 @Injectable()
 export class TapLogsService {
@@ -38,7 +39,8 @@ export class TapLogsService {
     @InjectRepository(TapLogs)
     private readonly tapLogsRepo: Repository<TapLogs>,
     private pusherService: PusherService,
-    private firebaseProvoder: FirebaseProvider
+    private firebaseProvoder: FirebaseProvider,
+    private firebaseCloudMessagingService: FirebaseCloudMessagingService
   ) {}
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
     const skip =
@@ -174,7 +176,7 @@ export class TapLogsService {
 
         userFireBase.forEach(async (x) => {
           if (x.firebaseToken && x.firebaseToken !== "") {
-            const res = await this.firebaseSendToDevice(
+            const res = await this.firebaseCloudMessagingService.sendToDevice(
               x.firebaseToken,
               title,
               desc
@@ -213,34 +215,5 @@ export class TapLogsService {
       });
     });
     await entityManager.save(Notifications, notifcations);
-  }
-
-  async firebaseSendToDevice(token, title, description) {
-    return await this.firebaseProvoder.app
-      .messaging()
-      .sendToDevice(
-        token,
-        {
-          notification: {
-            title: title,
-            body: description,
-            sound: "notif_alert",
-          },
-        },
-        {
-          priority: "high",
-          timeToLive: 60 * 24,
-          android: { sound: "notif_alert" },
-        }
-      )
-      .then((response: MessagingDevicesResponse) => {
-        console.log("Successfully sent message:", response);
-      })
-      .catch((error) => {
-        throw new HttpException(
-          `Error sending notif! ${error.message}`,
-          HttpStatus.BAD_REQUEST
-        );
-      });
   }
 }
