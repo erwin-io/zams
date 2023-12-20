@@ -108,19 +108,12 @@ let TapLogsService = class TapLogsService {
                     active: true,
                 },
             });
-            if (!student) {
+            if (!machine) {
                 throw Error(machines_constant_1.MACHINES_ERROR_NOT_FOUND);
             }
             tapLogs.machine = machine;
             tapLogs = await entityManager.save(TapLogs_1.TapLogs, tapLogs);
             const parentStudents = await entityManager.find(ParentStudent_1.ParentStudent, {
-                select: {
-                    parent: {
-                        user: {
-                            userFirebaseTokens: true,
-                        },
-                    },
-                },
                 where: {
                     student: {
                         studentId: student.studentId,

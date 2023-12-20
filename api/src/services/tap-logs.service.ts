@@ -113,7 +113,7 @@ export class TapLogsService {
           active: true,
         },
       });
-      if (!student) {
+      if (!machine) {
         throw Error(MACHINES_ERROR_NOT_FOUND);
       }
       tapLogs.machine = machine;
@@ -121,13 +121,6 @@ export class TapLogsService {
       tapLogs = await entityManager.save(TapLogs, tapLogs);
 
       const parentStudents = await entityManager.find(ParentStudent, {
-        select: {
-          parent: {
-            user: {
-              userFirebaseTokens: true,
-            },
-          },
-        },
         where: {
           student: {
             studentId: student.studentId,
