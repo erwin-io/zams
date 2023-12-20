@@ -39,6 +39,23 @@ export class MyClock extends TimeagoClock {
     return interval(1000);
   }
 }
+
+export function loadCrucialData() {
+  return function() {
+    // or use UserService
+    return delay(100000);
+  }
+}
+
+export function delay(delay: number) {
+  return function() {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, delay);
+    });
+  }
+}
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -82,6 +99,11 @@ export class MyClock extends TimeagoClock {
       deps : [AppConfigService],
       useFactory : (config : AppConfigService) =>  () => config.loadAppConfig()
     },
+    // {
+    //   provide: APP_INITIALIZER,
+    //   multi: true,
+    //   useFactory: loadCrucialData()
+    // },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomHttpInterceptor,

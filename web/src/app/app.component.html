@@ -1,5 +1,5 @@
 
-<ng-http-loader 
+<ng-http-loader
     [backdrop]="true"
     [backgroundColor]="'#177bee'"
     [debounceDelay]="100"
@@ -7,6 +7,7 @@
     [minDuration]="300"
     [spinner]="spinkit.skThreeBounce"
     opacity="0.8"
+    *ngIf="isLoaded"
     [backdropBackgroundColor]="'rgb(83 83 83 / 59%)'">
 </ng-http-loader>
 
