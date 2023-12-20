@@ -79,10 +79,14 @@
                         <ng-container *ngIf="colDef.format && colDef.format.type !== ''; else noFormat">
                           <span *ngIf="colDef.format.type === 'currency' && (!colDef.format.custom || colDef.format.custom === '')">{{element[colDef.name] | currency: 'PHP'}}</span>
                           <span *ngIf="colDef.format.type === 'currency' && (colDef.format.custom && colDef.format.custom !== '')">{{element[colDef.name] | currency: colDef.format.custom }}</span>
-                          <span *ngIf="colDef.format.type === 'date' && (!colDef.format.custom || colDef.format.custom === '')">{{element[colDef.name] | date: 'MMM dd, yyyy'}}</span>
-                          <span *ngIf="colDef.format.type === 'date' && (colDef.format.custom && colDef.format.custom !== '')">{{element[colDef.name] | date: colDef.format.custom }}</span>
-                          <span *ngIf="colDef.format.type === 'date-time' && (!colDef.format.custom || colDef.format.custom === '')">{{element[colDef.name] | date: 'MMM dd, yyyy h:mm a'}}</span>
-                          <span *ngIf="colDef.format.type === 'date-time' && (colDef.format.custom && colDef.format.custom !== '')">{{element[colDef.name] | date: colDef.format.custom}}</span>
+                          <!-- <span *ngIf="colDef.format.type === 'date' && (!colDef.format.custom || colDef.format.custom === '')">{{element[colDef.name] | date: 'MMM dd, yyyy'}}</span> -->
+                          <app-date-formatter *ngIf="colDef.format.type === 'date' && (!colDef.format.custom || colDef.format.custom === '')" [date]="element[colDef.name]" format="MMM dd, yyyy"></app-date-formatter>
+                          <!-- <span *ngIf="colDef.format.type === 'date' && (colDef.format.custom && colDef.format.custom !== '')">{{element[colDef.name] | date: colDef.format.custom }}</span> -->
+                          <app-date-formatter *ngIf="colDef.format.type === 'date' && (colDef.format.custom && colDef.format.custom !== '')" [date]="element[colDef.name]" [format]="colDef.format.custom"></app-date-formatter>
+                          <!-- <span *ngIf="colDef.format.type === 'date-time' && (!colDef.format.custom || colDef.format.custom === '')">{{element[colDef.name] | date: 'MMM dd, yyyy h:mm a'}}</span> -->
+                          <app-date-formatter *ngIf="colDef.format.type === 'date-time' && (!colDef.format.custom || colDef.format.custom === '')" [date]="element[colDef.name]" format="MMM dd, yyyy h:mm a"></app-date-formatter>
+                          <!-- <span *ngIf="colDef.format.type === 'date-time' && (colDef.format.custom && colDef.format.custom !== '')">{{element[colDef.name] | date: colDef.format.custom}}</span> -->
+                          <app-date-formatter *ngIf="colDef.format.type === 'date-time' && (colDef.format.custom && colDef.format.custom !== '')" [date]="element[colDef.name]" [format]="colDef.format.custom"></app-date-formatter>
                           <span *ngIf="colDef.format.type === 'number'">{{element[colDef.name] | number }}</span>
                         </ng-container>
                         <ng-template #noFormat>

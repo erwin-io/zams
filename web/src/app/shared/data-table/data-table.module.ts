@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { MaterialModule } from '../material/material.module';
 import { DataTableRangeFilterComponent } from './data-table-range-filter/data-table-range-filter.component';
+import { DateFormatterModule } from '../date-formatter/date-formatter.module';
 
 
 
@@ -17,7 +18,8 @@ import { DataTableRangeFilterComponent } from './data-table-range-filter/data-ta
     MaterialModule,
     NgxSkeletonLoaderModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DateFormatterModule
   ],
   exports: [DataTableComponent]
 })
