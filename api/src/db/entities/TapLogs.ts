@@ -18,11 +18,14 @@ export class TapLogs {
   @Column("character varying", { name: "Status" })
   status: string;
 
-  @Column("timestamp with time zone", {
-    name: "DateTime",
+  @Column("date", {
+    name: "Date",
     default: () => "(now() AT TIME ZONE 'Asia/Manila')",
   })
-  dateTime: Date;
+  date: string;
+
+  @Column("character varying", { name: "Time" })
+  time: string;
 
   @ManyToOne(() => Machines, (machines) => machines.tapLogs)
   @JoinColumn([{ name: "MachineId", referencedColumnName: "machineId" }])

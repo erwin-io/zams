@@ -24,12 +24,16 @@ __decorate([
     __metadata("design:type", String)
 ], TapLogs.prototype, "status", void 0);
 __decorate([
-    (0, typeorm_1.Column)("timestamp with time zone", {
-        name: "DateTime",
+    (0, typeorm_1.Column)("date", {
+        name: "Date",
         default: () => "(now() AT TIME ZONE 'Asia/Manila')",
     }),
-    __metadata("design:type", Date)
-], TapLogs.prototype, "dateTime", void 0);
+    __metadata("design:type", String)
+], TapLogs.prototype, "date", void 0);
+__decorate([
+    (0, typeorm_1.Column)("character varying", { name: "Time" }),
+    __metadata("design:type", String)
+], TapLogs.prototype, "time", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Machines_1.Machines, (machines) => machines.tapLogs),
     (0, typeorm_1.JoinColumn)([{ name: "MachineId", referencedColumnName: "machineId" }]),

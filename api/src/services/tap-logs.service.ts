@@ -97,7 +97,8 @@ export class TapLogsService {
         .then((res) => {
           return res[0]["timestamp"];
         });
-      tapLogs.dateTime = dto.dateTime;
+      tapLogs.date = moment(dto.date).format("YYYY-MM-DD");
+      tapLogs.time = dto.time;
       tapLogs.status = dto.status;
       const student = await entityManager.findOne(Students, {
         where: {
@@ -161,17 +162,9 @@ export class TapLogsService {
         const title = student?.fullName;
         let desc;
         if ((dto.status = "LOG IN")) {
-          desc = `Your child, ${
-            student?.fullName
-          } has arrived in the school at ${moment(dto.dateTime).format(
-            "hh:mm A"
-          )}`;
+          desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
         } else {
-          desc = `Your child, ${
-            student?.fullName
-          } has left the school premises at ${moment(dto.dateTime).format(
-            "hh:mm A"
-          )}`;
+          desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
         }
 
         userFireBase.forEach(async (x) => {

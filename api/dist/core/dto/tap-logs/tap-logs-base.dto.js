@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefaultTapLogDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class DefaultTapLogDto {
 }
@@ -42,6 +43,18 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Date)
-], DefaultTapLogDto.prototype, "dateTime", void 0);
+], DefaultTapLogDto.prototype, "date", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Transform)(({ obj, key }) => {
+        var _a;
+        return (_a = obj[key]) === null || _a === void 0 ? void 0 : _a.toString().toUpperCase();
+    }),
+    (0, class_validator_1.Matches)(/\b((1[0-2]|0?[1-9]):([0-5][0-9]) ([AaPp][Mm]))/g, {
+        message: "Invalid time format",
+    }),
+    __metadata("design:type", String)
+], DefaultTapLogDto.prototype, "time", void 0);
 exports.DefaultTapLogDto = DefaultTapLogDto;
 //# sourceMappingURL=tap-logs-base.dto.js.map

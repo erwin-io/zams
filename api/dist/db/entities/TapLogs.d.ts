@@ -3,7 +3,8 @@ import { Students } from "./Students";
 export declare class TapLogs {
     tapLogId: string;
     status: string;
-    dateTime: Date;
+    date: string;
+    time: string;
     machine: Machines;
     student: Students;
 }

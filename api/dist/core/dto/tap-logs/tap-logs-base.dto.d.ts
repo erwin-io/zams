@@ -3,5 +3,6 @@ export declare class DefaultTapLogDto {
     status: "LOG IN" | "LOG OUT";
     cardNumber: string;
     userType: "STUDENT" | "EMPLOYEE";
-    dateTime: Date;
+    date: Date;
+    time: string;
 }

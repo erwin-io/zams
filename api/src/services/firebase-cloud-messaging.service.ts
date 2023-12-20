@@ -31,16 +31,17 @@ export class FirebaseCloudMessagingService {
   }
 
   async sendToDevice(token, title, description) {
+    const payload = {
+      token,
+      notification: {
+        title: title,
+        body: description,
+      },
+      ...this.messageConfig,
+    };
     return await this.firebaseProvoder.app
       .messaging()
-      .send({
-        token,
-        notification: {
-          title: title,
-          body: description,
-        },
-        ...this.messageConfig,
-      })
+      .send(payload)
       .then(() => {
         console.log("Successfully sent message");
       })
