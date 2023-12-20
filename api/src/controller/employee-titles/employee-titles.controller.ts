@@ -74,6 +74,24 @@ export class EmployeeTitlesController {
     }
   }
 
+  @Post("batchCreate")
+  //   @UseGuards(JwtAuthGuard)
+  async batchCreate(@Body() employeeTitlesDto: CreateEmployeeTitleDto[]) {
+    const res: ApiResponseModel<EmployeeTitles[]> = {} as any;
+    try {
+      res.data = await this.employeeTitlesService.batchCreate(
+        employeeTitlesDto
+      );
+      res.success = true;
+      res.message = `Employee Titles ${SAVING_SUCCESS}`;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
   @Put("/:employeeTitleCode")
   //   @UseGuards(JwtAuthGuard)
   async update(

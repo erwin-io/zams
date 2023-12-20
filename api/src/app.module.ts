@@ -19,6 +19,8 @@ import { OperatorsModule } from "./controller/operators/operators.module";
 import { ParentsModule } from "./controller/parents/parents.module";
 import { LinkStudentRequestModule } from "./controller/link-student-request/link-student-request.module";
 import { UserFirebaseTokenModule } from "./controller/user-firebase-token/user-firebase-token.module";
+import { TapLogsModule } from "./controller/tap-logs/tap-logs.module";
+import { MachinesModule } from "./controller/machines/machines.module";
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
 @Module({
@@ -45,6 +47,8 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     ParentsModule,
     LinkStudentRequestModule,
     UserFirebaseTokenModule,
+    MachinesModule,
+    TapLogsModule,
   ],
   providers: [AppService],
   controllers: [],

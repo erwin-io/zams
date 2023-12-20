@@ -117,6 +117,47 @@ let EmployeeTitlesService = class EmployeeTitlesService {
             return employeeTitles;
         });
     }
+    async batchCreate(dtos) {
+        return await this.employeeTitlesRepo.manager.transaction(async (entityManager) => {
+            const employeeTitles = [];
+            for (const dto of dtos) {
+                let employeeTitle = new EmployeeTitles_1.EmployeeTitles();
+                employeeTitle.name = dto.name;
+                const timestamp = await entityManager
+                    .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+                    .then((res) => {
+                    return res[0]["timestamp"];
+                });
+                employeeTitle.createdDate = timestamp;
+                const school = await entityManager.findOne(Schools_1.Schools, {
+                    where: {
+                        schoolId: dto.schoolId,
+                        active: true,
+                    },
+                });
+                if (!school) {
+                    throw Error(schools_constant_1.SCHOOLS_ERROR_NOT_FOUND);
+                }
+                employeeTitle.school = school;
+                const createdByUser = await entityManager.findOne(Users_1.Users, {
+                    where: {
+                        userId: dto.createdByUserId,
+                        active: true,
+                    },
+                });
+                if (!createdByUser) {
+                    throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+                }
+                employeeTitle.createdByUser = createdByUser;
+                employeeTitle = await entityManager.save(employeeTitle);
+                employeeTitle.employeeTitleCode = (0, utils_1.generateIndentityCode)(employeeTitle.employeeTitleId);
+                employeeTitle = await entityManager.save(EmployeeTitles_1.EmployeeTitles, employeeTitle);
+                delete employeeTitle.createdByUser.password;
+                employeeTitles.push(employeeTitle);
+            }
+            return employeeTitles;
+        });
+    }
     async update(employeeTitleCode, dto) {
         return await this.employeeTitlesRepo.manager.transaction(async (entityManager) => {
             var _a, _b;

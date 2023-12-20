@@ -13,6 +13,7 @@ export declare class EmployeeTitlesController {
         total: number;
     }>>;
     create(employeeTitlesDto: CreateEmployeeTitleDto): Promise<ApiResponseModel<EmployeeTitles>>;
+    batchCreate(employeeTitlesDto: CreateEmployeeTitleDto[]): Promise<ApiResponseModel<EmployeeTitles[]>>;
     update(employeeTitleCode: string, dto: UpdateEmployeeTitleDto): Promise<ApiResponseModel<EmployeeTitles>>;
     delete(employeeTitleCode: string): Promise<ApiResponseModel<EmployeeTitles>>;
 }

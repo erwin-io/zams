@@ -51,6 +51,8 @@ const operators_module_1 = require("./controller/operators/operators.module");
 const parents_module_1 = require("./controller/parents/parents.module");
 const link_student_request_module_1 = require("./controller/link-student-request/link-student-request.module");
 const user_firebase_token_module_1 = require("./controller/user-firebase-token/user-firebase-token.module");
+const tap_logs_module_1 = require("./controller/tap-logs/tap-logs.module");
+const machines_module_1 = require("./controller/machines/machines.module");
 const envFilePath = (0, utils_1.getEnvPath)(`${__dirname}/common/envs`);
 let AppModule = class AppModule {
 };
@@ -79,6 +81,8 @@ AppModule = __decorate([
             parents_module_1.ParentsModule,
             link_student_request_module_1.LinkStudentRequestModule,
             user_firebase_token_module_1.UserFirebaseTokenModule,
+            machines_module_1.MachinesModule,
+            tap_logs_module_1.TapLogsModule,
         ],
         providers: [app_service_1.AppService],
         controllers: [],

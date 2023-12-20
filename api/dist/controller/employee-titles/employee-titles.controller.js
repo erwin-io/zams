@@ -64,6 +64,20 @@ let EmployeeTitlesController = class EmployeeTitlesController {
             return res;
         }
     }
+    async batchCreate(employeeTitlesDto) {
+        const res = {};
+        try {
+            res.data = await this.employeeTitlesService.batchCreate(employeeTitlesDto);
+            res.success = true;
+            res.message = `Employee Titles ${api_response_constant_1.SAVING_SUCCESS}`;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
     async update(employeeTitleCode, dto) {
         const res = {};
         try {
@@ -114,6 +128,13 @@ __decorate([
     __metadata("design:paramtypes", [employee_titles_create_dto_1.CreateEmployeeTitleDto]),
     __metadata("design:returntype", Promise)
 ], EmployeeTitlesController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)("batchCreate"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], EmployeeTitlesController.prototype, "batchCreate", null);
 __decorate([
     (0, common_1.Put)("/:employeeTitleCode"),
     __param(0, (0, common_1.Param)("employeeTitleCode")),

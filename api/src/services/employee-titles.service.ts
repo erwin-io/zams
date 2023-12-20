@@ -129,6 +129,57 @@ export class EmployeeTitlesService {
     );
   }
 
+  async batchCreate(dtos: CreateEmployeeTitleDto[]) {
+    return await this.employeeTitlesRepo.manager.transaction(
+      async (entityManager) => {
+        const employeeTitles = [];
+        for (const dto of dtos) {
+          let employeeTitle = new EmployeeTitles();
+          employeeTitle.name = dto.name;
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          employeeTitle.createdDate = timestamp;
+
+          const school = await entityManager.findOne(Schools, {
+            where: {
+              schoolId: dto.schoolId,
+              active: true,
+            },
+          });
+          if (!school) {
+            throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          }
+          employeeTitle.school = school;
+
+          const createdByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.createdByUserId,
+              active: true,
+            },
+          });
+          if (!createdByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          employeeTitle.createdByUser = createdByUser;
+          employeeTitle = await entityManager.save(employeeTitle);
+          employeeTitle.employeeTitleCode = generateIndentityCode(
+            employeeTitle.employeeTitleId
+          );
+          employeeTitle = await entityManager.save(
+            EmployeeTitles,
+            employeeTitle
+          );
+          delete employeeTitle.createdByUser.password;
+          employeeTitles.push(employeeTitle);
+        }
+        return employeeTitles;
+      }
+    );
+  }
+
   async update(employeeTitleCode, dto: UpdateEmployeeTitleDto) {
     return await this.employeeTitlesRepo.manager.transaction(
       async (entityManager) => {

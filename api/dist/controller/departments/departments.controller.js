@@ -64,6 +64,20 @@ let DepartmentsController = class DepartmentsController {
             return res;
         }
     }
+    async batchCreate(departmentsDto) {
+        const res = {};
+        try {
+            res.data = await this.departmentsService.batchCreate(departmentsDto);
+            res.success = true;
+            res.message = `Departments ${api_response_constant_1.SAVING_SUCCESS}`;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
     async update(departmentCode, dto) {
         const res = {};
         try {
@@ -114,6 +128,17 @@ __decorate([
     __metadata("design:paramtypes", [departments_create_dto_1.CreateDepartmentDto]),
     __metadata("design:returntype", Promise)
 ], DepartmentsController.prototype, "create", null);
+__decorate([
+    (0, swagger_1.ApiBody)({
+        isArray: true,
+        type: departments_create_dto_1.CreateDepartmentDto,
+    }),
+    (0, common_1.Post)("batchCreate"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], DepartmentsController.prototype, "batchCreate", null);
 __decorate([
     (0, common_1.Put)("/:departmentCode"),
     __param(0, (0, common_1.Param)("departmentCode")),

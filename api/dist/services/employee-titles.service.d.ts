@@ -16,6 +16,7 @@ export declare class EmployeeTitlesService {
     }>;
     getByCode(employeeTitleCode: any): Promise<EmployeeTitles>;
     create(dto: CreateEmployeeTitleDto): Promise<EmployeeTitles>;
+    batchCreate(dtos: CreateEmployeeTitleDto[]): Promise<any[]>;
     update(employeeTitleCode: any, dto: UpdateEmployeeTitleDto): Promise<EmployeeTitles>;
     delete(employeeTitleCode: any): Promise<EmployeeTitles>;
 }

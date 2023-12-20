@@ -126,6 +126,54 @@ export class DepartmentsService {
     );
   }
 
+  async batchCreate(dtos: CreateDepartmentDto[]) {
+    return await this.departmentsRepo.manager.transaction(
+      async (entityManager) => {
+        const departments = [];
+        for (const dto of dtos) {
+          let department = new Departments();
+          department.departmentName = dto.departmentName;
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          department.createdDate = timestamp;
+
+          const school = await entityManager.findOne(Schools, {
+            where: {
+              schoolId: dto.schoolId,
+              active: true,
+            },
+          });
+          if (!school) {
+            throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          }
+          department.school = school;
+
+          const createdByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.createdByUserId,
+              active: true,
+            },
+          });
+          if (!createdByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          department.createdByUser = createdByUser;
+          department = await entityManager.save(department);
+          department.departmentCode = generateIndentityCode(
+            department.departmentId
+          );
+          department = await entityManager.save(Departments, department);
+          delete department.createdByUser.password;
+          departments.push(department);
+        }
+        return departments;
+      }
+    );
+  }
+
   async update(departmentCode, dto: UpdateDepartmentDto) {
     return await this.departmentsRepo.manager.transaction(
       async (entityManager) => {
