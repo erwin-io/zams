@@ -7,7 +7,7 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
 import {
   DELETE_SUCCESS,
   SAVING_SUCCESS,
@@ -19,7 +19,6 @@ import { PaginationParamsDto } from "src/core/dto/pagination-params.dto";
 import { ApiResponseModel } from "src/core/models/api-response.model";
 import { TapLogs } from "src/db/entities/TapLogs";
 import { TapLogsService } from "src/services/tap-logs.service";
-import moment from "moment";
 
 @ApiTags("tapLogs")
 @Controller("tapLogs")
@@ -57,16 +56,17 @@ export class TapLogsController {
     }
   }
 
-  @Post("createTap")
+
+  @ApiBody({
+    isArray: true,
+    type: CreateTapLogDto,
+  })
+  @Post("createBatch")
   //   @UseGuards(JwtAuthGuard)
-  async createTap(@Body() tapLogsDto: CreateTapLogDto) {
-    const res: ApiResponseModel<any> = {} as any;
+  async createBatch(@Body() tapLogsDtos: CreateTapLogDto[]) {
+    const res: ApiResponseModel<any[]> = {} as any;
     try {
-      const getRes = await this.tapLogsService.createTap(tapLogsDto);
-      res.data = {
-        date: moment(tapLogsDto.date).utc().format("YYYY-MM-DD"),
-        result: getRes,
-      };
+      res.data = await this.tapLogsService.createBatch(tapLogsDtos);
       res.success = true;
       res.message = `Tap Logs ${SAVING_SUCCESS}`;
       return res;

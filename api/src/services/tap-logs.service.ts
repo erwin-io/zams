@@ -92,119 +92,220 @@ export class TapLogsService {
 
   async create(dto: CreateTapLogDto) {
     return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
-      let tapLogs = new TapLogs();
-      tapLogs.date = moment(dto.date).format("YYYY-MM-DD");
-      tapLogs.time = dto.time;
-      tapLogs.status = dto.status;
-      const student = await entityManager.findOne(Students, {
-        where: {
-          cardNumber: dto.cardNumber,
-          active: true,
-        },
-      });
-      if (!student) {
-        throw Error(STUDENTS_ERROR_NOT_FOUND);
-      }
-      tapLogs.student = student;
-      const machine = await entityManager.findOne(Machines, {
-        where: {
-          description: dto.sender,
-          active: true,
-        },
-      });
-      if (!machine) {
-        throw Error(MACHINES_ERROR_NOT_FOUND);
-      }
-      tapLogs.machine = machine;
-
-      tapLogs = await entityManager.save(TapLogs, tapLogs);
-
-      const parentStudents = await entityManager.find(ParentStudent, {
-        where: {
-          student: {
-            studentId: student.studentId,
-          },
-        },
-        relations: {
-          parent: {
-            user: {
-              userFirebaseTokens: true,
-            },
-          },
-        },
-      });
-
-      const userFireBase: UserFirebaseToken[] = [];
-      for (const parentStudent of parentStudents) {
-        if (
-          parentStudent.parent &&
-          parentStudent.parent.user &&
-          parentStudent.parent.user.userFirebaseTokens
-        ) {
-          for (const userFirebaseToken of parentStudent.parent.user
-            .userFirebaseTokens) {
-            if (
-              !userFireBase.some(
-                (x) => x.firebaseToken === userFirebaseToken.firebaseToken
-              )
-            ) {
-              userFireBase.push(userFirebaseToken);
-            }
-          }
-        }
-      }
-
-      if (userFireBase.length > 0) {
-        const title = student?.fullName;
-        let desc;
-        if ((dto.status = "LOG IN")) {
-          desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
-        } else {
-          desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
-        }
-
-        userFireBase.forEach(async (x) => {
-          if (x.firebaseToken && x.firebaseToken !== "") {
-            const res = await this.firebaseCloudMessagingService.sendToDevice(
-              x.firebaseToken,
-              title,
-              desc
-            );
-            console.log(res);
-          }
-        });
-        await this.logNotification(
-          parentStudents.map((x) => x.parent.user),
-          tapLogs.tapLogId,
-          entityManager,
-          title,
-          desc
-        );
-      }
-      return tapLogs;
-    });
-  }
-
-  async createTap(dto: CreateTapLogDto) {
-    return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
-      const date = moment(dto.date).utc().format("YYYY-MM-DD");
-      const tapLogs = await entityManager.find(TapLogs, {
+      const date = moment(dto.date, DateConstant.DATE_LANGUAGE).format(
+        "YYYY-MM-DD"
+      );
+      let tapLogs = await entityManager.findOne(TapLogs, {
         where: {
           date,
           time: dto.time.toUpperCase(),
         },
       });
+      if (!tapLogs) {
+        tapLogs = new TapLogs();
+
+        tapLogs.date = date;
+        tapLogs.time = dto.time;
+        tapLogs.status = dto.status;
+        const student = await entityManager.findOne(Students, {
+          where: {
+            cardNumber: dto.cardNumber,
+            active: true,
+          },
+        });
+        if (!student) {
+          throw Error(STUDENTS_ERROR_NOT_FOUND);
+        }
+        tapLogs.student = student;
+        const machine = await entityManager.findOne(Machines, {
+          where: {
+            description: dto.sender,
+            active: true,
+          },
+        });
+        if (!machine) {
+          throw Error(MACHINES_ERROR_NOT_FOUND);
+        }
+        tapLogs.machine = machine;
+
+        tapLogs = await entityManager.save(TapLogs, tapLogs);
+
+        const parentStudents = await entityManager.find(ParentStudent, {
+          where: {
+            student: {
+              studentId: student.studentId,
+            },
+          },
+          relations: {
+            parent: {
+              user: {
+                userFirebaseTokens: true,
+              },
+            },
+          },
+        });
+
+        const userFireBase: UserFirebaseToken[] = [];
+        for (const parentStudent of parentStudents) {
+          if (
+            parentStudent.parent &&
+            parentStudent.parent.user &&
+            parentStudent.parent.user.userFirebaseTokens
+          ) {
+            for (const userFirebaseToken of parentStudent.parent.user
+              .userFirebaseTokens) {
+              if (
+                !userFireBase.some(
+                  (x) => x.firebaseToken === userFirebaseToken.firebaseToken
+                )
+              ) {
+                userFireBase.push(userFirebaseToken);
+              }
+            }
+          }
+        }
+
+        if (userFireBase.length > 0) {
+          const title = student?.fullName;
+          let desc;
+          if ((dto.status = "LOG IN")) {
+            desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
+          } else {
+            desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
+          }
+
+          userFireBase.forEach(async (x) => {
+            if (x.firebaseToken && x.firebaseToken !== "") {
+              const res = await this.firebaseCloudMessagingService.sendToDevice(
+                x.firebaseToken,
+                title,
+                desc
+              );
+              console.log(res);
+            }
+          });
+          await this.logNotification(
+            parentStudents.map((x) => x.parent.user),
+            tapLogs.tapLogId,
+            entityManager,
+            title,
+            desc
+          );
+        }
+      }
       return tapLogs;
-      // const query = await entityManager
-      //   .createQueryBuilder("TapLogs", "tl")
-      //   .leftJoinAndSelect("tl.student", "s")
-      //   .leftJoinAndSelect("tl.machine", "m")
-      //   .where("tl.date = :date AND tl.time = :time")
-      //   .setParameters({
-      //     date,
-      //     time: dto.time.toUpperCase(),
-      //   });
-      // return query.getMany();
+    });
+  }
+
+  async createBatch(dtos: CreateTapLogDto[]) {
+    return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
+      const tapLogs = [];
+      for (const dto of dtos) {
+        const date = moment(dto.date, DateConstant.DATE_LANGUAGE).format(
+          "YYYY-MM-DD"
+        );
+        let tapLog = await entityManager.findOne(TapLogs, {
+          where: {
+            date,
+            time: dto.time.toUpperCase(),
+          },
+        });
+        if (!tapLog) {
+          tapLog = new TapLogs();
+
+          tapLog.date = date;
+          tapLog.time = dto.time;
+          tapLog.status = dto.status;
+          const student = await entityManager.findOne(Students, {
+            where: {
+              cardNumber: dto.cardNumber,
+              active: true,
+            },
+          });
+          if (!student) {
+            throw Error(STUDENTS_ERROR_NOT_FOUND);
+          }
+          tapLog.student = student;
+          const machine = await entityManager.findOne(Machines, {
+            where: {
+              description: dto.sender,
+              active: true,
+            },
+          });
+          if (!machine) {
+            throw Error(MACHINES_ERROR_NOT_FOUND);
+          }
+          tapLog.machine = machine;
+
+          tapLog = await entityManager.save(TapLogs, tapLog);
+
+          const parentStudents = await entityManager.find(ParentStudent, {
+            where: {
+              student: {
+                studentId: student.studentId,
+              },
+            },
+            relations: {
+              parent: {
+                user: {
+                  userFirebaseTokens: true,
+                },
+              },
+            },
+          });
+
+          const userFireBase: UserFirebaseToken[] = [];
+          for (const parentStudent of parentStudents) {
+            if (
+              parentStudent.parent &&
+              parentStudent.parent.user &&
+              parentStudent.parent.user.userFirebaseTokens
+            ) {
+              for (const userFirebaseToken of parentStudent.parent.user
+                .userFirebaseTokens) {
+                if (
+                  !userFireBase.some(
+                    (x) => x.firebaseToken === userFirebaseToken.firebaseToken
+                  )
+                ) {
+                  userFireBase.push(userFirebaseToken);
+                }
+              }
+            }
+          }
+
+          if (userFireBase.length > 0) {
+            const title = student?.fullName;
+            let desc;
+            if ((dto.status = "LOG IN")) {
+              desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
+            } else {
+              desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
+            }
+
+            userFireBase.forEach(async (x) => {
+              if (x.firebaseToken && x.firebaseToken !== "") {
+                const res =
+                  await this.firebaseCloudMessagingService.sendToDevice(
+                    x.firebaseToken,
+                    title,
+                    desc
+                  );
+                console.log(res);
+              }
+            });
+            await this.logNotification(
+              parentStudents.map((x) => x.parent.user),
+              tapLog.tapLogId,
+              entityManager,
+              title,
+              desc
+            );
+          }
+        }
+        tapLogs.push(tapLog);
+      }
+      return tapLogs;
     });
   }
 
