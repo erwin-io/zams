@@ -22,5 +22,6 @@ export declare class TapLogsService {
     }>;
     getByCode(tapLogId: any): Promise<TapLogs>;
     create(dto: CreateTapLogDto): Promise<TapLogs>;
+    createTap(dto: CreateTapLogDto): Promise<TapLogs[]>;
     logNotification(users: Users[], referenceId: any, entityManager: EntityManager, title: string, description: string): Promise<void>;
 }

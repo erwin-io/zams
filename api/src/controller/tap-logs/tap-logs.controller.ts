@@ -19,6 +19,7 @@ import { PaginationParamsDto } from "src/core/dto/pagination-params.dto";
 import { ApiResponseModel } from "src/core/models/api-response.model";
 import { TapLogs } from "src/db/entities/TapLogs";
 import { TapLogsService } from "src/services/tap-logs.service";
+import moment from "moment";
 
 @ApiTags("tapLogs")
 @Controller("tapLogs")
@@ -46,6 +47,26 @@ export class TapLogsController {
     const res: ApiResponseModel<TapLogs> = {} as any;
     try {
       res.data = await this.tapLogsService.create(tapLogsDto);
+      res.success = true;
+      res.message = `Tap Logs ${SAVING_SUCCESS}`;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
+  @Post("createTap")
+  //   @UseGuards(JwtAuthGuard)
+  async createTap(@Body() tapLogsDto: CreateTapLogDto) {
+    const res: ApiResponseModel<any> = {} as any;
+    try {
+      const getRes = await this.tapLogsService.createTap(tapLogsDto);
+      res.data = {
+        date: moment(tapLogsDto.date).utc().format("YYYY-MM-DD"),
+        result: getRes,
+      };
       res.success = true;
       res.message = `Tap Logs ${SAVING_SUCCESS}`;
       return res;

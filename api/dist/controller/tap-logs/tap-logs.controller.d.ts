@@ -7,4 +7,5 @@ export declare class TapLogsController {
     constructor(tapLogsService: TapLogsService);
     getDetails(tapLogId: string): Promise<ApiResponseModel<TapLogs>>;
     create(tapLogsDto: CreateTapLogDto): Promise<ApiResponseModel<TapLogs>>;
+    createTap(tapLogsDto: CreateTapLogDto): Promise<ApiResponseModel<any>>;
 }

@@ -32,6 +32,7 @@ import { PusherService } from "./pusher.service";
 import { Machines } from "src/db/entities/Machines";
 import { MACHINES_ERROR_NOT_FOUND } from "src/common/constant/machines.constant";
 import { FirebaseCloudMessagingService } from "./firebase-cloud-messaging.service";
+import { DateConstant } from "src/common/constant/date.constant";
 
 @Injectable()
 export class TapLogsService {
@@ -92,11 +93,6 @@ export class TapLogsService {
   async create(dto: CreateTapLogDto) {
     return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
       let tapLogs = new TapLogs();
-      const timestamp = await entityManager
-        .query(CONST_QUERYCURRENT_TIMESTAMP)
-        .then((res) => {
-          return res[0]["timestamp"];
-        });
       tapLogs.date = moment(dto.date).format("YYYY-MM-DD");
       tapLogs.time = dto.time;
       tapLogs.status = dto.status;
@@ -186,6 +182,29 @@ export class TapLogsService {
         );
       }
       return tapLogs;
+    });
+  }
+
+  async createTap(dto: CreateTapLogDto) {
+    return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
+      const date = moment(dto.date).utc().format("YYYY-MM-DD");
+      const tapLogs = await entityManager.find(TapLogs, {
+        where: {
+          date,
+          time: dto.time.toUpperCase(),
+        },
+      });
+      return tapLogs;
+      // const query = await entityManager
+      //   .createQueryBuilder("TapLogs", "tl")
+      //   .leftJoinAndSelect("tl.student", "s")
+      //   .leftJoinAndSelect("tl.machine", "m")
+      //   .where("tl.date = :date AND tl.time = :time")
+      //   .setParameters({
+      //     date,
+      //     time: dto.time.toUpperCase(),
+      //   });
+      // return query.getMany();
     });
   }
 

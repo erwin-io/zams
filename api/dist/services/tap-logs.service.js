@@ -21,7 +21,6 @@ const typeorm_1 = require("@nestjs/typeorm");
 const moment_1 = __importDefault(require("moment"));
 const notifications_constant_1 = require("../common/constant/notifications.constant");
 const students_constant_1 = require("../common/constant/students.constant");
-const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const top_logs_constant_1 = require("../common/constant/top-logs.constant");
 const utils_1 = require("../common/utils/utils");
 const firebase_provider_1 = require("../core/provider/firebase/firebase-provider");
@@ -87,11 +86,6 @@ let TapLogsService = class TapLogsService {
     async create(dto) {
         return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
             let tapLogs = new TapLogs_1.TapLogs();
-            const timestamp = await entityManager
-                .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
-                .then((res) => {
-                return res[0]["timestamp"];
-            });
             tapLogs.date = (0, moment_1.default)(dto.date).format("YYYY-MM-DD");
             tapLogs.time = dto.time;
             tapLogs.status = dto.status;
@@ -160,6 +154,18 @@ let TapLogsService = class TapLogsService {
                 });
                 await this.logNotification(parentStudents.map((x) => x.parent.user), tapLogs.tapLogId, entityManager, title, desc);
             }
+            return tapLogs;
+        });
+    }
+    async createTap(dto) {
+        return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
+            const date = (0, moment_1.default)(dto.date).utc().format("YYYY-MM-DD");
+            const tapLogs = await entityManager.find(TapLogs_1.TapLogs, {
+                where: {
+                    date,
+                    time: dto.time.toUpperCase(),
+                },
+            });
             return tapLogs;
         });
     }

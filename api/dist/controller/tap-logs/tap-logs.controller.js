@@ -11,6 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TapLogsController = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,6 +21,7 @@ const swagger_1 = require("@nestjs/swagger");
 const api_response_constant_1 = require("../../common/constant/api-response.constant");
 const tap_logs_create_dto_1 = require("../../core/dto/tap-logs/tap-logs.create.dto");
 const tap_logs_service_1 = require("../../services/tap-logs.service");
+const moment_1 = __importDefault(require("moment"));
 let TapLogsController = class TapLogsController {
     constructor(tapLogsService) {
         this.tapLogsService = tapLogsService;
@@ -49,6 +53,24 @@ let TapLogsController = class TapLogsController {
             return res;
         }
     }
+    async createTap(tapLogsDto) {
+        const res = {};
+        try {
+            const getRes = await this.tapLogsService.createTap(tapLogsDto);
+            res.data = {
+                date: (0, moment_1.default)(tapLogsDto.date).utc().format("YYYY-MM-DD"),
+                result: getRes,
+            };
+            res.success = true;
+            res.message = `Tap Logs ${api_response_constant_1.SAVING_SUCCESS}`;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
 };
 __decorate([
     (0, common_1.Get)("/:tapLogId"),
@@ -64,6 +86,13 @@ __decorate([
     __metadata("design:paramtypes", [tap_logs_create_dto_1.CreateTapLogDto]),
     __metadata("design:returntype", Promise)
 ], TapLogsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)("createTap"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [tap_logs_create_dto_1.CreateTapLogDto]),
+    __metadata("design:returntype", Promise)
+], TapLogsController.prototype, "createTap", null);
 TapLogsController = __decorate([
     (0, swagger_1.ApiTags)("tapLogs"),
     (0, common_1.Controller)("tapLogs"),
