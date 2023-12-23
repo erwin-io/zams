@@ -189,67 +189,66 @@ let TapLogsService = class TapLogsService {
                             active: true,
                         },
                     });
-                    if (!student) {
-                        throw Error(students_constant_1.STUDENTS_ERROR_NOT_FOUND);
-                    }
-                    tapLog.student = student;
-                    const machine = await entityManager.findOne(Machines_1.Machines, {
-                        where: {
-                            description: dto.sender,
-                            active: true,
-                        },
-                    });
-                    if (!machine) {
-                        throw Error(machines_constant_1.MACHINES_ERROR_NOT_FOUND);
-                    }
-                    tapLog.machine = machine;
-                    tapLog = await entityManager.save(TapLogs_1.TapLogs, tapLog);
-                    const parentStudents = await entityManager.find(ParentStudent_1.ParentStudent, {
-                        where: {
-                            student: {
-                                studentId: student.studentId,
+                    if (student) {
+                        tapLog.student = student;
+                        const machine = await entityManager.findOne(Machines_1.Machines, {
+                            where: {
+                                description: dto.sender,
+                                active: true,
                             },
-                        },
-                        relations: {
-                            parent: {
-                                user: {
-                                    userFirebaseTokens: true,
+                        });
+                        if (!machine) {
+                            throw Error(machines_constant_1.MACHINES_ERROR_NOT_FOUND);
+                        }
+                        tapLog.machine = machine;
+                        tapLog = await entityManager.save(TapLogs_1.TapLogs, tapLog);
+                        const parentStudents = await entityManager.find(ParentStudent_1.ParentStudent, {
+                            where: {
+                                student: {
+                                    studentId: student.studentId,
                                 },
                             },
-                        },
-                    });
-                    const userFireBase = [];
-                    for (const parentStudent of parentStudents) {
-                        if (parentStudent.parent &&
-                            parentStudent.parent.user &&
-                            parentStudent.parent.user.userFirebaseTokens) {
-                            for (const userFirebaseToken of parentStudent.parent.user
-                                .userFirebaseTokens) {
-                                if (!userFireBase.some((x) => x.firebaseToken === userFirebaseToken.firebaseToken)) {
-                                    userFireBase.push(userFirebaseToken);
+                            relations: {
+                                parent: {
+                                    user: {
+                                        userFirebaseTokens: true,
+                                    },
+                                },
+                            },
+                        });
+                        const userFireBase = [];
+                        for (const parentStudent of parentStudents) {
+                            if (parentStudent.parent &&
+                                parentStudent.parent.user &&
+                                parentStudent.parent.user.userFirebaseTokens) {
+                                for (const userFirebaseToken of parentStudent.parent.user
+                                    .userFirebaseTokens) {
+                                    if (!userFireBase.some((x) => x.firebaseToken === userFirebaseToken.firebaseToken)) {
+                                        userFireBase.push(userFirebaseToken);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (userFireBase.length > 0) {
-                        const title = student === null || student === void 0 ? void 0 : student.fullName;
-                        let desc;
-                        if ((dto.status = "LOG IN")) {
-                            desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has arrived in the school at ${dto.time}`;
-                        }
-                        else {
-                            desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises at ${dto.time}`;
-                        }
-                        userFireBase.forEach(async (x) => {
-                            if (x.firebaseToken && x.firebaseToken !== "") {
-                                const res = await this.firebaseCloudMessagingService.sendToDevice(x.firebaseToken, title, desc);
-                                console.log(res);
+                        if (userFireBase.length > 0) {
+                            const title = student === null || student === void 0 ? void 0 : student.fullName;
+                            let desc;
+                            if ((dto.status = "LOG IN")) {
+                                desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has arrived in the school at ${dto.time}`;
                             }
-                        });
-                        await this.logNotification(parentStudents.map((x) => x.parent.user), tapLog.tapLogId, entityManager, title, desc);
+                            else {
+                                desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises at ${dto.time}`;
+                            }
+                            userFireBase.forEach(async (x) => {
+                                if (x.firebaseToken && x.firebaseToken !== "") {
+                                    const res = await this.firebaseCloudMessagingService.sendToDevice(x.firebaseToken, title, desc);
+                                    console.log(res);
+                                }
+                            });
+                            await this.logNotification(parentStudents.map((x) => x.parent.user), tapLog.tapLogId, entityManager, title, desc);
+                        }
                     }
+                    tapLogs.push(Object.assign({ refId: dto.refId }, tapLog));
                 }
-                tapLogs.push(tapLog);
             }
             return tapLogs;
         });

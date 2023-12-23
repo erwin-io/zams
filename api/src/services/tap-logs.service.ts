@@ -222,88 +222,90 @@ export class TapLogsService {
               active: true,
             },
           });
-          if (!student) {
-            throw Error(STUDENTS_ERROR_NOT_FOUND);
-          }
-          tapLog.student = student;
-          const machine = await entityManager.findOne(Machines, {
-            where: {
-              description: dto.sender,
-              active: true,
-            },
-          });
-          if (!machine) {
-            throw Error(MACHINES_ERROR_NOT_FOUND);
-          }
-          tapLog.machine = machine;
-
-          tapLog = await entityManager.save(TapLogs, tapLog);
-
-          const parentStudents = await entityManager.find(ParentStudent, {
-            where: {
-              student: {
-                studentId: student.studentId,
+          if (student) {
+            tapLog.student = student;
+            const machine = await entityManager.findOne(Machines, {
+              where: {
+                description: dto.sender,
+                active: true,
               },
-            },
-            relations: {
-              parent: {
-                user: {
-                  userFirebaseTokens: true,
+            });
+            if (!machine) {
+              throw Error(MACHINES_ERROR_NOT_FOUND);
+            }
+            tapLog.machine = machine;
+
+            tapLog = await entityManager.save(TapLogs, tapLog);
+
+            const parentStudents = await entityManager.find(ParentStudent, {
+              where: {
+                student: {
+                  studentId: student.studentId,
                 },
               },
-            },
-          });
+              relations: {
+                parent: {
+                  user: {
+                    userFirebaseTokens: true,
+                  },
+                },
+              },
+            });
 
-          const userFireBase: UserFirebaseToken[] = [];
-          for (const parentStudent of parentStudents) {
-            if (
-              parentStudent.parent &&
-              parentStudent.parent.user &&
-              parentStudent.parent.user.userFirebaseTokens
-            ) {
-              for (const userFirebaseToken of parentStudent.parent.user
-                .userFirebaseTokens) {
-                if (
-                  !userFireBase.some(
-                    (x) => x.firebaseToken === userFirebaseToken.firebaseToken
-                  )
-                ) {
-                  userFireBase.push(userFirebaseToken);
+            const userFireBase: UserFirebaseToken[] = [];
+            for (const parentStudent of parentStudents) {
+              if (
+                parentStudent.parent &&
+                parentStudent.parent.user &&
+                parentStudent.parent.user.userFirebaseTokens
+              ) {
+                for (const userFirebaseToken of parentStudent.parent.user
+                  .userFirebaseTokens) {
+                  if (
+                    !userFireBase.some(
+                      (x) => x.firebaseToken === userFirebaseToken.firebaseToken
+                    )
+                  ) {
+                    userFireBase.push(userFirebaseToken);
+                  }
                 }
               }
             }
-          }
 
-          if (userFireBase.length > 0) {
-            const title = student?.fullName;
-            let desc;
-            if ((dto.status = "LOG IN")) {
-              desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
-            } else {
-              desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
-            }
-
-            userFireBase.forEach(async (x) => {
-              if (x.firebaseToken && x.firebaseToken !== "") {
-                const res =
-                  await this.firebaseCloudMessagingService.sendToDevice(
-                    x.firebaseToken,
-                    title,
-                    desc
-                  );
-                console.log(res);
+            if (userFireBase.length > 0) {
+              const title = student?.fullName;
+              let desc;
+              if ((dto.status = "LOG IN")) {
+                desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
+              } else {
+                desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
               }
-            });
-            await this.logNotification(
-              parentStudents.map((x) => x.parent.user),
-              tapLog.tapLogId,
-              entityManager,
-              title,
-              desc
-            );
+
+              userFireBase.forEach(async (x) => {
+                if (x.firebaseToken && x.firebaseToken !== "") {
+                  const res =
+                    await this.firebaseCloudMessagingService.sendToDevice(
+                      x.firebaseToken,
+                      title,
+                      desc
+                    );
+                  console.log(res);
+                }
+              });
+              await this.logNotification(
+                parentStudents.map((x) => x.parent.user),
+                tapLog.tapLogId,
+                entityManager,
+                title,
+                desc
+              );
+            }
           }
+          tapLogs.push({
+            refId: dto.refId,
+            ...tapLog,
+          });
         }
-        tapLogs.push(tapLog);
       }
       return tapLogs;
     });
