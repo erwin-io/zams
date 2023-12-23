@@ -86,7 +86,7 @@ export class Students {
   @Column("character varying", { name: "FullName", default: () => "''" })
   fullName: string;
 
-  @Column("character varying", { name: "OrgStudentId" })
+  @Column("character varying", { name: "OrgStudentId", default: () => "''" })
   orgStudentId: string;
 
   @OneToMany(

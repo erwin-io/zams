@@ -119,7 +119,7 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Schools.prototype, "active", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "OrgSchoolCode" }),
+    (0, typeorm_1.Column)("character varying", { name: "OrgSchoolCode", default: () => "''" }),
     __metadata("design:type", String)
 ], Schools.prototype, "orgSchoolCode", void 0);
 __decorate([

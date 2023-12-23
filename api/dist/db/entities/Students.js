@@ -102,7 +102,7 @@ __decorate([
     __metadata("design:type", String)
 ], Students.prototype, "fullName", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "OrgStudentId" }),
+    (0, typeorm_1.Column)("character varying", { name: "OrgStudentId", default: () => "''" }),
     __metadata("design:type", String)
 ], Students.prototype, "orgStudentId", void 0);
 __decorate([
