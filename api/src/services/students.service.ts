@@ -468,9 +468,6 @@ export class StudentsService {
           active: true,
         },
         relations: {
-          parentStudents: {
-            parent: true,
-          },
           studentCourse: {
             course: true,
           },
