@@ -8,17 +8,23 @@
     fxLayout="row wrap"
     id="employeeForm"
     (ngSubmit)="onSubmit()">
-      <fieldset fxFlex="100" fxLayout="column">
+      <fieldset fxFlex="100" fxLayout="row wrap" style="row-gap: 16px">
         <div
           fxLayout="column"
           fxFlex="100"
           style="gap: 16px">
           <div
+          fxFlex="100"
           fxLayout="column"
-          fxFlex="100">
+          fxLayout.gt-sm="row"
+          style="gap: 16px">
             <mat-form-field
+              appearance="outline"
+              fxFlex="33.33%"
+              class="cell"
+              [ngClass.gt-sm]="{ isLargeScreen: true }"
               appearance="outline">
-              <mat-label>Employee Title &nbsp;&nbsp;</mat-label>
+              <mat-label>Employee Title</mat-label>
               <input
                 readonly
                 matInput
@@ -42,7 +48,7 @@
           fxFlex="100">
             <mat-form-field
               appearance="outline">
-              <mat-label>Department &nbsp;</mat-label>
+              <mat-label>Department</mat-label>
               <input
                 matInput
                 readonly
@@ -84,29 +90,33 @@
               }}</mat-error
             >
           </mat-form-field>
-          <mat-form-field
-            appearance="outline"
-            [ngClass.gt-sm]="{ isLargeScreen: true }">
-            <mat-label>Middle Name</mat-label>
-            <input
-              matInput
-              placeholder="Middle Name"
-              formControlName="middleName"
-            />
-            <mat-error
-              *ngIf="getError('middleName') !== (null || undefined)"
-              >{{
-                (getError("middleName") &&
-                getError("middleName")["required"]
-                  ? "Please enter Middle Name"
-                  : "") ||
-                  (getError("middleName") &&
-                  getError("middleName")["pattern"]
-                    ? "Invalid input"
-                    : "")
-              }}</mat-error
-            >
-          </mat-form-field>
+          <div
+            fxLayout="row"
+            fxFlex="33.33%">
+            <mat-form-field
+              appearance="outline"
+              [ngClass.gt-sm]="{ isLargeScreen: true }">
+              <mat-label>Middle Initial</mat-label>
+              <input
+                matInput
+                placeholder="Middle Initial"
+                formControlName="middleInitial"
+              />
+              <mat-error
+                *ngIf="getError('middleInitial') !== (null || undefined)"
+                >{{
+                  (getError("middleInitial") &&
+                  getError("middleInitial")["required"]
+                    ? "Please enter Middle Initial"
+                    : "") ||
+                    (getError("middleInitial") &&
+                    getError("middleInitial")["pattern"]
+                      ? "Invalid input"
+                      : "")
+                }}</mat-error
+              >
+            </mat-form-field>
+          </div>
           <mat-form-field
             appearance="outline"
             [ngClass.gt-sm]="{ isLargeScreen: true }">

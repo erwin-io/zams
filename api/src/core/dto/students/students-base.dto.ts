@@ -20,7 +20,7 @@ export class DefaultStudentUserDto {
 
   @ApiProperty()
   @IsOptional()
-  middleName: string;
+  middleInitial: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -85,4 +85,8 @@ export class DefaultStudentUserDto {
     return obj[key]?.toString();
   })
   schoolYearLevelId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  orgStudentId: string;
 }

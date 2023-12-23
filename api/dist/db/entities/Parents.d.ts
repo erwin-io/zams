@@ -5,7 +5,7 @@ export declare class Parents {
     parentId: string;
     parentCode: string | null;
     firstName: string;
-    middleName: string | null;
+    middleInitial: string | null;
     lastName: string;
     gender: string;
     birthDate: string | null;

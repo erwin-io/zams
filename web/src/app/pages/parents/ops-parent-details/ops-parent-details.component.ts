@@ -41,7 +41,7 @@ export class OpsParentDetailsComponent {
         {
           userName: new FormControl(null),
           firstName: new FormControl(null),
-          middleName: new FormControl(null),
+          middleInitial: new FormControl(null),
           lastName: new FormControl(null),
           mobileNumber: new FormControl(null),
           email: new FormControl(null),
@@ -75,7 +75,7 @@ export class OpsParentDetailsComponent {
           this.parentForm.patchValue({
             userName: parent.data.user.userName,
             firstName: parent.data.firstName,
-            middleName: parent.data.middleName,
+            middleInitial: parent.data.middleInitial,
             lastName: parent.data.lastName,
             mobileNumber: parent.data.mobileNumber,
             email: parent.data?.email ? parent.data?.email : "No Email",

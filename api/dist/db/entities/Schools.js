@@ -119,6 +119,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Schools.prototype, "active", void 0);
 __decorate([
+    (0, typeorm_1.Column)("character varying", { name: "OrgSchoolCode" }),
+    __metadata("design:type", String)
+], Schools.prototype, "orgSchoolCode", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => Courses_1.Courses, (courses) => courses.school),
     __metadata("design:type", Array)
 ], Schools.prototype, "courses", void 0);

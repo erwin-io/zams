@@ -47,6 +47,21 @@ export class StudentsController {
     }
   }
 
+  @Get("getByOrgStudentId/:orgStudentId")
+  //   @UseGuards(JwtAuthGuard)
+  async getByOrgStudentId(@Param("orgStudentId") orgStudentId: string) {
+    const res = {} as ApiResponseModel<Students>;
+    try {
+      res.data = await this.studentsService.getByOrgStudentId(orgStudentId);
+      res.success = true;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
   @Post("/page")
   //   @UseGuards(JwtAuthGuard)
   async getPaginated(@Body() params: PaginationParamsDto) {

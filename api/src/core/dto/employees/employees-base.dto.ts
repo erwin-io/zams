@@ -20,7 +20,7 @@ export class DefaultEmployeeUserDto {
 
   @ApiProperty()
   @IsOptional()
-  middleName: string;
+  middleInitial: string;
 
   @ApiProperty()
   @IsNotEmpty()

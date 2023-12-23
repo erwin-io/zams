@@ -1,6 +1,6 @@
 export declare class DefaultParentUserDto {
     firstName: string;
-    middleName: string;
+    middleInitial: string;
     lastName: string;
     gender: "MALE" | "FEMALE" | "OTHERS";
     birthDate: Date;

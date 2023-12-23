@@ -54,8 +54,9 @@ export class OpsStudentFormComponent {
     public dialogRef: MatDialogRef<OpsStudentFormComponent>) {
       this.studentForm = this.formBuilder.group(
         {
+          orgStudentId: new FormControl(null, Validators.required),
           firstName: new FormControl(null, Validators.required),
-          middleName: new FormControl(null),
+          middleInitial: new FormControl(null),
           lastName: new FormControl(null, Validators.required),
           mobileNumber: new FormControl(null, Validators.required),
           lrn: new FormControl(null),
@@ -91,8 +92,9 @@ export class OpsStudentFormComponent {
         if (student.success) {
           this.student = student.data;
           this.studentForm.patchValue({
+            orgStudentId: student.data.orgStudentId,
             firstName: student.data.firstName,
-            middleName: student.data.middleName,
+            middleInitial: student.data.middleInitial,
             lastName: student.data.lastName,
             mobileNumber: student.data.mobileNumber,
             lrn: student.data.lrn,

@@ -51,7 +51,7 @@ export class OpsEmployeeFormComponent {
       this.employeeForm = this.formBuilder.group(
         {
           firstName: new FormControl(null, Validators.required),
-          middleName: new FormControl(null),
+          middleInitial: new FormControl(null),
           lastName: new FormControl(null, Validators.required),
           mobileNumber: new FormControl(null, Validators.required),
           cardNumber: new FormControl(null, Validators.required),
@@ -82,7 +82,7 @@ export class OpsEmployeeFormComponent {
           this.employee = employee.data;
           this.employeeForm.patchValue({
             firstName: employee.data.firstName,
-            middleName: employee.data.middleName,
+            middleInitial: employee.data.middleInitial,
             lastName: employee.data.lastName,
             mobileNumber: employee.data.mobileNumber,
             cardNumber: employee.data.cardNumber,

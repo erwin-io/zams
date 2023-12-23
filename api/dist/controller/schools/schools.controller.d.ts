@@ -8,6 +8,7 @@ export declare class SchoolsController {
     private readonly schoolsService;
     constructor(schoolsService: SchoolsService);
     getDetails(schoolCode: string): Promise<ApiResponseModel<Schools>>;
+    getByOrgCode(orgSchoolCode: string): Promise<ApiResponseModel<Schools>>;
     getPaginated(params: PaginationParamsDto): Promise<ApiResponseModel<{
         results: Schools[];
         total: number;

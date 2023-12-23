@@ -11,7 +11,7 @@ export declare class Students {
     studentId: string;
     studentCode: string | null;
     firstName: string;
-    middleName: string | null;
+    middleInitial: string | null;
     lastName: string;
     lrn: string;
     cardNumber: string;
@@ -25,6 +25,7 @@ export declare class Students {
     updatedDate: Date | null;
     active: boolean;
     fullName: string;
+    orgStudentId: string;
     linkStudentRequests: LinkStudentRequest[];
     parentStudents: ParentStudent[];
     studentCourse: StudentCourse;

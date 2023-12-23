@@ -343,7 +343,7 @@ export class AuthService {
   //       student.school = school;
   //       student.accessGranted = false;
   //       student.firstName = dto.firstName;
-  //       student.middleName = dto.middleName;
+  //       student.middleInitial = dto.middleInitial;
   //       student.lastName = dto.lastName;
   //       student.fullName = `${dto.firstName} ${dto.lastName}`;
   //       student.email = dto.email;
@@ -482,7 +482,7 @@ export class AuthService {
           employee.school = school;
           employee.accessGranted = false;
           employee.firstName = dto.firstName;
-          employee.middleName = dto.middleName;
+          employee.middleInitial = dto.middleInitial;
           employee.lastName = dto.lastName;
           employee.fullName = `${dto.firstName} ${dto.lastName}`;
           employee.mobileNumber = dto.mobileNumber;
@@ -582,7 +582,7 @@ export class AuthService {
           let parent = new Parents();
           parent.user = user;
           parent.firstName = dto.firstName;
-          parent.middleName = dto.middleName;
+          parent.middleInitial = dto.middleInitial;
           parent.lastName = dto.lastName;
           parent.fullName = `${dto.firstName} ${dto.lastName}`;
           parent.mobileNumber = dto.mobileNumber;

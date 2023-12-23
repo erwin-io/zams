@@ -12,6 +12,7 @@ import { Users } from "./users";
 export class Schools {
   schoolId: string;
   schoolCode: string;
+  orgSchoolCode: string;
   schoolName: string;
   schoolAddress: string;
   schoolContactNumber: string;

@@ -37,10 +37,10 @@ export class OpsUserFormComponent {
     public dialogRef: MatDialogRef<OpsUserFormComponent>) {
       this.operatorForm = this.formBuilder.group(
         {
-          userName: [null, [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]],
+          userName: [null, [Validators.required]],
           name: [
             '',
-            [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')],
+            [Validators.required],
           ],
           password: [
             '',
@@ -79,7 +79,7 @@ export class OpsUserFormComponent {
         userName: [null],
         name: [
           '',
-          [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')],
+          [Validators.required],
         ],
       });
 

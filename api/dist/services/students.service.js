@@ -116,6 +116,39 @@ let StudentsService = class StudentsService {
         }
         return res;
     }
+    async getByOrgStudentId(orgStudentId) {
+        var _a;
+        const res = await this.studentRepo.findOne({
+            where: {
+                orgStudentId,
+                active: true,
+            },
+            relations: {
+                parentStudents: {
+                    parent: true,
+                },
+                studentCourse: {
+                    course: true,
+                },
+                department: true,
+                registeredByUser: true,
+                updatedByUser: true,
+                school: true,
+                schoolYearLevel: true,
+                studentSection: {
+                    section: true,
+                },
+            },
+        });
+        if (!res) {
+            throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+        }
+        delete res.registeredByUser.password;
+        if ((_a = res === null || res === void 0 ? void 0 : res.updatedByUser) === null || _a === void 0 ? void 0 : _a.password) {
+            delete res.updatedByUser.password;
+        }
+        return res;
+    }
     async create(dto) {
         try {
             return await this.studentRepo.manager.transaction(async (entityManager) => {
@@ -132,7 +165,7 @@ let StudentsService = class StudentsService {
                 student.school = school;
                 student.accessGranted = true;
                 student.firstName = dto.firstName;
-                student.middleName = dto.middleName;
+                student.middleInitial = dto.middleInitial;
                 student.lastName = dto.lastName;
                 student.fullName = `${dto.firstName} ${dto.lastName}`;
                 student.email = dto.email;
@@ -142,6 +175,7 @@ let StudentsService = class StudentsService {
                 student.cardNumber = dto.cardNumber;
                 student.gender = dto.gender;
                 student.address = dto.address;
+                student.orgStudentId = dto.orgStudentId;
                 const timestamp = await entityManager
                     .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
                     .then((res) => {
@@ -280,7 +314,7 @@ let StudentsService = class StudentsService {
                 throw Error(students_constant_1.STUDENTS_ERROR_NOT_FOUND);
             }
             student.firstName = dto.firstName;
-            student.middleName = dto.middleName;
+            student.middleInitial = dto.middleInitial;
             student.lastName = dto.lastName;
             student.fullName = `${dto.firstName} ${dto.lastName}`;
             student.email = dto.email;
@@ -290,6 +324,7 @@ let StudentsService = class StudentsService {
             student.cardNumber = dto.cardNumber;
             student.gender = dto.gender;
             student.address = dto.address;
+            student.orgStudentId = dto.orgStudentId;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
                 .then((res) => {

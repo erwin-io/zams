@@ -39,6 +39,7 @@ export class OpsUsersTableColumn {
 
 export class OpsSchoolsTableColumn {
   schoolCode?: string;
+  orgSchoolCode?: string;
   schoolName?: string;
   schoolAddress?: string;
   schoolEmail?: string;

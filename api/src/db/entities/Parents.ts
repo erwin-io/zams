@@ -11,8 +11,8 @@ import { LinkStudentRequest } from "./LinkStudentRequest";
 import { ParentStudent } from "./ParentStudent";
 import { Users } from "./Users";
 
-@Index("u_parents_email", ["active", "email"], { unique: true })
 @Index("u_parents_number", ["active", "mobileNumber"], { unique: true })
+@Index("u_parents_email", ["active", "email"], { unique: true })
 @Index("Parents_pkey", ["parentId"], { unique: true })
 @Entity("Parents", { schema: "dbo" })
 export class Parents {
@@ -25,8 +25,8 @@ export class Parents {
   @Column("character varying", { name: "FirstName" })
   firstName: string;
 
-  @Column("character varying", { name: "MiddleName", nullable: true })
-  middleName: string | null;
+  @Column("character varying", { name: "MiddleInitial", nullable: true })
+  middleInitial: string | null;
 
   @Column("character varying", { name: "LastName" })
   lastName: string;

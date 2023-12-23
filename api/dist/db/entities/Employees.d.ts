@@ -8,7 +8,7 @@ export declare class Employees {
     employeeId: string;
     employeeCode: string | null;
     firstName: string;
-    middleName: string | null;
+    middleInitial: string | null;
     lastName: string;
     createdDate: Date;
     updatedDate: Date | null;

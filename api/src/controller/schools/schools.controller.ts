@@ -40,6 +40,21 @@ export class SchoolsController {
     }
   }
 
+  @Get("getByOrgCode/:orgSchoolCode")
+  //   @UseGuards(JwtAuthGuard)
+  async getByOrgCode(@Param("orgSchoolCode") orgSchoolCode: string) {
+    const res = {} as ApiResponseModel<Schools>;
+    try {
+      res.data = await this.schoolsService.getByOrgCode(orgSchoolCode);
+      res.success = true;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
   @Post("/page")
   //   @UseGuards(JwtAuthGuard)
   async getPaginated(@Body() params: PaginationParamsDto) {

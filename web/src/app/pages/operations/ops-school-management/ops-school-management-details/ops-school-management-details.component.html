@@ -63,6 +63,35 @@
               >
                 <mat-form-field
                   appearance="outline"
+                  fxFlex="33.33%"
+                  class="cell"
+                  [ngClass.gt-sm]="{ isLargeScreen: true }"
+                >
+                  <mat-label>School code</mat-label>
+                  <input
+                    matInput
+                    placeholder="School code"
+                    formControlName="orgSchoolCode"
+                  />
+                  <mat-error
+                    *ngIf="getError('orgSchoolCode') !== (null || undefined)"
+                    >{{
+                      (getError("orgSchoolCode") &&
+                      getError("orgSchoolCode")["required"]
+                        ? "Please enter school code"
+                        : "")
+                    }}</mat-error
+                  >
+                </mat-form-field>
+              </div>
+              <div
+                fxFlex="100"
+                fxLayout="column"
+                fxLayout.gt-sm="row"
+                style="gap: 16px"
+              >
+                <mat-form-field
+                  appearance="outline"
                   fxFlex="100"
                   class="cell"
                   [ngClass.gt-sm]="{ isLargeScreen: true }"

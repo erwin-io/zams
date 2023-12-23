@@ -24,7 +24,7 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], DefaultStudentUserDto.prototype, "middleName", void 0);
+], DefaultStudentUserDto.prototype, "middleInitial", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -103,5 +103,10 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], DefaultStudentUserDto.prototype, "schoolYearLevelId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], DefaultStudentUserDto.prototype, "orgStudentId", void 0);
 exports.DefaultStudentUserDto = DefaultStudentUserDto;
 //# sourceMappingURL=students-base.dto.js.map

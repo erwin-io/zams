@@ -33,8 +33,8 @@ export class Students {
   @Column("character varying", { name: "FirstName" })
   firstName: string;
 
-  @Column("character varying", { name: "MiddleName", nullable: true })
-  middleName: string | null;
+  @Column("character varying", { name: "MiddleInitial", nullable: true })
+  middleInitial: string | null;
 
   @Column("character varying", { name: "LastName" })
   lastName: string;
@@ -85,6 +85,9 @@ export class Students {
 
   @Column("character varying", { name: "FullName", default: () => "''" })
   fullName: string;
+
+  @Column("character varying", { name: "OrgStudentId" })
+  orgStudentId: string;
 
   @OneToMany(
     () => LinkStudentRequest,

@@ -104,7 +104,7 @@ export class OpsSchoolManagementComponent {
         if(res.success){
           let data = res.data.results.map((d)=>{
             return {
-              schoolCode: d.schoolCode,
+              orgSchoolCode: d.orgSchoolCode,
               schoolName:  d.schoolName,
               schoolAddress:  d.schoolAddress,
               schoolEmail:  d.schoolEmail,

@@ -8,7 +8,7 @@ export class Employees {
   employeeId: string;
   employeeCode: string;
   firstName: string;
-  middleName: string;
+  middleInitial: string;
   lastName: string;
   fullName: string;
   createdDate: Date;

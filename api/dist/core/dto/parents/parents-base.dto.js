@@ -24,7 +24,7 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], DefaultParentUserDto.prototype, "middleName", void 0);
+], DefaultParentUserDto.prototype, "middleInitial", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),

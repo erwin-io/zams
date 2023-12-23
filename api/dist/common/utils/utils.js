@@ -107,9 +107,9 @@ const convertColumnNotationToObject = (notation, nestedValue) => {
     return object;
 };
 exports.convertColumnNotationToObject = convertColumnNotationToObject;
-const getFullName = (firstName, middleName = "", lastName) => {
-    if (middleName && middleName !== "") {
-        return `${firstName} ${middleName} ${lastName}`;
+const getFullName = (firstName, middleInitial = "", lastName) => {
+    if (middleInitial && middleInitial !== "") {
+        return `${firstName} ${middleInitial} ${lastName}`;
     }
     else {
         return `${firstName} ${lastName}`;

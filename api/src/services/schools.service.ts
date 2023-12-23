@@ -80,9 +80,31 @@ export class SchoolsService {
     return result;
   }
 
+  async getByOrgCode(orgSchoolCode) {
+    const result = await this.schoolsRepo.findOne({
+      where: {
+        orgSchoolCode,
+        active: true,
+      },
+      relations: {
+        registeredByUser: true,
+        updatedByUser: true,
+      },
+    });
+    if (!result) {
+      throw Error(SCHOOLS_ERROR_NOT_FOUND);
+    }
+    delete result.registeredByUser.password;
+    if (result?.updatedByUser?.password) {
+      delete result.updatedByUser.password;
+    }
+    return result;
+  }
+
   async create(dto: CreateSchoolDto) {
     return await this.schoolsRepo.manager.transaction(async (entityManager) => {
       let schools = new Schools();
+      schools.orgSchoolCode = dto.orgSchoolCode;
       schools.schoolName = dto.schoolName;
       schools.schoolAddress = dto.schoolAddress;
       schools.schoolContactNumber = dto.schoolContactNumber;
@@ -128,6 +150,7 @@ export class SchoolsService {
       const schools = [];
       for (const dto of dtos) {
         let school = new Schools();
+        school.orgSchoolCode = dto.orgSchoolCode;
         school.schoolName = dto.schoolName;
         school.schoolAddress = dto.schoolAddress;
         school.schoolContactNumber = dto.schoolContactNumber;
@@ -181,6 +204,7 @@ export class SchoolsService {
       if (!schools) {
         throw Error(SCHOOLS_ERROR_NOT_FOUND);
       }
+      schools.orgSchoolCode = dto.orgSchoolCode;
       schools.schoolName = dto.schoolName;
       schools.schoolAddress = dto.schoolAddress;
       schools.schoolContactNumber = dto.schoolContactNumber;

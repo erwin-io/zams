@@ -39,7 +39,7 @@ export class OpsDepartmentFormComponent {
     public dialogRef: MatDialogRef<OpsDepartmentFormComponent>) {
       this.departmentForm = this.formBuilder.group(
         {
-          departmentName: [null, [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]]
+          departmentName: [null, [Validators.required]]
         }
       );
   }

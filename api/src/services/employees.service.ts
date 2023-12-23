@@ -134,7 +134,7 @@ export class EmployeesService {
           employee.school = school;
           employee.accessGranted = true;
           employee.firstName = dto.firstName;
-          employee.middleName = dto.middleName;
+          employee.middleInitial = dto.middleInitial;
           employee.lastName = dto.lastName;
           employee.fullName = `${dto.firstName} ${dto.lastName}`;
           employee.mobileNumber = dto.mobileNumber;
@@ -249,7 +249,7 @@ export class EmployeesService {
           employee.school = school;
           employee.accessGranted = true;
           employee.firstName = dto.firstName;
-          employee.middleName = dto.middleName;
+          employee.middleInitial = dto.middleInitial;
           employee.lastName = dto.lastName;
           employee.fullName = `${dto.firstName} ${dto.lastName}`;
           employee.mobileNumber = dto.mobileNumber;
@@ -386,7 +386,7 @@ export class EmployeesService {
         }
 
         employee.firstName = dto.firstName;
-        employee.middleName = dto.middleName;
+        employee.middleInitial = dto.middleInitial;
         employee.lastName = dto.lastName;
         employee.fullName = `${dto.firstName} ${dto.lastName}`;
         employee.mobileNumber = dto.mobileNumber;
@@ -477,7 +477,7 @@ export class EmployeesService {
         }
 
         employee.firstName = dto.firstName;
-        employee.middleName = dto.middleName;
+        employee.middleInitial = dto.middleInitial;
         employee.lastName = dto.lastName;
         employee.fullName = `${dto.firstName} ${dto.lastName}`;
         employee.mobileNumber = dto.mobileNumber;
@@ -579,7 +579,7 @@ export class EmployeesService {
         }
 
         employee.firstName = dto.firstName;
-        employee.middleName = dto.middleName;
+        employee.middleInitial = dto.middleInitial;
         employee.lastName = dto.lastName;
         employee.fullName = `${dto.firstName} ${dto.lastName}`;
         employee.mobileNumber = dto.mobileNumber;

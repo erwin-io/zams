@@ -1,13 +1,13 @@
 
 ::ng-deep .form-dialog {
   .mat-mdc-dialog-content {
-    overflow: auto!important;
+    // overflow: auto!important;
     form {
-      box-sizing: border-box;
+      // box-sizing: border-box;
       fieldset {
-        box-sizing: border-box;
+        // box-sizing: border-box;
         border: none!important;
-        margin-inline: 0px!important;
+        // margin-inline: 0px!important;
       }
     }
   }

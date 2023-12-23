@@ -98,6 +98,9 @@ export class Schools {
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
 
+  @Column("character varying", { name: "OrgSchoolCode" })
+  orgSchoolCode: string;
+
   @OneToMany(() => Courses, (courses) => courses.school)
   courses: Courses[];
 

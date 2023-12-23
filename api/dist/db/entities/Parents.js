@@ -29,9 +29,9 @@ __decorate([
     __metadata("design:type", String)
 ], Parents.prototype, "firstName", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "MiddleName", nullable: true }),
+    (0, typeorm_1.Column)("character varying", { name: "MiddleInitial", nullable: true }),
     __metadata("design:type", String)
-], Parents.prototype, "middleName", void 0);
+], Parents.prototype, "middleInitial", void 0);
 __decorate([
     (0, typeorm_1.Column)("character varying", { name: "LastName" }),
     __metadata("design:type", String)
@@ -99,8 +99,8 @@ __decorate([
     __metadata("design:type", Users_1.Users)
 ], Parents.prototype, "user", void 0);
 Parents = __decorate([
-    (0, typeorm_1.Index)("u_parents_email", ["active", "email"], { unique: true }),
     (0, typeorm_1.Index)("u_parents_number", ["active", "mobileNumber"], { unique: true }),
+    (0, typeorm_1.Index)("u_parents_email", ["active", "email"], { unique: true }),
     (0, typeorm_1.Index)("Parents_pkey", ["parentId"], { unique: true }),
     (0, typeorm_1.Entity)("Parents", { schema: "dbo" })
 ], Parents);

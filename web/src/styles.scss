@@ -444,3 +444,6 @@ app-auth {
   ::ng-deep .hidden {
     display: none !important;
   }
+.mdc-floating-label--float-above {
+    font-size: inherit!important;
+  }

@@ -1,6 +1,6 @@
 export declare class DefaultStudentUserDto {
     firstName: string;
-    middleName: string;
+    middleInitial: string;
     lastName: string;
     mobileNumber: string;
     lrn: string;
@@ -13,4 +13,5 @@ export declare class DefaultStudentUserDto {
     sectionId: string;
     departmentId: string;
     schoolYearLevelId: string;
+    orgStudentId: string;
 }

@@ -5,7 +5,7 @@ export class Parents {
   parentId: string;
   parentCode: string;
   firstName: string;
-  middleName: string;
+  middleInitial: string;
   lastName: string;
   fullName: string;
   gender: string;

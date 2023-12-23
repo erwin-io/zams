@@ -49,7 +49,7 @@ export class OpsSectionFormComponent {
     public dialogRef: MatDialogRef<OpsSectionFormComponent>) {
       this.sectionForm = this.formBuilder.group(
         {
-          sectionName: [null, [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]],
+          sectionName: [null, [Validators.required]],
           adviserEmployeeId: new FormControl(null, Validators.required),
           schoolYearLevelId: new FormControl(null, Validators.required),
           departmentId: new FormControl(null, Validators.required),

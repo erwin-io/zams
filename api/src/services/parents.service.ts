@@ -110,7 +110,7 @@ s."StudentId",
 s."StudentCode", 
 s."DepartmentId", 
 s."FirstName", 
-s."MiddleName", 
+s."middleInitial", 
 s."LastName", 
 s."LRN", 
 s."CardNumber", 
@@ -146,7 +146,7 @@ WHERE p."ParentCode" = '${parentCode}'
       }
 
       parent.firstName = dto.firstName;
-      parent.middleName = dto.middleName;
+      parent.middleInitial = dto.middleInitial;
       parent.lastName = dto.lastName;
       parent.fullName = `${dto.firstName} ${dto.lastName}`;
       parent.mobileNumber = dto.mobileNumber;

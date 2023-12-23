@@ -22,6 +22,11 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
+], DefaultSchoolDto.prototype, "orgSchoolCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
 ], DefaultSchoolDto.prototype, "schoolName", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),

@@ -78,9 +78,31 @@ let SchoolsService = class SchoolsService {
         }
         return result;
     }
+    async getByOrgCode(orgSchoolCode) {
+        var _a;
+        const result = await this.schoolsRepo.findOne({
+            where: {
+                orgSchoolCode,
+                active: true,
+            },
+            relations: {
+                registeredByUser: true,
+                updatedByUser: true,
+            },
+        });
+        if (!result) {
+            throw Error(schools_constant_1.SCHOOLS_ERROR_NOT_FOUND);
+        }
+        delete result.registeredByUser.password;
+        if ((_a = result === null || result === void 0 ? void 0 : result.updatedByUser) === null || _a === void 0 ? void 0 : _a.password) {
+            delete result.updatedByUser.password;
+        }
+        return result;
+    }
     async create(dto) {
         return await this.schoolsRepo.manager.transaction(async (entityManager) => {
             let schools = new Schools_1.Schools();
+            schools.orgSchoolCode = dto.orgSchoolCode;
             schools.schoolName = dto.schoolName;
             schools.schoolAddress = dto.schoolAddress;
             schools.schoolContactNumber = dto.schoolContactNumber;
@@ -124,6 +146,7 @@ let SchoolsService = class SchoolsService {
             const schools = [];
             for (const dto of dtos) {
                 let school = new Schools_1.Schools();
+                school.orgSchoolCode = dto.orgSchoolCode;
                 school.schoolName = dto.schoolName;
                 school.schoolAddress = dto.schoolAddress;
                 school.schoolContactNumber = dto.schoolContactNumber;
@@ -176,6 +199,7 @@ let SchoolsService = class SchoolsService {
             if (!schools) {
                 throw Error(schools_constant_1.SCHOOLS_ERROR_NOT_FOUND);
             }
+            schools.orgSchoolCode = dto.orgSchoolCode;
             schools.schoolName = dto.schoolName;
             schools.schoolAddress = dto.schoolAddress;
             schools.schoolContactNumber = dto.schoolContactNumber;

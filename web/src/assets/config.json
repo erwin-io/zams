@@ -56,9 +56,9 @@
     ],
     "schools": [
       {
-        "name": "schoolCode",
+        "name": "orgSchoolCode",
         "label": "School Code",
-        "apiNotation": "schoolCode",
+        "apiNotation": "orgSchoolCode",
         "sticky": true,
         "type": "string",
         "style": {

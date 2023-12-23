@@ -60,7 +60,8 @@ export class OpsSchoolManagementDetailsComponent {
     }
     this.schoolForm = this.formBuilder.group(
       {
-        schoolName: [null, [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]],
+        orgSchoolCode: new FormControl(null, [Validators.required]),
+        schoolName: new FormControl(null, [Validators.required]),
         schoolAddress: new FormControl(),
         schoolContactNumber: new FormControl(),
         schoolEmail: new FormControl(),
@@ -115,6 +116,7 @@ export class OpsSchoolManagementDetailsComponent {
           if (school.success) {
             this.school = school.data;
             this.schoolForm.patchValue({
+              orgSchoolCode: school.data.orgSchoolCode,
               schoolName: school.data.schoolName,
               schoolAddress: school.data.schoolAddress,
               studentsAllowableTimeLate: school.data.studentsAllowableTimeLate,

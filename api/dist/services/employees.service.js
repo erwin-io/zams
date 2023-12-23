@@ -119,7 +119,7 @@ let EmployeesService = class EmployeesService {
                 employee.school = school;
                 employee.accessGranted = true;
                 employee.firstName = dto.firstName;
-                employee.middleName = dto.middleName;
+                employee.middleInitial = dto.middleInitial;
                 employee.lastName = dto.lastName;
                 employee.fullName = `${dto.firstName} ${dto.lastName}`;
                 employee.mobileNumber = dto.mobileNumber;
@@ -225,7 +225,7 @@ let EmployeesService = class EmployeesService {
                 employee.school = school;
                 employee.accessGranted = true;
                 employee.firstName = dto.firstName;
-                employee.middleName = dto.middleName;
+                employee.middleInitial = dto.middleInitial;
                 employee.lastName = dto.lastName;
                 employee.fullName = `${dto.firstName} ${dto.lastName}`;
                 employee.mobileNumber = dto.mobileNumber;
@@ -351,7 +351,7 @@ let EmployeesService = class EmployeesService {
                 throw Error(employees_constant_1.EMPLOYEES_ERROR_NOT_FOUND);
             }
             employee.firstName = dto.firstName;
-            employee.middleName = dto.middleName;
+            employee.middleInitial = dto.middleInitial;
             employee.lastName = dto.lastName;
             employee.fullName = `${dto.firstName} ${dto.lastName}`;
             employee.mobileNumber = dto.mobileNumber;
@@ -435,7 +435,7 @@ let EmployeesService = class EmployeesService {
                 throw Error(employees_constant_1.EMPLOYEES_ERROR_NOT_FOUND);
             }
             employee.firstName = dto.firstName;
-            employee.middleName = dto.middleName;
+            employee.middleInitial = dto.middleInitial;
             employee.lastName = dto.lastName;
             employee.fullName = `${dto.firstName} ${dto.lastName}`;
             employee.mobileNumber = dto.mobileNumber;
@@ -529,7 +529,7 @@ let EmployeesService = class EmployeesService {
                 throw Error(employees_constant_1.EMPLOYEES_ERROR_NOT_FOUND);
             }
             employee.firstName = dto.firstName;
-            employee.middleName = dto.middleName;
+            employee.middleInitial = dto.middleInitial;
             employee.lastName = dto.lastName;
             employee.fullName = `${dto.firstName} ${dto.lastName}`;
             employee.mobileNumber = dto.mobileNumber;

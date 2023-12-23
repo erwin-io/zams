@@ -32,9 +32,9 @@ __decorate([
     __metadata("design:type", String)
 ], Employees.prototype, "firstName", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "MiddleName", nullable: true }),
+    (0, typeorm_1.Column)("character varying", { name: "MiddleInitial", nullable: true }),
     __metadata("design:type", String)
-], Employees.prototype, "middleName", void 0);
+], Employees.prototype, "middleInitial", void 0);
 __decorate([
     (0, typeorm_1.Column)("character varying", { name: "LastName" }),
     __metadata("design:type", String)

@@ -37,6 +37,19 @@ let SchoolsController = class SchoolsController {
             return res;
         }
     }
+    async getByOrgCode(orgSchoolCode) {
+        const res = {};
+        try {
+            res.data = await this.schoolsService.getByOrgCode(orgSchoolCode);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
     async getPaginated(params) {
         const res = {};
         try {
@@ -114,6 +127,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SchoolsController.prototype, "getDetails", null);
+__decorate([
+    (0, common_1.Get)("getByOrgCode/:orgSchoolCode"),
+    __param(0, (0, common_1.Param)("orgSchoolCode")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SchoolsController.prototype, "getByOrgCode", null);
 __decorate([
     (0, common_1.Post)("/page"),
     __param(0, (0, common_1.Body)()),

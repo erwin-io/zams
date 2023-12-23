@@ -15,6 +15,7 @@ export declare class SchoolsService {
         total: number;
     }>;
     getByCode(schoolCode: any): Promise<Schools>;
+    getByOrgCode(orgSchoolCode: any): Promise<Schools>;
     create(dto: CreateSchoolDto): Promise<Schools>;
     batchCreate(dtos: CreateSchoolDto[]): Promise<any[]>;
     update(schoolCode: any, dto: UpdateSchoolDto): Promise<Schools>;

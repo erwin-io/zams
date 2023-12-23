@@ -13,6 +13,10 @@ import {
 export class DefaultSchoolDto {
   @ApiProperty()
   @IsNotEmpty()
+  orgSchoolCode: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   schoolName: string;
 
   @ApiProperty()

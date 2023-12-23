@@ -29,8 +29,8 @@ export class Employees {
   @Column("character varying", { name: "FirstName" })
   firstName: string;
 
-  @Column("character varying", { name: "MiddleName", nullable: true })
-  middleName: string | null;
+  @Column("character varying", { name: "MiddleInitial", nullable: true })
+  middleInitial: string | null;
 
   @Column("character varying", { name: "LastName" })
   lastName: string;

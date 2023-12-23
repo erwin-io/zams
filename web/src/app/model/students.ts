@@ -9,8 +9,9 @@ import { Users } from "./users";
 export class Students {
   studentId: string;
   studentCode: string;
+  orgStudentId: string;
   firstName: string;
-  middleName: string;
+  middleInitial: string;
   lastName: string;
   fullName: string;
   lrn: string;

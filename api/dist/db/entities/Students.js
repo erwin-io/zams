@@ -35,9 +35,9 @@ __decorate([
     __metadata("design:type", String)
 ], Students.prototype, "firstName", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "MiddleName", nullable: true }),
+    (0, typeorm_1.Column)("character varying", { name: "MiddleInitial", nullable: true }),
     __metadata("design:type", String)
-], Students.prototype, "middleName", void 0);
+], Students.prototype, "middleInitial", void 0);
 __decorate([
     (0, typeorm_1.Column)("character varying", { name: "LastName" }),
     __metadata("design:type", String)
@@ -101,6 +101,10 @@ __decorate([
     (0, typeorm_1.Column)("character varying", { name: "FullName", default: () => "''" }),
     __metadata("design:type", String)
 ], Students.prototype, "fullName", void 0);
+__decorate([
+    (0, typeorm_1.Column)("character varying", { name: "OrgStudentId" }),
+    __metadata("design:type", String)
+], Students.prototype, "orgStudentId", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => LinkStudentRequest_1.LinkStudentRequest, (linkStudentRequest) => linkStudentRequest.student),
     __metadata("design:type", Array)

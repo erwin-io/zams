@@ -15,6 +15,7 @@ export declare class StudentsService {
         total: number;
     }>;
     getByCode(studentCode: any): Promise<Students>;
+    getByOrgStudentId(orgStudentId: any): Promise<Students>;
     create(dto: CreateStudentDto): Promise<Students>;
     update(studentCode: any, dto: UpdateStudentDto): Promise<Students>;
     delete(studentCode: any): Promise<Students>;

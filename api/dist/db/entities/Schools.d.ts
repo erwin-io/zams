@@ -29,6 +29,7 @@ export declare class Schools {
     dateRegistered: Date;
     dateUpdated: Date | null;
     active: boolean;
+    orgSchoolCode: string;
     courses: Courses[];
     departments: Departments[];
     employeeRoles: EmployeeRoles[];

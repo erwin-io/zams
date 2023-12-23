@@ -124,6 +124,40 @@ export class StudentsService {
     return res;
   }
 
+  async getByOrgStudentId(orgStudentId) {
+    const res = await this.studentRepo.findOne({
+      where: {
+        orgStudentId,
+        active: true,
+      },
+      relations: {
+        parentStudents: {
+          parent: true,
+        },
+        studentCourse: {
+          course: true,
+        },
+        department: true,
+        registeredByUser: true,
+        updatedByUser: true,
+        school: true,
+        schoolYearLevel: true,
+        studentSection: {
+          section: true,
+        },
+      },
+    });
+
+    if (!res) {
+      throw Error(USER_ERROR_USER_NOT_FOUND);
+    }
+    delete res.registeredByUser.password;
+    if (res?.updatedByUser?.password) {
+      delete res.updatedByUser.password;
+    }
+    return res;
+  }
+
   async create(dto: CreateStudentDto) {
     try {
       return await this.studentRepo.manager.transaction(
@@ -141,7 +175,7 @@ export class StudentsService {
           student.school = school;
           student.accessGranted = true;
           student.firstName = dto.firstName;
-          student.middleName = dto.middleName;
+          student.middleInitial = dto.middleInitial;
           student.lastName = dto.lastName;
           student.fullName = `${dto.firstName} ${dto.lastName}`;
           student.email = dto.email;
@@ -151,6 +185,7 @@ export class StudentsService {
           student.cardNumber = dto.cardNumber;
           student.gender = dto.gender;
           student.address = dto.address;
+          student.orgStudentId = dto.orgStudentId;
           const timestamp = await entityManager
             .query(CONST_QUERYCURRENT_TIMESTAMP)
             .then((res) => {
@@ -302,7 +337,7 @@ export class StudentsService {
   //     }
 
   //     student.firstName = dto.firstName;
-  //     student.middleName = dto.middleName;
+  //     student.middleInitial = dto.middleInitial;
   //     student.lastName = dto.lastName;
   //     student.fullName = `${dto.firstName} ${dto.lastName}`;
   //     student.email = dto.email;
@@ -455,7 +490,7 @@ export class StudentsService {
       }
 
       student.firstName = dto.firstName;
-      student.middleName = dto.middleName;
+      student.middleInitial = dto.middleInitial;
       student.lastName = dto.lastName;
       student.fullName = `${dto.firstName} ${dto.lastName}`;
       student.email = dto.email;
@@ -465,6 +500,7 @@ export class StudentsService {
       student.cardNumber = dto.cardNumber;
       student.gender = dto.gender;
       student.address = dto.address;
+      student.orgStudentId = dto.orgStudentId;
       const timestamp = await entityManager
         .query(CONST_QUERYCURRENT_TIMESTAMP)
         .then((res) => {

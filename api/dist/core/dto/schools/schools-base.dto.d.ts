@@ -1,4 +1,5 @@
 export declare class DefaultSchoolDto {
+    orgSchoolCode: string;
     schoolName: string;
     schoolAddress: string;
     schoolContactNumber: string;
