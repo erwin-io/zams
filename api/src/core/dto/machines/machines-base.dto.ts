@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class DefaultMachineDto {
   @ApiProperty()
@@ -7,10 +7,10 @@ export class DefaultMachineDto {
   description: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   path: string;
   
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   domain: string;
 }

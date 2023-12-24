@@ -134,7 +134,7 @@ WHERE p."ParentCode" = '${parentCode}'
           active: true,
         },
         relations: {
-          parentStudents: true,
+          // parentStudents: true,
           registeredByUser: true,
           updatedByUser: true,
           user: true,

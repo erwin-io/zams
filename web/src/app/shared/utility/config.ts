@@ -24,6 +24,7 @@ export interface AppConfig {
       employeeTitles: ColumnDefinition[];
       courses: ColumnDefinition[];
       linkStudentRequest: ColumnDefinition[];
+      machines: ColumnDefinition[];
     };
     sessionConfig: {
       sessionTimeout: string;
@@ -120,6 +121,13 @@ export interface AppConfig {
         approve: string;
         reject: string;
         cancel: string;
+      },
+      machines: {
+        getByAdvanceSearch: string;
+        getByCode: string;
+        create: string;
+        update: string;
+        delete: string;
       }
     };
   }

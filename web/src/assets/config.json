@@ -134,6 +134,28 @@
         }
       }
     ],
+    "machines": [
+      {
+        "name": "description",
+        "label": "Description",
+        "apiNotation": "description",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Description"
+        }
+      },
+      {
+        "name": "menu",
+        "type": "",
+        "label": "Controls",
+        "controls": true,
+        "stickyEnd": true,
+        "style": {
+          "width": "0%"
+        }
+      }
+    ],
     "schoolYearLevels": [
       {
         "name": "name",
@@ -568,6 +590,13 @@
       "approve": "/link-student-request/approve/",
       "reject": "/link-student-request/reject/",
       "cancel": "/link-student-request/cancel/"
+    },
+    "machines": {
+      "getByAdvanceSearch": "/machines/page/",
+      "getByCode": "/machines/",
+      "create": "/machines/",
+      "update": "/machines/",
+      "delete": "/machines/"
     }
   }
 }

@@ -21,12 +21,12 @@ __decorate([
 ], DefaultMachineDto.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], DefaultMachineDto.prototype, "path", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], DefaultMachineDto.prototype, "domain", void 0);
 exports.DefaultMachineDto = DefaultMachineDto;

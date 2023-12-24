@@ -123,6 +123,15 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'machines',
+        canActivate: [OpsAuthGuard],
+        data: { ops: true, title: 'Link Student Request' },
+        loadChildren: () =>
+          import('./pages/operations/ops-machines/ops-machines.module').then(
+            (m) => m.OpsMachinesModule
+          ),
+      },
+      {
         path: 'parents',
         canActivate: [OpsAuthGuard],
         data: { ops: true, title: 'Parents' },

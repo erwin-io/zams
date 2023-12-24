@@ -116,3 +116,9 @@ export class OpsLinkStudentRequestTableColumn extends TableColumnBase {
   requestedByParent?: string;
   requestedByParentCode?: string;
 }
+
+export class OpsMachinesTableColumn {
+  machineCode: string;
+  description: string;
+  url?: string;
+}
