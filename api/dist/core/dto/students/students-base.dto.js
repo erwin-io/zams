@@ -41,9 +41,9 @@ __decorate([
 ], DefaultStudentUserDto.prototype, "mobileNumber", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], DefaultStudentUserDto.prototype, "lrn", void 0);
+], DefaultStudentUserDto.prototype, "orgStudentId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -58,19 +58,6 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsDateString)({ strict: true }),
-    __metadata("design:type", Date)
-], DefaultStudentUserDto.prototype, "birthDate", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsIn)(["MALE", "FEMALE", "OTHERS"]),
-    (0, class_validator_1.IsUppercase)(),
-    __metadata("design:type", String)
-], DefaultStudentUserDto.prototype, "gender", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], DefaultStudentUserDto.prototype, "address", void 0);
 __decorate([
@@ -78,6 +65,11 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], DefaultStudentUserDto.prototype, "courseId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], DefaultStudentUserDto.prototype, "strandId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsOptional)(),
@@ -103,10 +95,5 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], DefaultStudentUserDto.prototype, "schoolYearLevelId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], DefaultStudentUserDto.prototype, "orgStudentId", void 0);
 exports.DefaultStudentUserDto = DefaultStudentUserDto;
 //# sourceMappingURL=students-base.dto.js.map

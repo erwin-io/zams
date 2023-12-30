@@ -22,6 +22,7 @@ const SchoolRequestAccess_1 = require("./SchoolRequestAccess");
 const SchoolYearLevels_1 = require("./SchoolYearLevels");
 const Users_1 = require("./Users");
 const Sections_1 = require("./Sections");
+const Strands_1 = require("./Strands");
 const Students_1 = require("./Students");
 let Schools = class Schools {
 };
@@ -172,6 +173,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => Sections_1.Sections, (sections) => sections.school),
     __metadata("design:type", Array)
 ], Schools.prototype, "sections", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Strands_1.Strands, (strands) => strands.school),
+    __metadata("design:type", Array)
+], Schools.prototype, "strands", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => Students_1.Students, (students) => students.school),
     __metadata("design:type", Array)

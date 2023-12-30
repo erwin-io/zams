@@ -34,7 +34,13 @@ export class NotificationsService {
       }),
     ]);
     return {
-      results,
+      results: results.map((x) => {
+        delete x.forUser.password;
+        if (x?.forUser?.password) {
+          delete x.forUser.password;
+        }
+        return x;
+      }),
       total,
     };
   }

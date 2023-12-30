@@ -12,11 +12,12 @@ const parents_controller_1 = require("./parents.controller");
 const Parents_1 = require("../../db/entities/Parents");
 const parents_service_1 = require("../../services/parents.service");
 const typeorm_1 = require("@nestjs/typeorm");
+const firebase_provider_module_1 = require("../../core/provider/firebase/firebase-provider.module");
 let ParentsModule = class ParentsModule {
 };
 ParentsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([Parents_1.Parents])],
+        imports: [firebase_provider_module_1.FirebaseProviderModule, typeorm_1.TypeOrmModule.forFeature([Parents_1.Parents])],
         controllers: [parents_controller_1.ParentsController],
         providers: [parents_service_1.ParentsService],
         exports: [parents_service_1.ParentsService],

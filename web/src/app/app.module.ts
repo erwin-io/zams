@@ -33,6 +33,7 @@ import { SelectEmployeeTitleDialogComponent } from './shared/select-employee-tit
 import { SelectEmployeeDialogComponent } from './shared/select-employee-dialog/select-employee-dialog.component';
 import { SelectCourseDialogComponent } from './shared/select-course-dialog/select-course-dialog.component';
 import { SelectSectionDialogComponent } from './shared/select-section-dialog/select-section-dialog.component';
+import { SelectStrandDialogComponent } from './shared/select-strand-dialog/select-strand-dialog.component';
 
 export class MyClock extends TimeagoClock {
   tick(then: number): Observable<number> {
@@ -73,7 +74,8 @@ export function delay(delay: number) {
     SelectEmployeeTitleDialogComponent,
     SelectEmployeeDialogComponent,
     SelectCourseDialogComponent,
-    SelectSectionDialogComponent
+    SelectSectionDialogComponent,
+    SelectStrandDialogComponent
   ],
   imports: [
     BrowserModule,

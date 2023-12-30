@@ -81,41 +81,54 @@ let DepartmentsService = class DepartmentsService {
         return result;
     }
     async create(dto) {
-        return await this.departmentsRepo.manager.transaction(async (entityManager) => {
-            let departments = new Departments_1.Departments();
-            departments.departmentName = dto.departmentName;
-            const timestamp = await entityManager
-                .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
-                .then((res) => {
-                return res[0]["timestamp"];
+        try {
+            return await this.departmentsRepo.manager.transaction(async (entityManager) => {
+                let departments = new Departments_1.Departments();
+                departments.departmentName = dto.departmentName;
+                const timestamp = await entityManager
+                    .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+                    .then((res) => {
+                    return res[0]["timestamp"];
+                });
+                departments.createdDate = timestamp;
+                const school = await entityManager.findOne(Schools_1.Schools, {
+                    where: {
+                        schoolId: dto.schoolId,
+                        active: true,
+                    },
+                });
+                if (!school) {
+                    throw Error(schools_constant_1.SCHOOLS_ERROR_NOT_FOUND);
+                }
+                departments.school = school;
+                const createdByUser = await entityManager.findOne(Users_1.Users, {
+                    where: {
+                        userId: dto.createdByUserId,
+                        active: true,
+                    },
+                });
+                if (!createdByUser) {
+                    throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+                }
+                departments.createdByUser = createdByUser;
+                departments = await entityManager.save(departments);
+                departments.departmentCode = (0, utils_1.generateIndentityCode)(departments.departmentId);
+                departments = await entityManager.save(Departments_1.Departments, departments);
+                delete departments.createdByUser.password;
+                return departments;
             });
-            departments.createdDate = timestamp;
-            const school = await entityManager.findOne(Schools_1.Schools, {
-                where: {
-                    schoolId: dto.schoolId,
-                    active: true,
-                },
-            });
-            if (!school) {
-                throw Error(schools_constant_1.SCHOOLS_ERROR_NOT_FOUND);
+        }
+        catch (ex) {
+            if (ex["message"] &&
+                (ex["message"].includes("duplicate key") ||
+                    ex["message"].includes("violates unique constraint")) &&
+                ex["message"].includes("u_department")) {
+                throw Error("Entry already exists!");
             }
-            departments.school = school;
-            const createdByUser = await entityManager.findOne(Users_1.Users, {
-                where: {
-                    userId: dto.createdByUserId,
-                    active: true,
-                },
-            });
-            if (!createdByUser) {
-                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            else {
+                throw ex;
             }
-            departments.createdByUser = createdByUser;
-            departments = await entityManager.save(departments);
-            departments.departmentCode = (0, utils_1.generateIndentityCode)(departments.departmentId);
-            departments = await entityManager.save(Departments_1.Departments, departments);
-            delete departments.createdByUser.password;
-            return departments;
-        });
+        }
     }
     async batchCreate(dtos) {
         return await this.departmentsRepo.manager.transaction(async (entityManager) => {
@@ -159,43 +172,56 @@ let DepartmentsService = class DepartmentsService {
         });
     }
     async update(departmentCode, dto) {
-        return await this.departmentsRepo.manager.transaction(async (entityManager) => {
-            var _a, _b;
-            let departments = await entityManager.findOne(Departments_1.Departments, {
-                where: {
-                    departmentCode,
-                    active: true,
-                },
+        try {
+            return await this.departmentsRepo.manager.transaction(async (entityManager) => {
+                var _a, _b;
+                let departments = await entityManager.findOne(Departments_1.Departments, {
+                    where: {
+                        departmentCode,
+                        active: true,
+                    },
+                });
+                if (!departments) {
+                    throw Error(departments_constant_1.DEPARTMENTS_ERROR_NOT_FOUND);
+                }
+                const timestamp = await entityManager
+                    .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+                    .then((res) => {
+                    return res[0]["timestamp"];
+                });
+                departments.updatedDate = timestamp;
+                const updatedByUser = await entityManager.findOne(Users_1.Users, {
+                    where: {
+                        userId: dto.updatedByUserId,
+                        active: true,
+                    },
+                });
+                if (!updatedByUser) {
+                    throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+                }
+                departments.updatedByUser = updatedByUser;
+                departments.departmentName = dto.departmentName;
+                departments = await entityManager.save(Departments_1.Departments, departments);
+                if ((_a = departments === null || departments === void 0 ? void 0 : departments.createdByUser) === null || _a === void 0 ? void 0 : _a.password) {
+                    delete departments.createdByUser.password;
+                }
+                if ((_b = departments === null || departments === void 0 ? void 0 : departments.updatedByUser) === null || _b === void 0 ? void 0 : _b.password) {
+                    delete departments.updatedByUser.password;
+                }
+                return departments;
             });
-            if (!departments) {
-                throw Error(departments_constant_1.DEPARTMENTS_ERROR_NOT_FOUND);
+        }
+        catch (ex) {
+            if (ex["message"] &&
+                (ex["message"].includes("duplicate key") ||
+                    ex["message"].includes("violates unique constraint")) &&
+                ex["message"].includes("u_department")) {
+                throw Error("Entry already exists!");
             }
-            const timestamp = await entityManager
-                .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
-                .then((res) => {
-                return res[0]["timestamp"];
-            });
-            departments.updatedDate = timestamp;
-            const updatedByUser = await entityManager.findOne(Users_1.Users, {
-                where: {
-                    userId: dto.updatedByUserId,
-                    active: true,
-                },
-            });
-            if (!updatedByUser) {
-                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            else {
+                throw ex;
             }
-            departments.updatedByUser = updatedByUser;
-            departments.departmentName = dto.departmentName;
-            departments = await entityManager.save(Departments_1.Departments, departments);
-            if ((_a = departments === null || departments === void 0 ? void 0 : departments.createdByUser) === null || _a === void 0 ? void 0 : _a.password) {
-                delete departments.createdByUser.password;
-            }
-            if ((_b = departments === null || departments === void 0 ? void 0 : departments.updatedByUser) === null || _b === void 0 ? void 0 : _b.password) {
-                delete departments.updatedByUser.password;
-            }
-            return departments;
-        });
+        }
     }
     async delete(departmentCode) {
         return await this.departmentsRepo.manager.transaction(async (entityManager) => {

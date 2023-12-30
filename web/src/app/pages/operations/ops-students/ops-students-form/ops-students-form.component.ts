@@ -20,6 +20,8 @@ import { Courses } from 'src/app/model/courses';
 import { Sections } from 'src/app/model/sections';
 import { SelectCourseDialogComponent } from 'src/app/shared/select-course-dialog/select-course-dialog.component';
 import { SelectSectionDialogComponent } from 'src/app/shared/select-section-dialog/select-section-dialog.component';
+import { Strands } from 'src/app/model/strands';
+import { SelectStrandDialogComponent } from 'src/app/shared/select-strand-dialog/select-strand-dialog.component';
 
 @Component({
   selector: 'app-ops-students-form',
@@ -42,6 +44,7 @@ export class OpsStudentFormComponent {
   department: Departments;
   section: Sections;
   course: Courses;
+  strand: Strands;
   currentOperatorCode;
 
   constructor(
@@ -59,12 +62,10 @@ export class OpsStudentFormComponent {
           middleInitial: new FormControl(null),
           lastName: new FormControl(null, Validators.required),
           mobileNumber: new FormControl(null, Validators.required),
-          lrn: new FormControl(null),
           cardNumber: new FormControl(null, Validators.required),
-          birthDate: new FormControl(null),
-          gender: new FormControl(null, Validators.required),
           address: new FormControl(null),
-          courseId: new FormControl(null, Validators.required),
+          courseId: new FormControl(null, [Validators.required]),
+          strandId: new FormControl(null, [Validators.required]),
           sectionId: new FormControl(null, Validators.required),
           departmentId: new FormControl(null, Validators.required),
           schoolYearLevelId: new FormControl(null, Validators.required)
@@ -97,17 +98,17 @@ export class OpsStudentFormComponent {
             middleInitial: student.data.middleInitial,
             lastName: student.data.lastName,
             mobileNumber: student.data.mobileNumber,
-            lrn: student.data.lrn,
             cardNumber: student.data.cardNumber,
-            birthDate: student.data.birthDate,
-            gender: student.data.gender,
             address: student.data.address,
             courseId: student.data.studentCourse?.course?.courseId,
+            strandId: student.data.studentStrand?.strand?.strandId,
+            studentId: student.data.studentSection?.student?.studentId,
             sectionId: student.data.studentSection?.section?.sectionId,
             departmentId: student.data.department?.departmentId,
             schoolYearLevelId: student.data.schoolYearLevel?.schoolYearLevelId
           });
           this.course = student.data?.studentCourse?.course;
+          this.strand = student.data?.studentStrand?.strand;
           this.section = student.data?.studentSection?.section;
           this.department = student.data?.department;
           this.schoolYearLevel = student.data?.schoolYearLevel;
@@ -224,7 +225,21 @@ export class OpsStudentFormComponent {
       console.log(res);
       if(res) {
         this.schoolYearLevel = res;
+        this.course = null;
+        this.strand = null;
+        this.schoolYearLevel = res;
         this.f["schoolYearLevelId"].setValue(res.schoolYearLevelId);
+        if(res.educationalStage === "COLLEGE") {
+          this.studentForm.controls["courseId"] = new FormControl(null, [Validators.required]);
+          this.studentForm.controls["strandId"] = new FormControl(null);
+        } else if(res.educationalStage === "SENIOR") {
+          this.studentForm.controls["courseId"] = new FormControl(null);
+          this.studentForm.controls["strandId"] = new FormControl(null, [Validators.required]);
+        } else {
+          this.studentForm.controls["courseId"] = new FormControl(null);
+          this.studentForm.controls["strandId"] = new FormControl(null);
+        }
+        this.studentForm.updateValueAndValidity();
       }
       this.f["schoolYearLevelId"].markAllAsTouched();
       this.f["schoolYearLevelId"].markAsDirty();
@@ -254,6 +269,8 @@ export class OpsStudentFormComponent {
   }
 
   showSelectCourseDialog() {
+    this.f['courseId'].markAsDirty();
+    this.f['courseId'].markAsTouched();
     const dialogRef = this.dialog.open(SelectCourseDialogComponent, {
         disableClose: true,
         panelClass: "select-course-dialog"
@@ -268,10 +285,38 @@ export class OpsStudentFormComponent {
       console.log(res);
       if(res) {
         this.course = res;
-        this.f["courseId"].setValue(res.courseId);
+        this.studentForm.controls["courseId"] = new FormControl(res.courseId, [Validators.required]);
+        this.studentForm.controls["strandId"] = new FormControl(null);
+        this.studentForm.updateValueAndValidity();
       }
       this.f["courseId"].markAllAsTouched();
       this.f["courseId"].markAsDirty();
+    })
+  }
+
+  showSelectStrandDialog() {
+    this.f['strandId'].markAsDirty();
+    this.f['strandId'].markAsTouched();
+    const dialogRef = this.dialog.open(SelectStrandDialogComponent, {
+        disableClose: true,
+        panelClass: "select-strand-dialog"
+    });
+    dialogRef.componentInstance.selected = {
+      strandCode: this.strand?.strandCode,
+      name: this.strand?.name,
+      selected: true
+    }
+    dialogRef.componentInstance.schoolCode = this.school?.schoolCode;
+    dialogRef.afterClosed().subscribe((res:Strands)=> {
+      console.log(res);
+      if(res) {
+        this.strand = res;
+        this.studentForm.controls["strandId"] = new FormControl(res.strandId, [Validators.required]);
+        this.studentForm.controls["courseId"] = new FormControl(null);
+        this.studentForm.updateValueAndValidity();
+      }
+      this.f["strandId"].markAllAsTouched();
+      this.f["strandId"].markAsDirty();
     })
   }
 

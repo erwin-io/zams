@@ -172,7 +172,7 @@ export class OpsSchoolYearLevelsComponent {
             let data = res.data.results.map((d)=>{
               return {
                 schoolYearLevelCode: d.schoolYearLevelCode,
-                canSelectCourses: d.canSelectCourses,
+                educationalStage: d.educationalStage,
                 name: d.name,
               } as OpsSchoolYearLevelsTableColumn
             });

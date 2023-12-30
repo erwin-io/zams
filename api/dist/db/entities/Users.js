@@ -26,8 +26,10 @@ const SchoolRequestAccess_1 = require("./SchoolRequestAccess");
 const SchoolYearLevels_1 = require("./SchoolYearLevels");
 const Schools_1 = require("./Schools");
 const Sections_1 = require("./Sections");
+const Strands_1 = require("./Strands");
 const Students_1 = require("./Students");
 const UserFirebaseToken_1 = require("./UserFirebaseToken");
+const UserProfilePic_1 = require("./UserProfilePic");
 let Users = class Users {
 };
 __decorate([
@@ -174,6 +176,14 @@ __decorate([
     __metadata("design:type", Array)
 ], Users.prototype, "sections2", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => Strands_1.Strands, (strands) => strands.createdByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "strands", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Strands_1.Strands, (strands) => strands.updatedByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "strands2", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => Students_1.Students, (students) => students.registeredByUser),
     __metadata("design:type", Array)
 ], Users.prototype, "students", void 0);
@@ -185,6 +195,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => UserFirebaseToken_1.UserFirebaseToken, (userFirebaseToken) => userFirebaseToken.user),
     __metadata("design:type", Array)
 ], Users.prototype, "userFirebaseTokens", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => UserProfilePic_1.UserProfilePic, (userProfilePic) => userProfilePic.user),
+    __metadata("design:type", UserProfilePic_1.UserProfilePic)
+], Users.prototype, "userProfilePic", void 0);
 Users = __decorate([
     (0, typeorm_1.Index)("u_user", ["active", "userName"], { unique: true }),
     (0, typeorm_1.Index)("Users_pkey", ["userId"], { unique: true }),

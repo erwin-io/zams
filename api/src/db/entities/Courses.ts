@@ -11,6 +11,7 @@ import { Users } from "./Users";
 import { Schools } from "./Schools";
 import { StudentCourse } from "./StudentCourse";
 
+@Index("u_course", ["active", "name", "schoolId"], { unique: true })
 @Index("Courses_pkey", ["courseId"], { unique: true })
 @Entity("Courses", { schema: "dbo" })
 export class Courses {
@@ -19,6 +20,9 @@ export class Courses {
 
   @Column("character varying", { name: "CourseCode", nullable: true })
   courseCode: string | null;
+
+  @Column("bigint", { name: "SchoolId" })
+  schoolId: string;
 
   @Column("character varying", { name: "Name" })
   name: string;

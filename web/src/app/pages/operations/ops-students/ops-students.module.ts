@@ -37,6 +37,26 @@ export const routes: Routes = [
     path: 'find/:schoolCode/sylvl/:schoolYearLevelCode',
     component: OpsStudentsComponent,
     data: { title: "Students", find: true }
+  },
+  {
+    path: 'find/:schoolCode/sylvl/:schoolYearLevelCode/course',
+    component: OpsStudentsComponent,
+    data: { title: "Students", find: true }
+  },
+  {
+    path: 'find/:schoolCode/sylvl/:schoolYearLevelCode/course/:courseCode',
+    component: OpsStudentsComponent,
+    data: { title: "Students", find: true }
+  },
+  {
+    path: 'find/:schoolCode/sylvl/:schoolYearLevelCode/strand',
+    component: OpsStudentsComponent,
+    data: { title: "Students", find: true }
+  },
+  {
+    path: 'find/:schoolCode/sylvl/:schoolYearLevelCode/strand/:strandCode',
+    component: OpsStudentsComponent,
+    data: { title: "Students", find: true }
   }
 ]
 

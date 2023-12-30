@@ -23,6 +23,7 @@ export interface AppConfig {
       sections: ColumnDefinition[];
       employeeTitles: ColumnDefinition[];
       courses: ColumnDefinition[];
+      strands: ColumnDefinition[];
       linkStudentRequest: ColumnDefinition[];
       machines: ColumnDefinition[];
     };
@@ -54,6 +55,7 @@ export interface AppConfig {
       schools: {
         getByAdvanceSearch: string;
         getByCode: string;
+        getByOrgCode: string;
         create: string;
         update: string;
         delete: string;
@@ -89,6 +91,7 @@ export interface AppConfig {
       students: {
         getByAdvanceSearch: string;
         getByCode: string;
+        getByOrgStudentId: string;
         create: string;
         update: string;
         delete: string;
@@ -101,6 +104,13 @@ export interface AppConfig {
         delete: string;
       },
       courses: {
+        getByAdvanceSearch: string;
+        getByCode: string;
+        create: string;
+        update: string;
+        delete: string;
+      },
+      strands: {
         getByAdvanceSearch: string;
         getByCode: string;
         create: string;

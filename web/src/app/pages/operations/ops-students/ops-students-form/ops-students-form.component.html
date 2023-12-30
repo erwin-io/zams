@@ -66,7 +66,8 @@
           </div>
           <div
           fxLayout="column"
-          fxFlex="100">
+          fxFlex="100"
+          *ngIf="schoolYearLevel && schoolYearLevel?.educationalStage === 'COLLEGE'">
             <mat-form-field
               appearance="outline">
               <mat-label>Course &nbsp;</mat-label>
@@ -88,6 +89,32 @@
             <span
               style="color: #f44336;font-size: 14px!important;"
               *ngIf="f['courseId'].touched && f['courseId'].dirty && f['courseId'].errors">Please select Course</span>
+          </div>
+          <div
+          fxLayout="column"
+          fxFlex="100"
+          *ngIf="schoolYearLevel && schoolYearLevel?.educationalStage === 'SENIOR'">
+            <mat-form-field
+              appearance="outline">
+              <mat-label>Strand &nbsp;</mat-label>
+              <input
+                matInput
+                readonly
+                [value]="strand?.name"
+                placeholder="Strand"/>
+                <mat-icon
+                  class="icon-right"
+                  style="cursor: pointer;"
+                  matSuffix
+                  matTooltip="Strand"
+                  *ngIf="studentForm.enabled"
+                  (click)="showSelectStrandDialog()">
+                  search
+                </mat-icon>
+            </mat-form-field>
+            <span
+              style="color: #f44336;font-size: 14px!important;"
+              *ngIf="f['strandId'].touched && f['strandId'].dirty && f['strandId'].errors">Please select Strand</span>
           </div>
           <div
             fxLayout="column"
@@ -228,29 +255,6 @@
           <mat-form-field
             appearance="outline"
             [ngClass.gt-sm]="{ isLargeScreen: true }">
-            <mat-label>LRN &nbsp;</mat-label>
-            <input
-              matInput
-              placeholder="LRN"
-              formControlName="lrn"
-            />
-            <mat-error
-              *ngIf="getError('lrn') !== (null || undefined)"
-              >{{
-                (getError("lrn") &&
-                getError("lrn")["required"]
-                  ? "Please enter LRN"
-                  : "") ||
-                  (getError("lrn") &&
-                  getError("lrn")["pattern"]
-                    ? "Invalid input"
-                    : "")
-              }}</mat-error
-            >
-          </mat-form-field>
-          <mat-form-field
-            appearance="outline"
-            [ngClass.gt-sm]="{ isLargeScreen: true }">
             <mat-label>Card number &nbsp;</mat-label>
             <input
               matInput
@@ -271,49 +275,6 @@
               }}</mat-error
             >
           </mat-form-field>
-          <div fxLayout="row">
-            <mat-form-field
-              appearance="outline"
-              fxFlex="50%"
-              (click)="bdayPicker.open()">
-              <mat-label>Birthdate &nbsp;</mat-label>
-              <input
-                matInput
-                [matDatepicker]="bdayPicker"
-                placeholder="Birthdate"
-                formControlName="birthDate">
-              <mat-hint>MM/DD/YYYY</mat-hint>
-              <mat-datepicker-toggle matIconSuffix [for]="bdayPicker"></mat-datepicker-toggle>
-              <mat-datepicker #bdayPicker></mat-datepicker>
-              <mat-error
-                *ngIf="getError('birthDate') !== (null || undefined)"
-                >{{
-                  (getError("birthDate") &&
-                  getError("birthDate").required
-                    ? "Please enter birthDate"
-                    : "")
-                }}</mat-error>
-            </mat-form-field>
-          </div>
-          <div fxLayout="row">
-            <mat-form-field
-              appearance="outline"
-              fxFlex="50%">
-              <mat-label>Select Gender &nbsp;</mat-label>
-              <mat-select
-                formControlName="gender" required="true">
-                <mat-option value="MALE">Male</mat-option>
-                <mat-option value="FEMALE">Female</mat-option>
-                <mat-option value="OTHERS">Rather not say</mat-option>
-              </mat-select>
-              <mat-error
-                *ngIf="getError('gender') !== (null || undefined)">{{
-                  (getError("gender") &&
-                  getError("gender").required
-                    ? "Please gender"
-                    : "") }}</mat-error>
-            </mat-form-field>
-          </div>
           <mat-form-field
             appearance="outline"
             fxFlex="50%"

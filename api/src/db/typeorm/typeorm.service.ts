@@ -1,3 +1,4 @@
+import { StudentStrand } from './../entities/StudentStrand';
 import { TypeOrmOptionsFactory, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
 import { Injectable, Inject } from "@nestjs/common";
@@ -23,6 +24,9 @@ import { StudentSection } from "../entities/StudentSection";
 import { SchoolRequestAccess } from "../entities/SchoolRequestAccess";
 import { EmployeeUser } from "../entities/EmployeeUser";
 import { LinkStudentRequest } from "../entities/LinkStudentRequest";
+import { Strands } from '../entities/Strands';
+import { UserProfilePic } from '../entities/UserProfilePic';
+import { Files } from '../entities/Files';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -61,6 +65,10 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         SchoolRequestAccess,
         LinkStudentRequest,
         EmployeeUser,
+        Strands,
+        StudentStrand,
+        Files,
+        UserProfilePic,
       ],
       synchronize: false, // never use TRUE in production!
       ssl: ssl.toLocaleLowerCase().includes("true"),

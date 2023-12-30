@@ -12,6 +12,7 @@ import { Schools } from "./Schools";
 import { Sections } from "./Sections";
 import { Students } from "./Students";
 
+@Index("u_school_year_level", ["active", "name", "schoolId"], { unique: true })
 @Index("SchoolYearLevels_pkey", ["schoolYearLevelId"], { unique: true })
 @Entity("SchoolYearLevels", { schema: "dbo" })
 export class SchoolYearLevels {
@@ -21,15 +22,11 @@ export class SchoolYearLevels {
   @Column("character varying", { name: "SchoolYearLevelCode", nullable: true })
   schoolYearLevelCode: string | null;
 
+  @Column("bigint", { name: "SchoolId" })
+  schoolId: string;
+
   @Column("character varying", { name: "Name", nullable: true })
   name: string | null;
-
-  @Column("boolean", {
-    name: "CanSelectCourses",
-    nullable: true,
-    default: () => "false",
-  })
-  canSelectCourses: boolean | null;
 
   @Column("timestamp with time zone", {
     name: "CreatedDate",
@@ -42,6 +39,12 @@ export class SchoolYearLevels {
 
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
+
+  @Column("character varying", {
+    name: "EducationalStage",
+    default: () => "''",
+  })
+  educationalStage: string;
 
   @ManyToOne(() => Users, (users) => users.schoolYearLevels)
   @JoinColumn([{ name: "CreatedByUserId", referencedColumnName: "userId" }])

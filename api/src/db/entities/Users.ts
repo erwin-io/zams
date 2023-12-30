@@ -3,6 +3,7 @@ import {
   Entity,
   Index,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Courses } from "./Courses";
@@ -20,8 +21,10 @@ import { SchoolRequestAccess } from "./SchoolRequestAccess";
 import { SchoolYearLevels } from "./SchoolYearLevels";
 import { Schools } from "./Schools";
 import { Sections } from "./Sections";
+import { Strands } from "./Strands";
 import { Students } from "./Students";
 import { UserFirebaseToken } from "./UserFirebaseToken";
+import { UserProfilePic } from "./UserProfilePic";
 
 @Index("u_user", ["active", "userName"], { unique: true })
 @Index("Users_pkey", ["userId"], { unique: true })
@@ -162,6 +165,12 @@ export class Users {
   @OneToMany(() => Sections, (sections) => sections.updatedByUser)
   sections2: Sections[];
 
+  @OneToMany(() => Strands, (strands) => strands.createdByUser)
+  strands: Strands[];
+
+  @OneToMany(() => Strands, (strands) => strands.updatedByUser)
+  strands2: Strands[];
+
   @OneToMany(() => Students, (students) => students.registeredByUser)
   students: Students[];
 
@@ -173,4 +182,7 @@ export class Users {
     (userFirebaseToken) => userFirebaseToken.user
   )
   userFirebaseTokens: UserFirebaseToken[];
+
+  @OneToOne(() => UserProfilePic, (userProfilePic) => userProfilePic.user)
+  userProfilePic: UserProfilePic;
 }

@@ -4,6 +4,7 @@ import { SchoolYearLevels } from "./school-year-levels";
 import { Schools } from "./schools";
 import { StudentCourse } from "./student-course";
 import { StudentSection } from "./student-section";
+import { StudentStrand } from "./student-strand";
 import { Users } from "./users";
 
 export class Students {
@@ -14,13 +15,10 @@ export class Students {
   middleInitial: string;
   lastName: string;
   fullName: string;
-  lrn: string;
   cardNumber: string;
-  birthDate: string;
   mobileNumber: string;
   email: string;
   address: string;
-  gender: string;
   accessGranted: boolean;
   registrationDate: Date;
   updatedDate: Date;
@@ -34,4 +32,5 @@ export class Students {
   schoolYearLevel: SchoolYearLevels;
   studentCourse: StudentCourse;
   studentSection: StudentSection;
+  studentStrand: StudentStrand;
 }

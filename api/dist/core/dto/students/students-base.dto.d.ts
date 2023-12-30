@@ -3,15 +3,13 @@ export declare class DefaultStudentUserDto {
     middleInitial: string;
     lastName: string;
     mobileNumber: string;
-    lrn: string;
+    orgStudentId: string;
     cardNumber: string;
     email: string;
-    birthDate: Date;
-    gender: "MALE" | "FEMALE" | "OTHERS";
     address: string;
     courseId: string;
+    strandId: string;
     sectionId: string;
     departmentId: string;
     schoolYearLevelId: string;
-    orgStudentId: string;
 }

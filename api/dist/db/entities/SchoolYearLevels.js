@@ -26,17 +26,13 @@ __decorate([
     __metadata("design:type", String)
 ], SchoolYearLevels.prototype, "schoolYearLevelCode", void 0);
 __decorate([
+    (0, typeorm_1.Column)("bigint", { name: "SchoolId" }),
+    __metadata("design:type", String)
+], SchoolYearLevels.prototype, "schoolId", void 0);
+__decorate([
     (0, typeorm_1.Column)("character varying", { name: "Name", nullable: true }),
     __metadata("design:type", String)
 ], SchoolYearLevels.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)("boolean", {
-        name: "CanSelectCourses",
-        nullable: true,
-        default: () => "false",
-    }),
-    __metadata("design:type", Boolean)
-], SchoolYearLevels.prototype, "canSelectCourses", void 0);
 __decorate([
     (0, typeorm_1.Column)("timestamp with time zone", {
         name: "CreatedDate",
@@ -52,6 +48,13 @@ __decorate([
     (0, typeorm_1.Column)("boolean", { name: "Active", default: () => "true" }),
     __metadata("design:type", Boolean)
 ], SchoolYearLevels.prototype, "active", void 0);
+__decorate([
+    (0, typeorm_1.Column)("character varying", {
+        name: "EducationalStage",
+        default: () => "''",
+    }),
+    __metadata("design:type", String)
+], SchoolYearLevels.prototype, "educationalStage", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Users_1.Users, (users) => users.schoolYearLevels),
     (0, typeorm_1.JoinColumn)([{ name: "CreatedByUserId", referencedColumnName: "userId" }]),
@@ -76,6 +79,7 @@ __decorate([
     __metadata("design:type", Array)
 ], SchoolYearLevels.prototype, "students", void 0);
 SchoolYearLevels = __decorate([
+    (0, typeorm_1.Index)("u_school_year_level", ["active", "name", "schoolId"], { unique: true }),
     (0, typeorm_1.Index)("SchoolYearLevels_pkey", ["schoolYearLevelId"], { unique: true }),
     (0, typeorm_1.Entity)("SchoolYearLevels", { schema: "dbo" })
 ], SchoolYearLevels);

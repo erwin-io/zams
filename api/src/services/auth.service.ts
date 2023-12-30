@@ -133,7 +133,11 @@ export class AuthService {
         parentStudents: true,
         registeredByUser: true,
         updatedByUser: true,
-        user: true,
+        user: {
+          userProfilePic: {
+            file: true,
+          },
+        },
       }
     });
     if (!parent) {
@@ -251,35 +255,7 @@ export class AuthService {
       if (!user) {
         throw Error(LOGIN_ERROR_USER_NOT_FOUND);
       }
-      // if(user.userType === "STUDENT") {
-      //   const student = await this.userRepo.manager.findOne(Students, {
-      //     where: {
-      //     },
-      //     relations: {
-      //       parentStudents: {
-      //         parent: true,
-      //       },
-      //       studentCourses: {
-      //         course: true,
-      //       },
-      //       department: true,
-      //       registeredByUser: true,
-      //       updatedByUser: true,
-      //       school: true,
-      //       schoolYearLevel: true,
-      //       studentSections: {
-      //         section: true,
-      //       },
-      //     }
-      //   })
-      //   if(!student.accessGranted) {
-      //     throw Error(LOGIN_ERROR_PENDING_ACCESS_REQUEST);
-      //   }
-      //   delete student.user.password;
-      //   return student.user;
-      // } 
-      // else 
-      if(user.userType === "EMPLOYEE") {
+      if(user.userType === USER_TYPE.EMPLOYEE) {
         const employee = await this.userRepo.manager.findOne(Employees, {
           where: {
             employeeUser: {
@@ -304,6 +280,26 @@ export class AuthService {
         }
         delete employee.employeeUser.user.password;
         return employee.employeeUser?.user;
+      } else if(user.userType === USER_TYPE.PARENT) {
+        const parent = await this.userRepo.manager.findOne(Parents, {
+          where: {
+            user: {
+              userId: user.userId,
+            }
+          },
+          relations: {
+            parentStudents: true,
+            registeredByUser: true,
+            updatedByUser: true,
+            user: true,
+          }
+        })
+        delete parent.user.password;
+        delete parent.registeredByUser.password;
+        if (parent?.updatedByUser?.password) {
+          delete parent.updatedByUser.password;
+        }
+        return parent.user;
       } else {
         const operator = await this.userRepo.manager.findOne(Operators, {
           where: {

@@ -12,14 +12,15 @@ import { LinkStudentRequest } from "./LinkStudentRequest";
 import { ParentStudent } from "./ParentStudent";
 import { StudentCourse } from "./StudentCourse";
 import { StudentSection } from "./StudentSection";
+import { StudentStrand } from "./StudentStrand";
 import { Departments } from "./Departments";
 import { Users } from "./Users";
 import { Schools } from "./Schools";
 import { SchoolYearLevels } from "./SchoolYearLevels";
 import { TapLogs } from "./TapLogs";
 
-@Index("u_students_card", ["active", "cardNumber"], { unique: true })
 @Index("u_students_number", ["active", "mobileNumber"], { unique: true })
+@Index("u_students_card", ["active", "cardNumber"], { unique: true })
 @Index("u_students_email", ["active", "email"], { unique: true })
 @Index("Students_pkey", ["studentId"], { unique: true })
 @Entity("Students", { schema: "dbo" })
@@ -39,14 +40,8 @@ export class Students {
   @Column("character varying", { name: "LastName" })
   lastName: string;
 
-  @Column("character varying", { name: "LRN" })
-  lrn: string;
-
   @Column("character varying", { name: "CardNumber" })
   cardNumber: string;
-
-  @Column("date", { name: "BirthDate", nullable: true })
-  birthDate: string | null;
 
   @Column("character varying", { name: "MobileNumber" })
   mobileNumber: string;
@@ -56,13 +51,6 @@ export class Students {
 
   @Column("character varying", { name: "Address", nullable: true })
   address: string | null;
-
-  @Column("character varying", {
-    name: "Gender",
-    nullable: true,
-    default: () => "'Others'",
-  })
-  gender: string | null;
 
   @Column("boolean", {
     name: "AccessGranted",
@@ -103,6 +91,9 @@ export class Students {
 
   @OneToOne(() => StudentSection, (studentSection) => studentSection.student)
   studentSection: StudentSection;
+
+  @OneToOne(() => StudentStrand, (studentStrand) => studentStrand.student)
+  studentStrand: StudentStrand;
 
   @ManyToOne(() => Departments, (departments) => departments.students)
   @JoinColumn([{ name: "DepartmentId", referencedColumnName: "departmentId" }])

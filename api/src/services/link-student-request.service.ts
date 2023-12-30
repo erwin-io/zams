@@ -298,14 +298,17 @@ export class LinkStudentRequestService {
             },
           },
         });
+        const notifTitle = NOTIF_TITLE.LINK_REQUEST_APPROVED;
+        const notifDesc =
+          "Request to Link Student " +
+          linkStudentRequest.student?.fullName +
+          " was approved!";
         userFireBase.forEach(async (x) => {
           if (x.firebaseToken && x.firebaseToken !== "") {
             const res = await this.firebaseSendToDevice(
               x.firebaseToken,
-              "Approved Request to Link Student!",
-              "Request to Link Student " +
-                linkStudentRequest.student?.fullName +
-                " was approved!"
+              notifTitle,
+              notifDesc
             );
             console.log(res);
           }
@@ -316,8 +319,8 @@ export class LinkStudentRequestService {
           linkStudentRequest.requestedByParent.user,
           linkStudentRequest.linkStudentRequestCode,
           entityManager,
-          NOTIF_TITLE.LINK_REQUEST_APPROVED,
-          `Link student request was approved`
+          notifTitle,
+          notifDesc
         );
         return linkStudentRequest;
       }
@@ -395,14 +398,17 @@ export class LinkStudentRequestService {
             },
           },
         });
+        const notifTitle = NOTIF_TITLE.LINK_REQUEST_REJECTED;
+        const notifDesc =
+          "Request to Link Student " +
+          linkStudentRequest.student?.fullName +
+          " was rejected!";
         userFireBase.forEach(async (x) => {
           if (x.firebaseToken && x.firebaseToken !== "") {
             const res = await this.firebaseSendToDevice(
               x.firebaseToken,
-              "Rejected Link to Student Request!",
-              "Request to Link Student " +
-                linkStudentRequest.student?.fullName +
-                " was rejected!"
+              notifTitle,
+              notifDesc
             );
             console.log(res);
           }
@@ -413,8 +419,8 @@ export class LinkStudentRequestService {
           linkStudentRequest.requestedByParent.user,
           linkStudentRequest.linkStudentRequestCode,
           entityManager,
-          NOTIF_TITLE.LINK_REQUEST_REJECTED,
-          `Link student request was rejected`
+          notifTitle,
+          notifDesc
         );
         return linkStudentRequest;
       }

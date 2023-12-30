@@ -42,6 +42,7 @@ export class SchoolYearLevelsService {
           active: true,
         },
         relations: {
+          school: true,
           createdByUser: true,
           updatedByUser: true,
         },
@@ -79,6 +80,7 @@ export class SchoolYearLevelsService {
         active: true,
       },
       relations: {
+        school: true,
         createdByUser: true,
         updatedByUser: true,
       },
@@ -94,100 +96,127 @@ export class SchoolYearLevelsService {
   }
 
   async create(dto: CreateSchoolYearLevelDto) {
-    return await this.schoolYearLevelsRepo.manager.transaction(
-      async (entityManager) => {
-        let schoolYearLevels = new SchoolYearLevels();
-        schoolYearLevels.name = dto.name;
-        schoolYearLevels.canSelectCourses = dto.canSelectCourses;
-        const timestamp = await entityManager
-          .query(CONST_QUERYCURRENT_TIMESTAMP)
-          .then((res) => {
-            return res[0]["timestamp"];
+    try {
+      return await this.schoolYearLevelsRepo.manager.transaction(
+        async (entityManager) => {
+          let schoolYearLevels = new SchoolYearLevels();
+          schoolYearLevels.name = dto.name;
+          schoolYearLevels.educationalStage =
+            dto.educationalStage.toUpperCase();
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          schoolYearLevels.createdDate = timestamp;
+
+          const school = await entityManager.findOne(Schools, {
+            where: {
+              schoolId: dto.schoolId,
+              active: true,
+            },
           });
-        schoolYearLevels.createdDate = timestamp;
+          if (!school) {
+            throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          }
+          schoolYearLevels.school = school;
 
-        const school = await entityManager.findOne(Schools, {
-          where: {
-            schoolId: dto.schoolId,
-            active: true,
-          },
-        });
-        if (!school) {
-          throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          const createdByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.createdByUserId,
+              active: true,
+            },
+          });
+          if (!createdByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          schoolYearLevels.createdByUser = createdByUser;
+          schoolYearLevels = await entityManager.save(
+            SchoolYearLevels,
+            schoolYearLevels
+          );
+          schoolYearLevels.schoolYearLevelCode = generateIndentityCode(
+            schoolYearLevels.schoolYearLevelId
+          );
+          schoolYearLevels = await entityManager.save(
+            SchoolYearLevels,
+            schoolYearLevels
+          );
+          delete schoolYearLevels.createdByUser.password;
+          return schoolYearLevels;
         }
-        schoolYearLevels.school = school;
-
-        const createdByUser = await entityManager.findOne(Users, {
-          where: {
-            userId: dto.createdByUserId,
-            active: true,
-          },
-        });
-        if (!createdByUser) {
-          throw Error(USER_ERROR_USER_NOT_FOUND);
-        }
-        schoolYearLevels.createdByUser = createdByUser;
-        schoolYearLevels = await entityManager.save(
-          SchoolYearLevels,
-          schoolYearLevels
-        );
-        schoolYearLevels.schoolYearLevelCode = generateIndentityCode(
-          schoolYearLevels.schoolYearLevelId
-        );
-        schoolYearLevels = await entityManager.save(
-          SchoolYearLevels,
-          schoolYearLevels
-        );
-        delete schoolYearLevels.createdByUser.password;
-        return schoolYearLevels;
+      );
+    } catch (ex) {
+      if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_school_year_level")
+      ) {
+        throw Error("Entry already exists!");
+      } else {
+        throw ex;
       }
-    );
+    }
   }
 
   async update(schoolYearLevelCode, dto: UpdateSchoolYearLevelDto) {
-    return await this.schoolYearLevelsRepo.manager.transaction(
-      async (entityManager) => {
-        let schoolYearLevels = await entityManager.findOne(SchoolYearLevels, {
-          where: {
-            schoolYearLevelCode,
-            active: true,
-          },
-        });
-        if (!schoolYearLevels) {
-          throw Error(SCHOOL_YEAR_LEVELS_ERROR_NOT_FOUND);
-        }
-        const timestamp = await entityManager
-          .query(CONST_QUERYCURRENT_TIMESTAMP)
-          .then((res) => {
-            return res[0]["timestamp"];
+    try {
+      return await this.schoolYearLevelsRepo.manager.transaction(
+        async (entityManager) => {
+          let schoolYearLevels = await entityManager.findOne(SchoolYearLevels, {
+            where: {
+              schoolYearLevelCode,
+              active: true,
+            },
           });
-        schoolYearLevels.updatedDate = timestamp;
+          if (!schoolYearLevels) {
+            throw Error(SCHOOL_YEAR_LEVELS_ERROR_NOT_FOUND);
+          }
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          schoolYearLevels.updatedDate = timestamp;
 
-        const updatedByUser = await entityManager.findOne(Users, {
-          where: {
-            userId: dto.updatedByUserId,
-            active: true,
-          },
-        });
-        if (!updatedByUser) {
-          throw Error(USER_ERROR_USER_NOT_FOUND);
+          const updatedByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.updatedByUserId,
+              active: true,
+            },
+          });
+          if (!updatedByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          schoolYearLevels.updatedByUser = updatedByUser;
+          schoolYearLevels.name = dto.name;
+          schoolYearLevels.educationalStage = dto.educationalStage;
+          schoolYearLevels = await entityManager.save(
+            SchoolYearLevels,
+            schoolYearLevels
+          );
+          if (schoolYearLevels?.createdByUser?.password) {
+            delete schoolYearLevels.createdByUser.password;
+          }
+          if (schoolYearLevels?.updatedByUser?.password) {
+            delete schoolYearLevels.updatedByUser.password;
+          }
+          return schoolYearLevels;
         }
-        schoolYearLevels.updatedByUser = updatedByUser;
-        schoolYearLevels.name = dto.name;
-        schoolYearLevels.canSelectCourses = dto.canSelectCourses;
-        schoolYearLevels = await entityManager.save(
-          SchoolYearLevels,
-          schoolYearLevels
-        );
-        if (schoolYearLevels?.createdByUser?.password) {
-          delete schoolYearLevels.createdByUser.password;
-        }
-        if (schoolYearLevels?.updatedByUser?.password) {
-          delete schoolYearLevels.updatedByUser.password;
-        }
-        return schoolYearLevels;
+      );
+    } catch (ex) {
+      if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_school_year_level")
+      ) {
+        throw Error("Entry already exists!");
+      } else {
+        throw ex;
       }
-    );
+    }
   }
 
   async delete(schoolYearLevelCode) {

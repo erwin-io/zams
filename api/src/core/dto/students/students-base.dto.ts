@@ -35,8 +35,8 @@ export class DefaultStudentUserDto {
   mobileNumber: string;
 
   @ApiProperty()
-  @IsOptional()
-  lrn: string;
+  @IsNotEmpty()
+  orgStudentId: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -49,22 +49,15 @@ export class DefaultStudentUserDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsDateString({ strict: true } as any)
-  birthDate: Date;
-  
-  @ApiProperty()
-  @IsOptional()
-  @IsIn(["MALE", "FEMALE", "OTHERS"])
-  @IsUppercase()
-  gender: "MALE" | "FEMALE" | "OTHERS";
-
-  @ApiProperty()
-  @IsOptional()
   address: string;
 
   @ApiProperty()
   @IsOptional()
   courseId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  strandId: string;
 
   @ApiProperty()
   @IsOptional()
@@ -85,8 +78,4 @@ export class DefaultStudentUserDto {
     return obj[key]?.toString();
   })
   schoolYearLevelId: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  orgStudentId: string;
 }

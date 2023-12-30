@@ -25,6 +25,10 @@ __decorate([
     __metadata("design:type", String)
 ], Courses.prototype, "courseCode", void 0);
 __decorate([
+    (0, typeorm_1.Column)("bigint", { name: "SchoolId" }),
+    __metadata("design:type", String)
+], Courses.prototype, "schoolId", void 0);
+__decorate([
     (0, typeorm_1.Column)("character varying", { name: "Name" }),
     __metadata("design:type", String)
 ], Courses.prototype, "name", void 0);
@@ -63,6 +67,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Courses.prototype, "studentCourses", void 0);
 Courses = __decorate([
+    (0, typeorm_1.Index)("u_course", ["active", "name", "schoolId"], { unique: true }),
     (0, typeorm_1.Index)("Courses_pkey", ["courseId"], { unique: true }),
     (0, typeorm_1.Entity)("Courses", { schema: "dbo" })
 ], Courses);

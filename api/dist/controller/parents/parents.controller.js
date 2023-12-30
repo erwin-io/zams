@@ -20,6 +20,7 @@ const parents_update_dto_1 = require("../../core/dto/parents/parents.update.dto"
 const pagination_params_dto_1 = require("../../core/dto/pagination-params.dto");
 const parents_service_1 = require("../../services/parents.service");
 const reset_password_dto_1 = require("../../core/dto/auth/reset-password.dto");
+const reset_password_dto_copy_1 = require("../../core/dto/auth/reset-password.dto copy");
 let ParentsController = class ParentsController {
     constructor(parentsService) {
         this.parentsService = parentsService;
@@ -119,6 +120,19 @@ let ParentsController = class ParentsController {
             return res;
         }
     }
+    async updateProfilePicture(parentCode, dto) {
+        const res = {};
+        try {
+            res.data = await this.parentsService.updateProfilePicture(parentCode, dto);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
 };
 __decorate([
     (0, common_1.Get)("/:parentCode"),
@@ -164,13 +178,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ParentsController.prototype, "delete", null);
 __decorate([
-    (0, common_1.Put)("/:parentCode/resetPassword"),
+    (0, common_1.Put)("resetPassword/:parentCode"),
     __param(0, (0, common_1.Param)("parentCode")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, reset_password_dto_1.UpdateUserResetPasswordDto]),
     __metadata("design:returntype", Promise)
 ], ParentsController.prototype, "resetPassword", null);
+__decorate([
+    (0, common_1.Put)("/updateProfilePicture/:parentCode"),
+    __param(0, (0, common_1.Param)("parentCode")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, reset_password_dto_copy_1.UpdateProfilePictureDto]),
+    __metadata("design:returntype", Promise)
+], ParentsController.prototype, "updateProfilePicture", null);
 ParentsController = __decorate([
     (0, swagger_1.ApiTags)("parents"),
     (0, common_1.Controller)("parents"),

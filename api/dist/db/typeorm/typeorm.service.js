@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeOrmConfigService = void 0;
+const StudentStrand_1 = require("./../entities/StudentStrand");
 const config_1 = require("@nestjs/config");
 const common_1 = require("@nestjs/common");
 const Courses_1 = require("../entities/Courses");
@@ -34,6 +35,9 @@ const StudentSection_1 = require("../entities/StudentSection");
 const SchoolRequestAccess_1 = require("../entities/SchoolRequestAccess");
 const EmployeeUser_1 = require("../entities/EmployeeUser");
 const LinkStudentRequest_1 = require("../entities/LinkStudentRequest");
+const Strands_1 = require("../entities/Strands");
+const UserProfilePic_1 = require("../entities/UserProfilePic");
+const Files_1 = require("../entities/Files");
 let TypeOrmConfigService = class TypeOrmConfigService {
     createTypeOrmOptions() {
         const ssl = this.config.get("SSL");
@@ -67,6 +71,10 @@ let TypeOrmConfigService = class TypeOrmConfigService {
                 SchoolRequestAccess_1.SchoolRequestAccess,
                 LinkStudentRequest_1.LinkStudentRequest,
                 EmployeeUser_1.EmployeeUser,
+                Strands_1.Strands,
+                StudentStrand_1.StudentStrand,
+                Files_1.Files,
+                UserProfilePic_1.UserProfilePic,
             ],
             synchronize: false,
             ssl: ssl.toLocaleLowerCase().includes("true"),

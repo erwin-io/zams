@@ -83,47 +83,60 @@ export class MachinesService {
   }
 
   async create(dto: CreateMachineDto) {
-    return await this.machinesRepo.manager.transaction(
-      async (entityManager) => {
-        let machines = new Machines();
-        machines.description = dto.description;
-        machines.path = dto.path;
-        machines.domain = dto.domain;
-        const timestamp = await entityManager
-          .query(CONST_QUERYCURRENT_TIMESTAMP)
-          .then((res) => {
-            return res[0]["timestamp"];
+    try {
+      return await this.machinesRepo.manager.transaction(
+        async (entityManager) => {
+          let machines = new Machines();
+          machines.description = dto.description;
+          machines.path = dto.path;
+          machines.domain = dto.domain;
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          machines.createdDate = timestamp;
+
+          const school = await entityManager.findOne(Schools, {
+            where: {
+              schoolId: dto.schoolId,
+              active: true,
+            },
           });
-        machines.createdDate = timestamp;
+          if (!school) {
+            throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          }
+          machines.school = school;
 
-        const school = await entityManager.findOne(Schools, {
-          where: {
-            schoolId: dto.schoolId,
-            active: true,
-          },
-        });
-        if (!school) {
-          throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          const createdByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.createdByUserId,
+              active: true,
+            },
+          });
+          if (!createdByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          machines.createdByUser = createdByUser;
+          machines = await entityManager.save(machines);
+          machines.machineCode = generateIndentityCode(machines.machineId);
+          machines = await entityManager.save(Machines, machines);
+          delete machines.createdByUser.password;
+          return machines;
         }
-        machines.school = school;
-
-        const createdByUser = await entityManager.findOne(Users, {
-          where: {
-            userId: dto.createdByUserId,
-            active: true,
-          },
-        });
-        if (!createdByUser) {
-          throw Error(USER_ERROR_USER_NOT_FOUND);
-        }
-        machines.createdByUser = createdByUser;
-        machines = await entityManager.save(machines);
-        machines.machineCode = generateIndentityCode(machines.machineId);
-        machines = await entityManager.save(Machines, machines);
-        delete machines.createdByUser.password;
-        return machines;
+      );
+    } catch (ex) {
+      if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_machine")
+      ) {
+        throw Error("Entry already exists!");
+      } else {
+        throw ex;
       }
-    );
+    }
   }
 
   async batchCreate(dtos: CreateMachineDto[]) {
@@ -175,47 +188,60 @@ export class MachinesService {
   }
 
   async update(machineCode, dto: UpdateMachineDto) {
-    return await this.machinesRepo.manager.transaction(
-      async (entityManager) => {
-        let machines = await entityManager.findOne(Machines, {
-          where: {
-            machineCode,
-            active: true,
-          },
-        });
-        if (!machines) {
-          throw Error(MACHINES_ERROR_NOT_FOUND);
-        }
-        const timestamp = await entityManager
-          .query(CONST_QUERYCURRENT_TIMESTAMP)
-          .then((res) => {
-            return res[0]["timestamp"];
+    try {
+      return await this.machinesRepo.manager.transaction(
+        async (entityManager) => {
+          let machines = await entityManager.findOne(Machines, {
+            where: {
+              machineCode,
+              active: true,
+            },
           });
-        machines.updatedDate = timestamp;
+          if (!machines) {
+            throw Error(MACHINES_ERROR_NOT_FOUND);
+          }
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          machines.updatedDate = timestamp;
 
-        const updatedByUser = await entityManager.findOne(Users, {
-          where: {
-            userId: dto.updatedByUserId,
-            active: true,
-          },
-        });
-        if (!updatedByUser) {
-          throw Error(USER_ERROR_USER_NOT_FOUND);
+          const updatedByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.updatedByUserId,
+              active: true,
+            },
+          });
+          if (!updatedByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          machines.updatedByUser = updatedByUser;
+          machines.description = dto.description;
+          machines.path = dto.path;
+          machines.domain = dto.domain;
+          machines = await entityManager.save(Machines, machines);
+          if (machines?.createdByUser?.password) {
+            delete machines.createdByUser.password;
+          }
+          if (machines?.updatedByUser?.password) {
+            delete machines.updatedByUser.password;
+          }
+          return machines;
         }
-        machines.updatedByUser = updatedByUser;
-        machines.description = dto.description;
-        machines.path = dto.path;
-        machines.domain = dto.domain;
-        machines = await entityManager.save(Machines, machines);
-        if (machines?.createdByUser?.password) {
-          delete machines.createdByUser.password;
-        }
-        if (machines?.updatedByUser?.password) {
-          delete machines.updatedByUser.password;
-        }
-        return machines;
+      );
+    } catch (ex) {
+      if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_machine")
+      ) {
+        throw Error("Entry already exists!");
+      } else {
+        throw ex;
       }
-    );
+    }
   }
 
   async delete(machineCode) {

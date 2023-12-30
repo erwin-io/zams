@@ -9,6 +9,7 @@ import { SchoolRequestAccess } from "./SchoolRequestAccess";
 import { SchoolYearLevels } from "./SchoolYearLevels";
 import { Users } from "./Users";
 import { Sections } from "./Sections";
+import { Strands } from "./Strands";
 import { Students } from "./Students";
 export declare class Schools {
     schoolId: string;
@@ -42,5 +43,6 @@ export declare class Schools {
     registeredByUser: Users;
     updatedByUser: Users;
     sections: Sections[];
+    strands: Strands[];
     students: Students[];
 }

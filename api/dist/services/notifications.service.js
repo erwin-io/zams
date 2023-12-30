@@ -43,7 +43,14 @@ let NotificationsService = class NotificationsService {
             }),
         ]);
         return {
-            results,
+            results: results.map((x) => {
+                var _a;
+                delete x.forUser.password;
+                if ((_a = x === null || x === void 0 ? void 0 : x.forUser) === null || _a === void 0 ? void 0 : _a.password) {
+                    delete x.forUser.password;
+                }
+                return x;
+            }),
             total,
         };
     }

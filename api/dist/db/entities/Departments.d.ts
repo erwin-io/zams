@@ -6,6 +6,7 @@ import { Students } from "./Students";
 export declare class Departments {
     departmentId: string;
     departmentCode: string | null;
+    schoolId: string;
     departmentName: string;
     createdDate: Date;
     updatedDate: Date | null;

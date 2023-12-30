@@ -35,6 +35,9 @@ export class Notifications {
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
 
+  @Column("character varying", { name: "ReferenceId", default: () => "''" })
+  referenceId: string;
+
   @ManyToOne(() => Users, (users) => users.notifications)
   @JoinColumn([{ name: "ForUserId", referencedColumnName: "userId" }])
   forUser: Users;

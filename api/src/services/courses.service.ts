@@ -83,84 +83,114 @@ export class CoursesService {
   }
 
   async create(dto: CreateCourseDto) {
-    return await this.coursesRepo.manager.transaction(async (entityManager) => {
-      let courses = new Courses();
-      courses.name = dto.name;
-      const timestamp = await entityManager
-        .query(CONST_QUERYCURRENT_TIMESTAMP)
-        .then((res) => {
-          return res[0]["timestamp"];
-        });
-      courses.createdDate = timestamp;
+    try {
+      return await this.coursesRepo.manager.transaction(
+        async (entityManager) => {
+          let courses = new Courses();
+          courses.name = dto.name;
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          courses.createdDate = timestamp;
 
-      const school = await entityManager.findOne(Schools, {
-        where: {
-          schoolId: dto.schoolId,
-          active: true,
-        },
-      });
-      if (!school) {
-        throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          const school = await entityManager.findOne(Schools, {
+            where: {
+              schoolId: dto.schoolId,
+              active: true,
+            },
+          });
+          if (!school) {
+            throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          }
+          courses.school = school;
+
+          const createdByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.createdByUserId,
+              active: true,
+            },
+          });
+          if (!createdByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          courses.createdByUser = createdByUser;
+          courses = await entityManager.save(courses);
+          courses.courseCode = generateIndentityCode(courses.courseId);
+          courses = await entityManager.save(Courses, courses);
+
+          delete courses.createdByUser.password;
+          return courses;
+        }
+      );
+    } catch (ex) {
+      if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_course")
+      ) {
+        throw Error("Entry already exists!");
+      } else {
+        throw ex;
       }
-      courses.school = school;
-
-      const createdByUser = await entityManager.findOne(Users, {
-        where: {
-          userId: dto.createdByUserId,
-          active: true,
-        },
-      });
-      if (!createdByUser) {
-        throw Error(USER_ERROR_USER_NOT_FOUND);
-      }
-      courses.createdByUser = createdByUser;
-      courses = await entityManager.save(courses);
-      courses.courseCode = generateIndentityCode(courses.courseId);
-      courses = await entityManager.save(Courses, courses);
-
-      delete courses.createdByUser.password;
-      return courses;
-    });
+    }
   }
 
   async update(courseCode, dto: UpdateCourseDto) {
-    return await this.coursesRepo.manager.transaction(async (entityManager) => {
-      let courses = await entityManager.findOne(Courses, {
-        where: {
-          courseCode,
-          active: true,
-        },
-      });
-      if (!courses) {
-        throw Error(COURSES_ERROR_NOT_FOUND);
-      }
-      const timestamp = await entityManager
-        .query(CONST_QUERYCURRENT_TIMESTAMP)
-        .then((res) => {
-          return res[0]["timestamp"];
-        });
-      courses.updatedDate = timestamp;
+    try {
+      return await this.coursesRepo.manager.transaction(
+        async (entityManager) => {
+          let courses = await entityManager.findOne(Courses, {
+            where: {
+              courseCode,
+              active: true,
+            },
+          });
+          if (!courses) {
+            throw Error(COURSES_ERROR_NOT_FOUND);
+          }
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          courses.updatedDate = timestamp;
 
-      const updatedByUser = await entityManager.findOne(Users, {
-        where: {
-          userId: dto.updatedByUserId,
-          active: true,
-        },
-      });
-      if (!updatedByUser) {
-        throw Error(USER_ERROR_USER_NOT_FOUND);
+          const updatedByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.updatedByUserId,
+              active: true,
+            },
+          });
+          if (!updatedByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          courses.updatedByUser = updatedByUser;
+          courses.name = dto.name;
+          courses = await entityManager.save(Courses, courses);
+          if (courses?.createdByUser?.password) {
+            delete courses.createdByUser.password;
+          }
+          if (courses?.updatedByUser?.password) {
+            delete courses.updatedByUser.password;
+          }
+          return courses;
+        }
+      );
+    } catch (ex) {
+      if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_course")
+      ) {
+        throw Error("Entry already exists!");
+      } else {
+        throw ex;
       }
-      courses.updatedByUser = updatedByUser;
-      courses.name = dto.name;
-      courses = await entityManager.save(Courses, courses);
-      if (courses?.createdByUser?.password) {
-        delete courses.createdByUser.password;
-      }
-      if (courses?.updatedByUser?.password) {
-        delete courses.updatedByUser.password;
-      }
-      return courses;
-    });
+    }
   }
 
   async delete(courseCode) {

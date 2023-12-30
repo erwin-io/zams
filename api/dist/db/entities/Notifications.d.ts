@@ -7,5 +7,6 @@ export declare class Notifications {
     dateTime: Date;
     isRead: boolean;
     active: boolean;
+    referenceId: string;
     forUser: Users;
 }

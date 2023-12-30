@@ -36,6 +36,7 @@ let SchoolYearLevelsService = class SchoolYearLevelsService {
             this.schoolYearLevelsRepo.find({
                 where: Object.assign(Object.assign({}, condition), { active: true }),
                 relations: {
+                    school: true,
                     createdByUser: true,
                     updatedByUser: true,
                 },
@@ -71,6 +72,7 @@ let SchoolYearLevelsService = class SchoolYearLevelsService {
                 active: true,
             },
             relations: {
+                school: true,
                 createdByUser: true,
                 updatedByUser: true,
             },
@@ -85,82 +87,109 @@ let SchoolYearLevelsService = class SchoolYearLevelsService {
         return result;
     }
     async create(dto) {
-        return await this.schoolYearLevelsRepo.manager.transaction(async (entityManager) => {
-            let schoolYearLevels = new SchoolYearLevels_1.SchoolYearLevels();
-            schoolYearLevels.name = dto.name;
-            schoolYearLevels.canSelectCourses = dto.canSelectCourses;
-            const timestamp = await entityManager
-                .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
-                .then((res) => {
-                return res[0]["timestamp"];
+        try {
+            return await this.schoolYearLevelsRepo.manager.transaction(async (entityManager) => {
+                let schoolYearLevels = new SchoolYearLevels_1.SchoolYearLevels();
+                schoolYearLevels.name = dto.name;
+                schoolYearLevels.educationalStage =
+                    dto.educationalStage.toUpperCase();
+                const timestamp = await entityManager
+                    .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+                    .then((res) => {
+                    return res[0]["timestamp"];
+                });
+                schoolYearLevels.createdDate = timestamp;
+                const school = await entityManager.findOne(Schools_1.Schools, {
+                    where: {
+                        schoolId: dto.schoolId,
+                        active: true,
+                    },
+                });
+                if (!school) {
+                    throw Error(schools_constant_1.SCHOOLS_ERROR_NOT_FOUND);
+                }
+                schoolYearLevels.school = school;
+                const createdByUser = await entityManager.findOne(Users_1.Users, {
+                    where: {
+                        userId: dto.createdByUserId,
+                        active: true,
+                    },
+                });
+                if (!createdByUser) {
+                    throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+                }
+                schoolYearLevels.createdByUser = createdByUser;
+                schoolYearLevels = await entityManager.save(SchoolYearLevels_1.SchoolYearLevels, schoolYearLevels);
+                schoolYearLevels.schoolYearLevelCode = (0, utils_1.generateIndentityCode)(schoolYearLevels.schoolYearLevelId);
+                schoolYearLevels = await entityManager.save(SchoolYearLevels_1.SchoolYearLevels, schoolYearLevels);
+                delete schoolYearLevels.createdByUser.password;
+                return schoolYearLevels;
             });
-            schoolYearLevels.createdDate = timestamp;
-            const school = await entityManager.findOne(Schools_1.Schools, {
-                where: {
-                    schoolId: dto.schoolId,
-                    active: true,
-                },
-            });
-            if (!school) {
-                throw Error(schools_constant_1.SCHOOLS_ERROR_NOT_FOUND);
+        }
+        catch (ex) {
+            if (ex["message"] &&
+                (ex["message"].includes("duplicate key") ||
+                    ex["message"].includes("violates unique constraint")) &&
+                ex["message"].includes("u_school_year_level")) {
+                throw Error("Entry already exists!");
             }
-            schoolYearLevels.school = school;
-            const createdByUser = await entityManager.findOne(Users_1.Users, {
-                where: {
-                    userId: dto.createdByUserId,
-                    active: true,
-                },
-            });
-            if (!createdByUser) {
-                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            else {
+                throw ex;
             }
-            schoolYearLevels.createdByUser = createdByUser;
-            schoolYearLevels = await entityManager.save(SchoolYearLevels_1.SchoolYearLevels, schoolYearLevels);
-            schoolYearLevels.schoolYearLevelCode = (0, utils_1.generateIndentityCode)(schoolYearLevels.schoolYearLevelId);
-            schoolYearLevels = await entityManager.save(SchoolYearLevels_1.SchoolYearLevels, schoolYearLevels);
-            delete schoolYearLevels.createdByUser.password;
-            return schoolYearLevels;
-        });
+        }
     }
     async update(schoolYearLevelCode, dto) {
-        return await this.schoolYearLevelsRepo.manager.transaction(async (entityManager) => {
-            var _a, _b;
-            let schoolYearLevels = await entityManager.findOne(SchoolYearLevels_1.SchoolYearLevels, {
-                where: {
-                    schoolYearLevelCode,
-                    active: true,
-                },
+        try {
+            return await this.schoolYearLevelsRepo.manager.transaction(async (entityManager) => {
+                var _a, _b;
+                let schoolYearLevels = await entityManager.findOne(SchoolYearLevels_1.SchoolYearLevels, {
+                    where: {
+                        schoolYearLevelCode,
+                        active: true,
+                    },
+                });
+                if (!schoolYearLevels) {
+                    throw Error(school_year_levels_constant_1.SCHOOL_YEAR_LEVELS_ERROR_NOT_FOUND);
+                }
+                const timestamp = await entityManager
+                    .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+                    .then((res) => {
+                    return res[0]["timestamp"];
+                });
+                schoolYearLevels.updatedDate = timestamp;
+                const updatedByUser = await entityManager.findOne(Users_1.Users, {
+                    where: {
+                        userId: dto.updatedByUserId,
+                        active: true,
+                    },
+                });
+                if (!updatedByUser) {
+                    throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+                }
+                schoolYearLevels.updatedByUser = updatedByUser;
+                schoolYearLevels.name = dto.name;
+                schoolYearLevels.educationalStage = dto.educationalStage;
+                schoolYearLevels = await entityManager.save(SchoolYearLevels_1.SchoolYearLevels, schoolYearLevels);
+                if ((_a = schoolYearLevels === null || schoolYearLevels === void 0 ? void 0 : schoolYearLevels.createdByUser) === null || _a === void 0 ? void 0 : _a.password) {
+                    delete schoolYearLevels.createdByUser.password;
+                }
+                if ((_b = schoolYearLevels === null || schoolYearLevels === void 0 ? void 0 : schoolYearLevels.updatedByUser) === null || _b === void 0 ? void 0 : _b.password) {
+                    delete schoolYearLevels.updatedByUser.password;
+                }
+                return schoolYearLevels;
             });
-            if (!schoolYearLevels) {
-                throw Error(school_year_levels_constant_1.SCHOOL_YEAR_LEVELS_ERROR_NOT_FOUND);
+        }
+        catch (ex) {
+            if (ex["message"] &&
+                (ex["message"].includes("duplicate key") ||
+                    ex["message"].includes("violates unique constraint")) &&
+                ex["message"].includes("u_school_year_level")) {
+                throw Error("Entry already exists!");
             }
-            const timestamp = await entityManager
-                .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
-                .then((res) => {
-                return res[0]["timestamp"];
-            });
-            schoolYearLevels.updatedDate = timestamp;
-            const updatedByUser = await entityManager.findOne(Users_1.Users, {
-                where: {
-                    userId: dto.updatedByUserId,
-                    active: true,
-                },
-            });
-            if (!updatedByUser) {
-                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            else {
+                throw ex;
             }
-            schoolYearLevels.updatedByUser = updatedByUser;
-            schoolYearLevels.name = dto.name;
-            schoolYearLevels.canSelectCourses = dto.canSelectCourses;
-            schoolYearLevels = await entityManager.save(SchoolYearLevels_1.SchoolYearLevels, schoolYearLevels);
-            if ((_a = schoolYearLevels === null || schoolYearLevels === void 0 ? void 0 : schoolYearLevels.createdByUser) === null || _a === void 0 ? void 0 : _a.password) {
-                delete schoolYearLevels.createdByUser.password;
-            }
-            if ((_b = schoolYearLevels === null || schoolYearLevels === void 0 ? void 0 : schoolYearLevels.updatedByUser) === null || _b === void 0 ? void 0 : _b.password) {
-                delete schoolYearLevels.updatedByUser.password;
-            }
-            return schoolYearLevels;
-        });
+        }
     }
     async delete(schoolYearLevelCode) {
         return await this.schoolYearLevelsRepo.manager.transaction(async (entityManager) => {

@@ -8,6 +8,7 @@ import { SchoolYearLevels } from "./school-year-levels";
 import { Sections } from "./sections";
 import { Students } from "./students";
 import { Users } from "./users";
+import { Strands } from "./strands";
 
 export class Schools {
   schoolId: string;
@@ -30,6 +31,7 @@ export class Schools {
   dateUpdated: Date;
   active: boolean;
   courses: Courses[];
+  strands: Strands[];
   departments: Departments[];
   employeeRoles: EmployeeRoles[];
   employeeTitles: EmployeeTitles[];

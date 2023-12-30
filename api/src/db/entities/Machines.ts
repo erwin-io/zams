@@ -11,7 +11,7 @@ import { Users } from "./Users";
 import { Schools } from "./Schools";
 import { TapLogs } from "./TapLogs";
 
-@Index("u_machine_desc", ["active", "description"], { unique: true })
+@Index("u_machine", ["active", "description", "schoolId"], { unique: true })
 @Index("Machines_pkey", ["machineId"], { unique: true })
 @Entity("Machines", { schema: "dbo" })
 export class Machines {
@@ -21,14 +21,17 @@ export class Machines {
   @Column("character varying", { name: "MachineCode", nullable: true })
   machineCode: string | null;
 
+  @Column("bigint", { name: "SchoolId" })
+  schoolId: string;
+
   @Column("character varying", { name: "Description" })
   description: string;
 
-  @Column("character varying", { name: "Path" })
-  path: string;
+  @Column("character varying", { name: "Path", nullable: true })
+  path: string | null;
 
-  @Column("character varying", { name: "Domain" })
-  domain: string;
+  @Column("character varying", { name: "Domain", nullable: true })
+  domain: string | null;
 
   @Column("timestamp with time zone", {
     name: "CreatedDate",

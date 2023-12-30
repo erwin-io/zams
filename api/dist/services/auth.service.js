@@ -119,7 +119,11 @@ let AuthService = class AuthService {
                 parentStudents: true,
                 registeredByUser: true,
                 updatedByUser: true,
-                user: true,
+                user: {
+                    userProfilePic: {
+                        file: true,
+                    },
+                },
             }
         });
         if (!parent) {
@@ -229,7 +233,7 @@ let AuthService = class AuthService {
         }
     }
     async getUserById(userId) {
-        var _a;
+        var _a, _b;
         try {
             let user = await this.userRepo.findOne({
                 where: {
@@ -240,7 +244,7 @@ let AuthService = class AuthService {
             if (!user) {
                 throw Error(auth_error_constant_1.LOGIN_ERROR_USER_NOT_FOUND);
             }
-            if (user.userType === "EMPLOYEE") {
+            if (user.userType === user_type_constant_1.USER_TYPE.EMPLOYEE) {
                 const employee = await this.userRepo.manager.findOne(Employees_1.Employees, {
                     where: {
                         employeeUser: {
@@ -265,6 +269,27 @@ let AuthService = class AuthService {
                 }
                 delete employee.employeeUser.user.password;
                 return (_a = employee.employeeUser) === null || _a === void 0 ? void 0 : _a.user;
+            }
+            else if (user.userType === user_type_constant_1.USER_TYPE.PARENT) {
+                const parent = await this.userRepo.manager.findOne(Parents_1.Parents, {
+                    where: {
+                        user: {
+                            userId: user.userId,
+                        }
+                    },
+                    relations: {
+                        parentStudents: true,
+                        registeredByUser: true,
+                        updatedByUser: true,
+                        user: true,
+                    }
+                });
+                delete parent.user.password;
+                delete parent.registeredByUser.password;
+                if ((_b = parent === null || parent === void 0 ? void 0 : parent.updatedByUser) === null || _b === void 0 ? void 0 : _b.password) {
+                    delete parent.updatedByUser.password;
+                }
+                return parent.user;
             }
             else {
                 const operator = await this.userRepo.manager.findOne(Operators_1.Operators, {

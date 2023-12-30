@@ -46,6 +46,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Notifications.prototype, "active", void 0);
 __decorate([
+    (0, typeorm_1.Column)("character varying", { name: "ReferenceId", default: () => "''" }),
+    __metadata("design:type", String)
+], Notifications.prototype, "referenceId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Users_1.Users, (users) => users.notifications),
     (0, typeorm_1.JoinColumn)([{ name: "ForUserId", referencedColumnName: "userId" }]),
     __metadata("design:type", Users_1.Users)

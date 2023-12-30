@@ -1,4 +1,5 @@
 export declare const NOTIF_TYPE: {
+    ANNOUNCEMENT: string;
     LINK_REQUEST: string;
     STUDENT_LOG: string;
 };

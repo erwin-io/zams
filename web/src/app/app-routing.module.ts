@@ -78,6 +78,15 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'strands',
+        canActivate: [OpsAuthGuard],
+        data: { ops: true, title: 'Strands' },
+        loadChildren: () =>
+          import('./pages/operations/ops-strands/ops-strands.module').then(
+            (m) => m.OpsStrandsModule
+          ),
+      },
+      {
         path: 'employee-titles',
         canActivate: [OpsAuthGuard],
         data: { ops: true, title: 'Employee Titles' },

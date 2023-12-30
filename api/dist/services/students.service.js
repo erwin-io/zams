@@ -11,20 +11,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StudentsService = void 0;
 const utils_1 = require("../common/utils/utils");
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const moment_1 = __importDefault(require("moment"));
 const courses_constant_1 = require("../common/constant/courses.constant");
 const departments_constant_1 = require("../common/constant/departments.constant");
+const educational_stage_constant_1 = require("../common/constant/educational-stage.constant");
 const school_year_levels_constant_1 = require("../common/constant/school-year-levels.constant");
 const schools_constant_1 = require("../common/constant/schools.constant");
 const sections_constant_1 = require("../common/constant/sections.constant");
+const strand_constant_1 = require("../common/constant/strand.constant");
 const students_constant_1 = require("../common/constant/students.constant");
 const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
@@ -33,8 +31,10 @@ const Departments_1 = require("../db/entities/Departments");
 const SchoolYearLevels_1 = require("../db/entities/SchoolYearLevels");
 const Schools_1 = require("../db/entities/Schools");
 const Sections_1 = require("../db/entities/Sections");
+const Strands_1 = require("../db/entities/Strands");
 const StudentCourse_1 = require("../db/entities/StudentCourse");
 const StudentSection_1 = require("../db/entities/StudentSection");
+const StudentStrand_1 = require("../db/entities/StudentStrand");
 const Students_1 = require("../db/entities/Students");
 const Users_1 = require("../db/entities/Users");
 const typeorm_2 = require("typeorm");
@@ -53,6 +53,9 @@ let StudentsService = class StudentsService {
                     parentStudents: true,
                     studentCourse: {
                         course: true,
+                    },
+                    studentStrand: {
+                        strand: true,
                     },
                     department: true,
                     registeredByUser: true,
@@ -97,6 +100,9 @@ let StudentsService = class StudentsService {
                 studentCourse: {
                     course: true,
                 },
+                studentStrand: {
+                    strand: true,
+                },
                 department: true,
                 registeredByUser: true,
                 updatedByUser: true,
@@ -129,6 +135,9 @@ let StudentsService = class StudentsService {
                 },
                 studentCourse: {
                     course: true,
+                },
+                studentStrand: {
+                    strand: true,
                 },
                 department: true,
                 registeredByUser: true,
@@ -170,10 +179,7 @@ let StudentsService = class StudentsService {
                 student.fullName = `${dto.firstName} ${dto.lastName}`;
                 student.email = dto.email;
                 student.mobileNumber = dto.mobileNumber;
-                student.birthDate = (0, moment_1.default)(dto.birthDate).format("YYYY-MM-DD");
-                student.lrn = dto.lrn;
                 student.cardNumber = dto.cardNumber;
-                student.gender = dto.gender;
                 student.address = dto.address;
                 student.orgStudentId = dto.orgStudentId;
                 const timestamp = await entityManager
@@ -234,19 +240,36 @@ let StudentsService = class StudentsService {
                 }
                 studentSection.section = section;
                 await entityManager.save(StudentSection_1.StudentSection, studentSection);
-                const studentCourse = new StudentCourse_1.StudentCourse();
-                studentCourse.student = student;
-                const course = await entityManager.findOne(Courses_1.Courses, {
-                    where: {
-                        courseId: dto.courseId,
-                        active: true,
-                    },
-                });
-                if (!course) {
-                    throw Error(courses_constant_1.COURSES_ERROR_NOT_FOUND);
+                if (schoolYearLevel.educationalStage === educational_stage_constant_1.EDUCATIONAL_STAGE.COLLEGE) {
+                    const studentCourse = new StudentCourse_1.StudentCourse();
+                    studentCourse.student = student;
+                    const course = await entityManager.findOne(Courses_1.Courses, {
+                        where: {
+                            courseId: dto.courseId,
+                            active: true,
+                        },
+                    });
+                    if (!course) {
+                        throw Error(courses_constant_1.COURSES_ERROR_NOT_FOUND);
+                    }
+                    studentCourse.course = course;
+                    await entityManager.save(StudentCourse_1.StudentCourse, studentCourse);
                 }
-                studentCourse.course = course;
-                await entityManager.save(StudentCourse_1.StudentCourse, studentCourse);
+                else if (schoolYearLevel.educationalStage === educational_stage_constant_1.EDUCATIONAL_STAGE.SENIOR) {
+                    const studentStrand = new StudentStrand_1.StudentStrand();
+                    studentStrand.student = student;
+                    const strand = await entityManager.findOne(Strands_1.Strands, {
+                        where: {
+                            strandId: dto.strandId,
+                            active: true,
+                        },
+                    });
+                    if (!strand) {
+                        throw Error(strand_constant_1.STRAND_ERROR_NOT_FOUND);
+                    }
+                    studentStrand.strand = strand;
+                    await entityManager.save(StudentStrand_1.StudentStrand, studentStrand);
+                }
                 student = await entityManager.findOne(Students_1.Students, {
                     where: {
                         studentCode: student.studentCode,
@@ -258,6 +281,9 @@ let StudentsService = class StudentsService {
                         },
                         studentCourse: {
                             course: true,
+                        },
+                        studentStrand: {
+                            strand: true,
                         },
                         department: true,
                         registeredByUser: true,
@@ -297,6 +323,9 @@ let StudentsService = class StudentsService {
                     studentCourse: {
                         course: true,
                     },
+                    studentStrand: {
+                        strand: true,
+                    },
                     department: true,
                     registeredByUser: true,
                     updatedByUser: true,
@@ -316,10 +345,7 @@ let StudentsService = class StudentsService {
             student.fullName = `${dto.firstName} ${dto.lastName}`;
             student.email = dto.email;
             student.mobileNumber = dto.mobileNumber;
-            student.birthDate = (0, moment_1.default)(dto.birthDate).format("YYYY-MM-DD");
-            student.lrn = dto.lrn;
             student.cardNumber = dto.cardNumber;
-            student.gender = dto.gender;
             student.address = dto.address;
             student.orgStudentId = dto.orgStudentId;
             const timestamp = await entityManager
@@ -386,31 +412,58 @@ let StudentsService = class StudentsService {
             }
             studentSection.section = section;
             await entityManager.save(StudentSection_1.StudentSection, studentSection);
-            let studentCourse = await entityManager.findOne(StudentCourse_1.StudentCourse, {
-                where: {
-                    student: {
-                        studentId: student.studentId,
+            let [studentCourse, studentStrand] = await Promise.all([
+                entityManager.findOne(StudentCourse_1.StudentCourse, {
+                    where: {
+                        student: {
+                            studentId: student.studentId,
+                        },
                     },
-                },
-            });
+                }),
+                entityManager.findOne(StudentStrand_1.StudentStrand, {
+                    where: {
+                        student: {
+                            studentId: student.studentId,
+                        },
+                    },
+                }),
+            ]);
             if (studentCourse) {
                 await entityManager.delete(StudentCourse_1.StudentCourse, studentCourse);
             }
-            else {
+            if (studentStrand) {
+                await entityManager.delete(StudentStrand_1.StudentStrand, studentStrand);
+            }
+            if (schoolYearLevel.educationalStage === educational_stage_constant_1.EDUCATIONAL_STAGE.COLLEGE) {
                 studentCourse = new StudentCourse_1.StudentCourse();
+                studentCourse.student = student;
+                const course = await entityManager.findOne(Courses_1.Courses, {
+                    where: {
+                        courseId: dto.courseId,
+                        active: true,
+                    },
+                });
+                if (!course) {
+                    throw Error(courses_constant_1.COURSES_ERROR_NOT_FOUND);
+                }
+                studentCourse.course = course;
+                await entityManager.save(StudentCourse_1.StudentCourse, studentCourse);
             }
-            studentCourse.student = student;
-            const course = await entityManager.findOne(Courses_1.Courses, {
-                where: {
-                    courseId: dto.courseId,
-                    active: true,
-                },
-            });
-            if (!course) {
-                throw Error(courses_constant_1.COURSES_ERROR_NOT_FOUND);
+            else if (schoolYearLevel.educationalStage === educational_stage_constant_1.EDUCATIONAL_STAGE.SENIOR) {
+                studentStrand = new StudentStrand_1.StudentStrand();
+                studentStrand.student = student;
+                const strand = await entityManager.findOne(Strands_1.Strands, {
+                    where: {
+                        strandId: dto.strandId,
+                        active: true,
+                    },
+                });
+                if (!strand) {
+                    throw Error(courses_constant_1.COURSES_ERROR_NOT_FOUND);
+                }
+                studentStrand.strand = strand;
+                await entityManager.save(StudentStrand_1.StudentStrand, studentStrand);
             }
-            studentCourse.course = course;
-            await entityManager.save(StudentCourse_1.StudentCourse, studentCourse);
             student = await entityManager.findOne(Students_1.Students, {
                 where: {
                     studentCode,
@@ -422,6 +475,9 @@ let StudentsService = class StudentsService {
                     },
                     studentCourse: {
                         course: true,
+                    },
+                    studentStrand: {
+                        strand: true,
                     },
                     department: true,
                     registeredByUser: true,
@@ -466,6 +522,9 @@ let StudentsService = class StudentsService {
                     studentCourse: {
                         course: true,
                     },
+                    studentStrand: {
+                        strand: true,
+                    },
                     department: true,
                     registeredByUser: true,
                     updatedByUser: true,
@@ -508,6 +567,9 @@ let StudentsService = class StudentsService {
                     },
                     studentCourse: {
                         course: true,
+                    },
+                    studentStrand: {
+                        strand: true,
                     },
                     department: true,
                     registeredByUser: true,

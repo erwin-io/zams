@@ -5,7 +5,7 @@ export class SchoolYearLevels {
   schoolYearLevelId: string;
   schoolYearLevelCode: string;
   name: string;
-  canSelectCourses: boolean;
+  educationalStage: string;
   createdDate: Date;
   updatedDate: Date;
   active: boolean;

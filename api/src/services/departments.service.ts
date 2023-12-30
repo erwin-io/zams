@@ -83,47 +83,60 @@ export class DepartmentsService {
   }
 
   async create(dto: CreateDepartmentDto) {
-    return await this.departmentsRepo.manager.transaction(
-      async (entityManager) => {
-        let departments = new Departments();
-        departments.departmentName = dto.departmentName;
-        const timestamp = await entityManager
-          .query(CONST_QUERYCURRENT_TIMESTAMP)
-          .then((res) => {
-            return res[0]["timestamp"];
+    try {
+      return await this.departmentsRepo.manager.transaction(
+        async (entityManager) => {
+          let departments = new Departments();
+          departments.departmentName = dto.departmentName;
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          departments.createdDate = timestamp;
+
+          const school = await entityManager.findOne(Schools, {
+            where: {
+              schoolId: dto.schoolId,
+              active: true,
+            },
           });
-        departments.createdDate = timestamp;
+          if (!school) {
+            throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          }
+          departments.school = school;
 
-        const school = await entityManager.findOne(Schools, {
-          where: {
-            schoolId: dto.schoolId,
-            active: true,
-          },
-        });
-        if (!school) {
-          throw Error(SCHOOLS_ERROR_NOT_FOUND);
+          const createdByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.createdByUserId,
+              active: true,
+            },
+          });
+          if (!createdByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          departments.createdByUser = createdByUser;
+          departments = await entityManager.save(departments);
+          departments.departmentCode = generateIndentityCode(
+            departments.departmentId
+          );
+          departments = await entityManager.save(Departments, departments);
+          delete departments.createdByUser.password;
+          return departments;
         }
-        departments.school = school;
-
-        const createdByUser = await entityManager.findOne(Users, {
-          where: {
-            userId: dto.createdByUserId,
-            active: true,
-          },
-        });
-        if (!createdByUser) {
-          throw Error(USER_ERROR_USER_NOT_FOUND);
-        }
-        departments.createdByUser = createdByUser;
-        departments = await entityManager.save(departments);
-        departments.departmentCode = generateIndentityCode(
-          departments.departmentId
-        );
-        departments = await entityManager.save(Departments, departments);
-        delete departments.createdByUser.password;
-        return departments;
+      );
+    } catch (ex) {
+      if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_department")
+      ) {
+        throw Error("Entry already exists!");
+      } else {
+        throw ex;
       }
-    );
+    }
   }
 
   async batchCreate(dtos: CreateDepartmentDto[]) {
@@ -175,45 +188,58 @@ export class DepartmentsService {
   }
 
   async update(departmentCode, dto: UpdateDepartmentDto) {
-    return await this.departmentsRepo.manager.transaction(
-      async (entityManager) => {
-        let departments = await entityManager.findOne(Departments, {
-          where: {
-            departmentCode,
-            active: true,
-          },
-        });
-        if (!departments) {
-          throw Error(DEPARTMENTS_ERROR_NOT_FOUND);
-        }
-        const timestamp = await entityManager
-          .query(CONST_QUERYCURRENT_TIMESTAMP)
-          .then((res) => {
-            return res[0]["timestamp"];
+    try {
+      return await this.departmentsRepo.manager.transaction(
+        async (entityManager) => {
+          let departments = await entityManager.findOne(Departments, {
+            where: {
+              departmentCode,
+              active: true,
+            },
           });
-        departments.updatedDate = timestamp;
+          if (!departments) {
+            throw Error(DEPARTMENTS_ERROR_NOT_FOUND);
+          }
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          departments.updatedDate = timestamp;
 
-        const updatedByUser = await entityManager.findOne(Users, {
-          where: {
-            userId: dto.updatedByUserId,
-            active: true,
-          },
-        });
-        if (!updatedByUser) {
-          throw Error(USER_ERROR_USER_NOT_FOUND);
+          const updatedByUser = await entityManager.findOne(Users, {
+            where: {
+              userId: dto.updatedByUserId,
+              active: true,
+            },
+          });
+          if (!updatedByUser) {
+            throw Error(USER_ERROR_USER_NOT_FOUND);
+          }
+          departments.updatedByUser = updatedByUser;
+          departments.departmentName = dto.departmentName;
+          departments = await entityManager.save(Departments, departments);
+          if (departments?.createdByUser?.password) {
+            delete departments.createdByUser.password;
+          }
+          if (departments?.updatedByUser?.password) {
+            delete departments.updatedByUser.password;
+          }
+          return departments;
         }
-        departments.updatedByUser = updatedByUser;
-        departments.departmentName = dto.departmentName;
-        departments = await entityManager.save(Departments, departments);
-        if (departments?.createdByUser?.password) {
-          delete departments.createdByUser.password;
-        }
-        if (departments?.updatedByUser?.password) {
-          delete departments.updatedByUser.password;
-        }
-        return departments;
+      );
+    } catch (ex) {
+      if (
+        ex["message"] &&
+        (ex["message"].includes("duplicate key") ||
+          ex["message"].includes("violates unique constraint")) &&
+        ex["message"].includes("u_department")
+      ) {
+        throw Error("Entry already exists!");
+      } else {
+        throw ex;
       }
-    );
+    }
   }
 
   async delete(departmentCode) {

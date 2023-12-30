@@ -59,6 +59,12 @@ export class OpsCoursesTableColumn {
   url?: string;
 }
 
+export class OpsStrandsTableColumn {
+  strandCode: string;
+  name: string;
+  url?: string;
+}
+
 export class OpsEmployeeTitlesTableColumn {
   employeeTitleCode: string;
   name: string;
@@ -68,7 +74,7 @@ export class OpsEmployeeTitlesTableColumn {
 export class OpsSchoolYearLevelsTableColumn {
   schoolYearLevelCode: string;
   name: string;
-  canSelectCourses?: boolean;
+  educationalStage?: string;
   url?: string;
 }
 
@@ -98,11 +104,12 @@ export class OpsParentsTableColumn {
 export class OpsStudentsTableColumn {
   studentCode?: string;
   fullName?: string;
-  lrn?: string;
+  orgStudentId?: string;
   cardNumber?: string;
   mobileNumber?: string;
   schoolYearLevel?: string;
   studentCourse?: string;
+  studentStrand?: string;
   studentSection?: string;
   department?: string;
 }

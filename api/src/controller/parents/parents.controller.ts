@@ -23,6 +23,7 @@ import { ApiResponseModel } from "src/core/models/api-response.model";
 import { Parents } from "src/db/entities/Parents";
 import { ParentsService } from "src/services/parents.service";
 import { UpdateUserResetPasswordDto } from "src/core/dto/auth/reset-password.dto";
+import { UpdateProfilePictureDto } from "src/core/dto/auth/reset-password.dto copy";
 
 @ApiTags("parents")
 @Controller("parents")
@@ -44,7 +45,6 @@ export class ParentsController {
     }
   }
 
-
   @Get("getParentStudents/:parentCode")
   //   @UseGuards(JwtAuthGuard)
   async getParentStudents(@Param("parentCode") parentCode: string) {
@@ -59,7 +59,6 @@ export class ParentsController {
       return res;
     }
   }
-
 
   @Post("/page")
   //   @UseGuards(JwtAuthGuard)
@@ -128,7 +127,7 @@ export class ParentsController {
     }
   }
 
-  @Put("/:parentCode/resetPassword")
+  @Put("resetPassword/:parentCode")
   //   @UseGuards(JwtAuthGuard)
   async resetPassword(
     @Param("parentCode") parentCode: string,
@@ -142,6 +141,26 @@ export class ParentsController {
       );
       res.success = true;
       res.message = `Parent password ${UPDATE_SUCCESS}`;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
+  @Put("/updateProfilePicture/:parentCode")
+  async updateProfilePicture(
+    @Param("parentCode") parentCode: string,
+    @Body() dto: UpdateProfilePictureDto
+  ) {
+    const res: ApiResponseModel<Parents> = {} as any;
+    try {
+      res.data = await this.parentsService.updateProfilePicture(
+        parentCode,
+        dto
+      );
+      res.success = true;
       return res;
     } catch (e) {
       res.success = false;

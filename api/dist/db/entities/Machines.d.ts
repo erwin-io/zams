@@ -4,9 +4,10 @@ import { TapLogs } from "./TapLogs";
 export declare class Machines {
     machineId: string;
     machineCode: string | null;
+    schoolId: string;
     description: string;
-    path: string;
-    domain: string;
+    path: string | null;
+    domain: string | null;
     createdDate: Date;
     updatedDate: Date | null;
     active: boolean;

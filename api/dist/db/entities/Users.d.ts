@@ -13,8 +13,10 @@ import { SchoolRequestAccess } from "./SchoolRequestAccess";
 import { SchoolYearLevels } from "./SchoolYearLevels";
 import { Schools } from "./Schools";
 import { Sections } from "./Sections";
+import { Strands } from "./Strands";
 import { Students } from "./Students";
 import { UserFirebaseToken } from "./UserFirebaseToken";
+import { UserProfilePic } from "./UserProfilePic";
 export declare class Users {
     userId: string;
     userCode: string | null;
@@ -51,7 +53,10 @@ export declare class Users {
     schools2: Schools[];
     sections: Sections[];
     sections2: Sections[];
+    strands: Strands[];
+    strands2: Strands[];
     students: Students[];
     students2: Students[];
     userFirebaseTokens: UserFirebaseToken[];
+    userProfilePic: UserProfilePic;
 }

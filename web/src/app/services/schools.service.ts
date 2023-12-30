@@ -36,6 +36,14 @@ export class SchoolsService implements IServices {
     );
   }
 
+  getByOrgCode(schoolCode: string): Observable<ApiResponse<Schools>> {
+    return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.schools.getByOrgCode + schoolCode)
+    .pipe(
+      tap(_ => this.log('schools')),
+      catchError(this.handleError('schools', []))
+    );
+  }
+
   create(data: any): Observable<ApiResponse<Schools>> {
     return this.http.post<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.schools.create, data)
     .pipe(

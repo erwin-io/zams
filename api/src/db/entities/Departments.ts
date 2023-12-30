@@ -13,6 +13,9 @@ import { Employees } from "./Employees";
 import { Sections } from "./Sections";
 import { Students } from "./Students";
 
+@Index("u_department", ["active", "departmentName", "schoolId"], {
+  unique: true,
+})
 @Index("Departments_pkey", ["departmentId"], { unique: true })
 @Entity("Departments", { schema: "dbo" })
 export class Departments {
@@ -21,6 +24,9 @@ export class Departments {
 
   @Column("character varying", { name: "DepartmentCode", nullable: true })
   departmentCode: string | null;
+
+  @Column("bigint", { name: "SchoolId" })
+  schoolId: string;
 
   @Column("character varying", { name: "DepartmentName" })
   departmentName: string;

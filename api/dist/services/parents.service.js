@@ -15,15 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParentsService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const path_1 = require("path");
 const parents_constant_1 = require("../common/constant/parents.constant");
 const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
 const utils_1 = require("../common/utils/utils");
+const firebase_provider_1 = require("../core/provider/firebase/firebase-provider");
+const Files_1 = require("../db/entities/Files");
 const Parents_1 = require("../db/entities/Parents");
+const UserProfilePic_1 = require("../db/entities/UserProfilePic");
 const Users_1 = require("../db/entities/Users");
 const typeorm_2 = require("typeorm");
+const uuid_1 = require("uuid");
 let ParentsService = class ParentsService {
-    constructor(parentRepo) {
+    constructor(firebaseProvoder, parentRepo) {
+        this.firebaseProvoder = firebaseProvoder;
         this.parentRepo = parentRepo;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
@@ -283,11 +289,97 @@ WHERE p."ParentCode" = '${parentCode}'
             return parent;
         });
     }
+    async updateProfilePicture(parentCode, dto) {
+        return await this.parentRepo.manager.transaction(async (entityManager) => {
+            var _a;
+            const user = await entityManager.findOne(Users_1.Users, {
+                where: {
+                    parents: {
+                        parentCode,
+                    },
+                },
+            });
+            if (!user) {
+                throw new common_1.HttpException(`User doesn't exist`, common_1.HttpStatus.NOT_FOUND);
+            }
+            if (dto.userProfilePic) {
+                const newFileName = (0, uuid_1.v4)();
+                let userProfilePic = await entityManager.findOne(UserProfilePic_1.UserProfilePic, {
+                    where: { userId: user.userId },
+                    relations: ["file"],
+                });
+                const bucket = this.firebaseProvoder.app.storage().bucket();
+                if (userProfilePic) {
+                    try {
+                        const deleteFile = bucket.file(`profile/${userProfilePic.file.fileName}`);
+                        deleteFile.delete();
+                    }
+                    catch (ex) {
+                        console.log(ex);
+                    }
+                    const file = userProfilePic.file;
+                    file.fileName = `${newFileName}${(0, path_1.extname)(dto.userProfilePic.fileName)}`;
+                    const bucketFile = bucket.file(`profile/${newFileName}${(0, path_1.extname)(dto.userProfilePic.fileName)}`);
+                    const img = Buffer.from(dto.userProfilePic.data, "base64");
+                    await bucketFile.save(img).then(async (res) => {
+                        console.log("res");
+                        console.log(res);
+                        const url = await bucketFile.getSignedUrl({
+                            action: "read",
+                            expires: "03-09-2500",
+                        });
+                        file.url = url[0];
+                        userProfilePic.file = await entityManager.save(Files_1.Files, file);
+                        user.userProfilePic = await entityManager.save(UserProfilePic_1.UserProfilePic, userProfilePic);
+                    });
+                }
+                else {
+                    userProfilePic = new UserProfilePic_1.UserProfilePic();
+                    userProfilePic.user = user;
+                    const file = new Files_1.Files();
+                    file.fileName = `${newFileName}${(0, path_1.extname)(dto.userProfilePic.fileName)}`;
+                    const bucketFile = bucket.file(`profile/${newFileName}${(0, path_1.extname)(dto.userProfilePic.fileName)}`);
+                    const img = Buffer.from(dto.userProfilePic.data, "base64");
+                    await bucketFile.save(img).then(async () => {
+                        const url = await bucketFile.getSignedUrl({
+                            action: "read",
+                            expires: "03-09-2500",
+                        });
+                        file.url = url[0];
+                        userProfilePic.file = await entityManager.save(Files_1.Files, file);
+                        user.userProfilePic = await entityManager.save(UserProfilePic_1.UserProfilePic, userProfilePic);
+                    });
+                }
+            }
+            const parent = await entityManager.findOne(Parents_1.Parents, {
+                where: {
+                    parentCode,
+                },
+                relations: {
+                    parentStudents: true,
+                    registeredByUser: true,
+                    updatedByUser: true,
+                    user: {
+                        userProfilePic: {
+                            file: true,
+                        },
+                    },
+                },
+            });
+            delete parent.user.password;
+            delete parent.registeredByUser.password;
+            if ((_a = parent === null || parent === void 0 ? void 0 : parent.updatedByUser) === null || _a === void 0 ? void 0 : _a.password) {
+                delete parent.updatedByUser.password;
+            }
+            return parent;
+        });
+    }
 };
 ParentsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(Parents_1.Parents)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(Parents_1.Parents)),
+    __metadata("design:paramtypes", [firebase_provider_1.FirebaseProvider,
+        typeorm_2.Repository])
 ], ParentsService);
 exports.ParentsService = ParentsService;
 //# sourceMappingURL=parents.service.js.map

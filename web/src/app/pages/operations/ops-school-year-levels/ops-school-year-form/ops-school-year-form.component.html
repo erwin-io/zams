@@ -40,15 +40,25 @@
               }}</mat-error
             >
           </mat-form-field>
-          <div
+          <mat-form-field
+            appearance="outline"
             fxFlex="100"
-            fxLayout="column">
-            <mat-checkbox
-              matTooltip=""
-              formControlName="canSelectCourses">
-              Can Select Courses
-            </mat-checkbox>
-          </div>
+            class="cell">
+            <mat-label>Select Educational Stage &nbsp;</mat-label>
+            <mat-select
+              formControlName="educationalStage" required="true">
+              <mat-option value="PRIMARY">Primary</mat-option>
+              <mat-option value="JUNIOR">Junior High School</mat-option>
+              <mat-option value="SENIOR">Senior High School</mat-option>
+              <mat-option value="COLLEGE">College</mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="getError('educationalStage') !== (null || undefined)">{{
+                (getError("educationalStage") &&
+                getError("educationalStage").required
+                  ? "Please educational stage"
+                  : "") }}</mat-error>
+          </mat-form-field>
         </div>
       </fieldset>
     </form>

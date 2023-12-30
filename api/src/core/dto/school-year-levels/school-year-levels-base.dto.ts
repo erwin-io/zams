@@ -4,9 +4,11 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsBooleanString,
+  IsIn,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
+  IsUppercase,
   ValidateNested,
 } from "class-validator";
 
@@ -14,16 +16,10 @@ export class DefaultSchoolYearLevelDto {
   @ApiProperty()
   @IsNotEmpty()
   name: string;
-
-  @ApiProperty({
-    default: false,
-    type: Boolean
-  })
+  
+  @ApiProperty()
   @IsNotEmpty()
-  @Type(() => Boolean)
-  @Transform(({ obj, key }) => {
-    return obj[key].toString();
-  })
-  @IsBooleanString()
-  canSelectCourses = false;
+  @IsIn(["PRIMARY", "JUNIOR", "SENIOR", "COLLEGE"])
+  @IsUppercase()
+  educationalStage: "PRIMARY" | "JUNIOR" | "SENIOR" | "COLLEGE";
 }

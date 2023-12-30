@@ -168,14 +168,13 @@
         }
       },
       {
-        "name": "canSelectCourses",
-        "label": "Can select courses",
-        "apiNotation": "canSelectCourses",
-        "type": "boolean",
+        "name": "educationalStage",
+        "label": "Educational Stage",
+        "apiNotation": "educationalStage",
+        "type": "string",
         "filterOptions": {
           "enable": true,
-          "placeholder": "Can select courses",
-          "type": "option-yes-no"
+          "placeholder": "Educational Stage"
         }
       },
       {
@@ -327,13 +326,13 @@
         }
       },
       {
-        "name": "cardNumber",
-        "label": "Card number",
-        "apiNotation": "cardNumber",
+        "name": "orgStudentId",
+        "label": "Student Id",
+        "apiNotation": "orgStudentId",
         "type": "string",
         "filterOptions": {
           "enable": true,
-          "placeholder": "Card number"
+          "placeholder": "Student Id"
         }
       },
       {
@@ -344,16 +343,6 @@
         "filterOptions": {
           "enable": true,
           "placeholder": "Year/Grade/Level"
-        }
-      },
-      {
-        "name": "studentCourse",
-        "label": "Course",
-        "apiNotation": "studentCourse.course.courseName",
-        "type": "string",
-        "filterOptions": {
-          "enable": true,
-          "placeholder": "Course"
         }
       },
       {
@@ -427,7 +416,29 @@
         "type": "string",
         "filterOptions": {
           "enable": true,
-          "placeholder": "name"
+          "placeholder": "Name"
+        }
+      },
+      {
+        "name": "menu",
+        "type": "",
+        "label": "Controls",
+        "controls": true,
+        "stickyEnd": true,
+        "style": {
+          "width": "0%"
+        }
+      }
+    ],
+    "strands": [
+      {
+        "name": "name",
+        "label": "Name",
+        "apiNotation": "name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Name"
         }
       },
       {
@@ -523,6 +534,7 @@
     "schools": {
       "getByAdvanceSearch": "/schools/page/",
       "getByCode": "/schools/",
+      "getByOrgCode": "/schools/getByOrgCode/",
       "create": "/schools/",
       "update": "/schools/",
       "delete": "/schools/"
@@ -565,6 +577,7 @@
     "students": {
       "getByAdvanceSearch": "/students/page/",
       "getByCode": "/students/",
+      "getByOrgStudentId": "/students/getByOrgStudentId/",
       "create": "/students/",
       "update": "/students/",
       "delete": "/students/"
@@ -575,6 +588,13 @@
       "create": "/courses/",
       "update": "/courses/",
       "delete": "/courses/"
+    },
+    "strands": {
+      "getByAdvanceSearch": "/strands/page/",
+      "getByCode": "/strands/",
+      "create": "/strands/",
+      "update": "/strands/",
+      "delete": "/strands/"
     },
     "parents": {
       "getByAdvanceSearch": "/parents/page/",

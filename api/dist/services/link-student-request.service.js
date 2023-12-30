@@ -181,7 +181,7 @@ let LinkStudentRequestService = class LinkStudentRequestService {
     }
     async approve(linkStudentRequestCode, dto) {
         return await this.linkStudentRequestRepo.manager.transaction(async (entityManager) => {
-            var _a, _b;
+            var _a, _b, _c;
             let linkStudentRequest = await entityManager.findOne(LinkStudentRequest_1.LinkStudentRequest, {
                 where: {
                     linkStudentRequestCode,
@@ -264,24 +264,25 @@ let LinkStudentRequestService = class LinkStudentRequestService {
                     },
                 },
             });
+            const notifTitle = notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_APPROVED;
+            const notifDesc = "Request to Link Student " +
+                ((_c = linkStudentRequest.student) === null || _c === void 0 ? void 0 : _c.fullName) +
+                " was approved!";
             userFireBase.forEach(async (x) => {
-                var _a;
                 if (x.firebaseToken && x.firebaseToken !== "") {
-                    const res = await this.firebaseSendToDevice(x.firebaseToken, "Approved Request to Link Student!", "Request to Link Student " +
-                        ((_a = linkStudentRequest.student) === null || _a === void 0 ? void 0 : _a.fullName) +
-                        " was approved!");
+                    const res = await this.firebaseSendToDevice(x.firebaseToken, notifTitle, notifDesc);
                     console.log(res);
                 }
             });
             delete linkStudentRequest.requestedByParent.user.password;
             delete linkStudentRequest.updatedByUser.password;
-            await this.logNotification(linkStudentRequest.requestedByParent.user, linkStudentRequest.linkStudentRequestCode, entityManager, notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_APPROVED, `Link student request was approved`);
+            await this.logNotification(linkStudentRequest.requestedByParent.user, linkStudentRequest.linkStudentRequestCode, entityManager, notifTitle, notifDesc);
             return linkStudentRequest;
         });
     }
     async reject(linkStudentRequestCode, dto) {
         return await this.linkStudentRequestRepo.manager.transaction(async (entityManager) => {
-            var _a, _b;
+            var _a, _b, _c;
             let linkStudentRequest = await entityManager.findOne(LinkStudentRequest_1.LinkStudentRequest, {
                 where: {
                     linkStudentRequestCode,
@@ -340,18 +341,19 @@ let LinkStudentRequestService = class LinkStudentRequestService {
                     },
                 },
             });
+            const notifTitle = notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_REJECTED;
+            const notifDesc = "Request to Link Student " +
+                ((_c = linkStudentRequest.student) === null || _c === void 0 ? void 0 : _c.fullName) +
+                " was rejected!";
             userFireBase.forEach(async (x) => {
-                var _a;
                 if (x.firebaseToken && x.firebaseToken !== "") {
-                    const res = await this.firebaseSendToDevice(x.firebaseToken, "Rejected Link to Student Request!", "Request to Link Student " +
-                        ((_a = linkStudentRequest.student) === null || _a === void 0 ? void 0 : _a.fullName) +
-                        " was rejected!");
+                    const res = await this.firebaseSendToDevice(x.firebaseToken, notifTitle, notifDesc);
                     console.log(res);
                 }
             });
             delete linkStudentRequest.requestedByParent.user.password;
             delete linkStudentRequest.updatedByUser.password;
-            await this.logNotification(linkStudentRequest.requestedByParent.user, linkStudentRequest.linkStudentRequestCode, entityManager, notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_REJECTED, `Link student request was rejected`);
+            await this.logNotification(linkStudentRequest.requestedByParent.user, linkStudentRequest.linkStudentRequestCode, entityManager, notifTitle, notifDesc);
             return linkStudentRequest;
         });
     }

@@ -25,15 +25,19 @@ __decorate([
     __metadata("design:type", String)
 ], Machines.prototype, "machineCode", void 0);
 __decorate([
+    (0, typeorm_1.Column)("bigint", { name: "SchoolId" }),
+    __metadata("design:type", String)
+], Machines.prototype, "schoolId", void 0);
+__decorate([
     (0, typeorm_1.Column)("character varying", { name: "Description" }),
     __metadata("design:type", String)
 ], Machines.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "Path" }),
+    (0, typeorm_1.Column)("character varying", { name: "Path", nullable: true }),
     __metadata("design:type", String)
 ], Machines.prototype, "path", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "Domain" }),
+    (0, typeorm_1.Column)("character varying", { name: "Domain", nullable: true }),
     __metadata("design:type", String)
 ], Machines.prototype, "domain", void 0);
 __decorate([
@@ -71,7 +75,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Machines.prototype, "tapLogs", void 0);
 Machines = __decorate([
-    (0, typeorm_1.Index)("u_machine_desc", ["active", "description"], { unique: true }),
+    (0, typeorm_1.Index)("u_machine", ["active", "description", "schoolId"], { unique: true }),
     (0, typeorm_1.Index)("Machines_pkey", ["machineId"], { unique: true }),
     (0, typeorm_1.Entity)("Machines", { schema: "dbo" })
 ], Machines);

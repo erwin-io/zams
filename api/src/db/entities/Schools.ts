@@ -18,6 +18,7 @@ import { SchoolRequestAccess } from "./SchoolRequestAccess";
 import { SchoolYearLevels } from "./SchoolYearLevels";
 import { Users } from "./Users";
 import { Sections } from "./Sections";
+import { Strands } from "./Strands";
 import { Students } from "./Students";
 
 @Index("Schools_pkey", ["schoolId"], { unique: true })
@@ -147,6 +148,9 @@ export class Schools {
 
   @OneToMany(() => Sections, (sections) => sections.school)
   sections: Sections[];
+
+  @OneToMany(() => Strands, (strands) => strands.school)
+  strands: Strands[];
 
   @OneToMany(() => Students, (students) => students.school)
   students: Students[];

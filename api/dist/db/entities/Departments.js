@@ -27,6 +27,10 @@ __decorate([
     __metadata("design:type", String)
 ], Departments.prototype, "departmentCode", void 0);
 __decorate([
+    (0, typeorm_1.Column)("bigint", { name: "SchoolId" }),
+    __metadata("design:type", String)
+], Departments.prototype, "schoolId", void 0);
+__decorate([
     (0, typeorm_1.Column)("character varying", { name: "DepartmentName" }),
     __metadata("design:type", String)
 ], Departments.prototype, "departmentName", void 0);
@@ -73,6 +77,9 @@ __decorate([
     __metadata("design:type", Array)
 ], Departments.prototype, "students", void 0);
 Departments = __decorate([
+    (0, typeorm_1.Index)("u_department", ["active", "departmentName", "schoolId"], {
+        unique: true,
+    }),
     (0, typeorm_1.Index)("Departments_pkey", ["departmentId"], { unique: true }),
     (0, typeorm_1.Entity)("Departments", { schema: "dbo" })
 ], Departments);

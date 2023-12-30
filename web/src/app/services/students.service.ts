@@ -36,6 +36,14 @@ export class StudentsService implements IServices {
     );
   }
 
+  getByOrgStudentId(orgStudentId: string): Observable<ApiResponse<Students>> {
+    return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.students.getByOrgStudentId + orgStudentId)
+    .pipe(
+      tap(_ => this.log('students')),
+      catchError(this.handleError('students', []))
+    );
+  }
+
   create(data: any): Observable<ApiResponse<Students>> {
     return this.http.post<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.students.create, data)
     .pipe(

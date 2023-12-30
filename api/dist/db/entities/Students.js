@@ -15,6 +15,7 @@ const LinkStudentRequest_1 = require("./LinkStudentRequest");
 const ParentStudent_1 = require("./ParentStudent");
 const StudentCourse_1 = require("./StudentCourse");
 const StudentSection_1 = require("./StudentSection");
+const StudentStrand_1 = require("./StudentStrand");
 const Departments_1 = require("./Departments");
 const Users_1 = require("./Users");
 const Schools_1 = require("./Schools");
@@ -43,17 +44,9 @@ __decorate([
     __metadata("design:type", String)
 ], Students.prototype, "lastName", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "LRN" }),
-    __metadata("design:type", String)
-], Students.prototype, "lrn", void 0);
-__decorate([
     (0, typeorm_1.Column)("character varying", { name: "CardNumber" }),
     __metadata("design:type", String)
 ], Students.prototype, "cardNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)("date", { name: "BirthDate", nullable: true }),
-    __metadata("design:type", String)
-], Students.prototype, "birthDate", void 0);
 __decorate([
     (0, typeorm_1.Column)("character varying", { name: "MobileNumber" }),
     __metadata("design:type", String)
@@ -66,14 +59,6 @@ __decorate([
     (0, typeorm_1.Column)("character varying", { name: "Address", nullable: true }),
     __metadata("design:type", String)
 ], Students.prototype, "address", void 0);
-__decorate([
-    (0, typeorm_1.Column)("character varying", {
-        name: "Gender",
-        nullable: true,
-        default: () => "'Others'",
-    }),
-    __metadata("design:type", String)
-], Students.prototype, "gender", void 0);
 __decorate([
     (0, typeorm_1.Column)("boolean", {
         name: "AccessGranted",
@@ -122,6 +107,10 @@ __decorate([
     __metadata("design:type", StudentSection_1.StudentSection)
 ], Students.prototype, "studentSection", void 0);
 __decorate([
+    (0, typeorm_1.OneToOne)(() => StudentStrand_1.StudentStrand, (studentStrand) => studentStrand.student),
+    __metadata("design:type", StudentStrand_1.StudentStrand)
+], Students.prototype, "studentStrand", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Departments_1.Departments, (departments) => departments.students),
     (0, typeorm_1.JoinColumn)([{ name: "DepartmentId", referencedColumnName: "departmentId" }]),
     __metadata("design:type", Departments_1.Departments)
@@ -153,8 +142,8 @@ __decorate([
     __metadata("design:type", Array)
 ], Students.prototype, "tapLogs", void 0);
 Students = __decorate([
-    (0, typeorm_1.Index)("u_students_card", ["active", "cardNumber"], { unique: true }),
     (0, typeorm_1.Index)("u_students_number", ["active", "mobileNumber"], { unique: true }),
+    (0, typeorm_1.Index)("u_students_card", ["active", "cardNumber"], { unique: true }),
     (0, typeorm_1.Index)("u_students_email", ["active", "email"], { unique: true }),
     (0, typeorm_1.Index)("Students_pkey", ["studentId"], { unique: true }),
     (0, typeorm_1.Entity)("Students", { schema: "dbo" })

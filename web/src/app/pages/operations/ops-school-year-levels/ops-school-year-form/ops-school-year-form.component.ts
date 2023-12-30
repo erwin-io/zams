@@ -40,7 +40,7 @@ export class OpsSchoolYearLevelFormComponent {
       this.schoolYearLevelForm = this.formBuilder.group(
         {
           name: [null, [Validators.required]],
-          canSelectCourses: new FormControl(false)
+          educationalStage: new FormControl(null, [Validators.required])
         }
       );
   }
@@ -66,7 +66,7 @@ export class OpsSchoolYearLevelFormComponent {
           this.schoolYearLevel = schoolYearLevel.data;
           this.schoolYearLevelForm.patchValue({
             name: schoolYearLevel.data.name,
-            canSelectCourses: schoolYearLevel.data.canSelectCourses
+            educationalStage: schoolYearLevel.data.educationalStage
           });
           this.schoolYearLevelForm.updateValueAndValidity();
           this.isLoading = false;

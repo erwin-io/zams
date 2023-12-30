@@ -11,12 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefaultSchoolYearLevelDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
-const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class DefaultSchoolYearLevelDto {
-    constructor() {
-        this.canSelectCourses = false;
-    }
 }
 __decorate([
     (0, swagger_1.ApiProperty)(),
@@ -24,17 +20,11 @@ __decorate([
     __metadata("design:type", String)
 ], DefaultSchoolYearLevelDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        default: false,
-        type: Boolean
-    }),
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_transformer_1.Type)(() => Boolean),
-    (0, class_transformer_1.Transform)(({ obj, key }) => {
-        return obj[key].toString();
-    }),
-    (0, class_validator_1.IsBooleanString)(),
-    __metadata("design:type", Object)
-], DefaultSchoolYearLevelDto.prototype, "canSelectCourses", void 0);
+    (0, class_validator_1.IsIn)(["PRIMARY", "JUNIOR", "SENIOR", "COLLEGE"]),
+    (0, class_validator_1.IsUppercase)(),
+    __metadata("design:type", String)
+], DefaultSchoolYearLevelDto.prototype, "educationalStage", void 0);
 exports.DefaultSchoolYearLevelDto = DefaultSchoolYearLevelDto;
 //# sourceMappingURL=school-year-levels-base.dto.js.map

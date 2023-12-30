@@ -22,6 +22,13 @@ import { SchoolYearLevels } from 'src/app/model/school-year-levels';
 import { SchoolYearLevelsService } from 'src/app/services/school-year-levels.service';
 import { OpsStudentFormComponent } from './ops-students-form/ops-students-form.component';
 import { OpsStudentParentsDialogComponent } from './ops-students-parents-dialog/ops-students-parents-dialog.component';
+import { SelectCourseDialogComponent } from 'src/app/shared/select-course-dialog/select-course-dialog.component';
+import { Courses } from 'src/app/model/courses';
+import { Strands } from 'src/app/model/strands';
+import { SelectStrandDialogComponent } from 'src/app/shared/select-strand-dialog/select-strand-dialog.component';
+import { FormControl, Validators } from '@angular/forms';
+import { CoursesService } from 'src/app/services/courses.service';
+import { StrandsService } from 'src/app/services/strands.service';
 @Component({
   selector: 'app-ops-students',
   templateUrl: './ops-students.component.html',
@@ -53,12 +60,16 @@ export class OpsStudentsComponent  {
   requestingAccess = 0;
   selectedSchool: Schools;
   selectedSchoolYearLevel: SchoolYearLevels;
+  selectedCourse: Courses;
+  selectedStrand: Strands;
 
   constructor(
     private _location: Location,
     private studentsService: StudentsService,
     private schoolsService: SchoolsService,
     private schoolYearLevelsService: SchoolYearLevelsService,
+    private coursesService: CoursesService,
+    private strandsService: StrandsService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     public appConfig: AppConfigService,
@@ -78,6 +89,10 @@ export class OpsStudentsComponent  {
       if(this.selectedSchool?.schoolCode && this.selectedSchool?.schoolCode !== "" && (!this.selectedSchoolYearLevel?.schoolYearLevelCode || this.selectedSchoolYearLevel?.schoolYearLevelCode === '')) {
         this.router.navigate(["/ops/students/find/" +this.selectedSchool?.schoolCode]);
       }
+      this.selectedCourse = new Courses();
+      this.selectedCourse.courseCode = this.route.snapshot.paramMap.get('courseCode');
+      this.selectedStrand = new Strands();
+      this.selectedStrand.strandCode = this.route.snapshot.paramMap.get('strandCode');
       this.appConfig.config.tableColumns.students.forEach(x=> {
         if(x.name === "menu") {
           const menu = [{
@@ -104,16 +119,26 @@ export class OpsStudentsComponent  {
   async ngAfterViewInit() {
     const currentSelectedSchool = this.selectedSchool?.schoolCode ? this.selectedSchool?.schoolCode : "";
     const currentSelectedDepartment = this.selectedSchoolYearLevel?.schoolYearLevelCode ? this.selectedSchoolYearLevel?.schoolYearLevelCode : "";
+    const currentSelectedCourse = this.selectedCourse?.courseCode ? this.selectedCourse?.courseCode : "";
+    const currentSelectedStrand = this.selectedStrand?.strandCode ? this.selectedStrand?.strandCode : "";
     Promise.all([
       currentSelectedSchool && currentSelectedSchool !== "" ? this.schoolsService.getByCode(currentSelectedSchool).toPromise() : null,
       currentSelectedDepartment && currentSelectedDepartment !== "" ? this.schoolYearLevelsService.getByCode(currentSelectedDepartment).toPromise() : null,
+      currentSelectedCourse && currentSelectedCourse !== "" ? this.coursesService.getByCode(currentSelectedCourse).toPromise() : null,
+      currentSelectedStrand && currentSelectedStrand !== "" ? this.strandsService.getByCode(currentSelectedStrand).toPromise() : null,
       this.getStudentsPaginated(),
-    ]).then(([school, schoolYearLevel, student])=> {
+    ]).then(([school, schoolYearLevel, course, strand, student])=> {
       if(school?.success && school?.data && school.data?.schoolName) {
         this.selectedSchool = school.data;
       }
       if(schoolYearLevel?.success && schoolYearLevel?.data && schoolYearLevel.data?.schoolYearLevelCode) {
         this.selectedSchoolYearLevel = schoolYearLevel.data;
+      }
+      if(course?.success && course?.data && course.data?.courseCode) {
+        this.selectedCourse = course.data;
+      }
+      if(strand?.success && strand?.data && strand.data?.strandCode) {
+        this.selectedStrand = strand.data;
       }
     });
 
@@ -180,7 +205,51 @@ export class OpsStudentsComponent  {
       console.log(res);
       if(res) {
         this.selectedSchoolYearLevel = res;
+        this.selectedCourse = null;
+        this.selectedStrand = null;
         this._location.go("/ops/students/find/" + this.selectedSchool?.schoolCode + "/sylvl/" + this.selectedSchoolYearLevel?.schoolYearLevelCode);
+        this.getStudentsPaginated();
+      }
+    })
+  }
+
+  showSelectCourseDialog() {
+    const dialogRef = this.dialog.open(SelectCourseDialogComponent, {
+        disableClose: true,
+        panelClass: "select-course-dialog"
+    });
+    dialogRef.componentInstance.selected = {
+      courseCode: this.selectedCourse?.courseCode,
+      name: this.selectedCourse?.name,
+      selected: true
+    }
+    dialogRef.componentInstance.schoolCode = this.selectedSchool?.schoolCode;
+    dialogRef.afterClosed().subscribe((res:Courses)=> {
+      console.log(res);
+      if(res) {
+        this.selectedCourse = res;
+        this._location.go("/ops/students/find/" + this.selectedSchool?.schoolCode + "/sylvl/" + this.selectedSchoolYearLevel?.schoolYearLevelCode + "/course/" + this.selectedCourse?.courseCode);
+        this.getStudentsPaginated();
+      }
+    })
+  }
+
+  showSelectStrandDialog() {
+    const dialogRef = this.dialog.open(SelectStrandDialogComponent, {
+        disableClose: true,
+        panelClass: "select-strand-dialog"
+    });
+    dialogRef.componentInstance.selected = {
+      strandCode: this.selectedStrand?.strandCode,
+      name: this.selectedStrand?.name,
+      selected: true
+    }
+    dialogRef.componentInstance.schoolCode = this.selectedSchool?.schoolCode;
+    dialogRef.afterClosed().subscribe((res:Strands)=> {
+      console.log(res);
+      if(res) {
+        this.selectedStrand = res;
+        this._location.go("/ops/students/find/" + this.selectedSchool?.schoolCode + "/sylvl/" + this.selectedSchoolYearLevel?.schoolYearLevelCode + "/strand/" + this.selectedStrand?.strandCode);
         this.getStudentsPaginated();
       }
     })
@@ -188,34 +257,37 @@ export class OpsStudentsComponent  {
 
   getStudentsPaginated(){
     try{
-      if(!this.selectedSchool?.schoolCode || this.selectedSchool?.schoolCode === "") {
+      if(!this.selectedSchool?.schoolCode || this.selectedSchool?.schoolCode === "" ||
+      !this.selectedSchoolYearLevel?.schoolYearLevelCode || this.selectedSchoolYearLevel?.schoolYearLevelCode === ""||
+      (this.selectedSchoolYearLevel?.educationalStage === "COLLEGE" && !this.selectedCourse?.courseCode || this.selectedCourse?.courseCode === "")||
+      (this.selectedSchoolYearLevel?.educationalStage === "SENIOR" && !this.selectedStrand?.strandCode || this.selectedStrand?.strandCode === "")) {
+        this.dataSource = new MatTableDataSource([]);
+        this.total = 0;
+        this.pageSize = 10;
         return;
       }
-      let findIndex = this.filter.findIndex(x=>x.apiNotation === "school.schoolCode");
-      if(findIndex >= 0) {
-        this.filter[findIndex] = {
-          apiNotation: "school.schoolCode",
-          filter: this.selectedSchool?.schoolCode,
-          type: "precise"
-        };
-      } else {
+      this.filter = [];
+      this.filter.push({
+        apiNotation: "school.schoolCode",
+        filter: this.selectedSchool?.schoolCode,
+        type: "precise"
+      });
+      this.filter.push({
+        apiNotation: "schoolYearLevel.schoolYearLevelCode",
+        filter: this.selectedSchoolYearLevel?.schoolYearLevelCode,
+        type: "precise"
+      });
+      if(this.selectedSchoolYearLevel?.educationalStage === "COLLEGE") {
         this.filter.push({
-          apiNotation: "school.schoolCode",
-          filter: this.selectedSchool?.schoolCode,
+          apiNotation: "studentCourse.course.courseCode",
+          filter: this.selectedCourse?.courseCode,
           type: "precise"
         });
       }
-      findIndex = this.filter.findIndex(x=>x.apiNotation === "schoolYearLevel.schoolYearLevelCode");
-      if(findIndex >= 0) {
-        this.filter[findIndex] = {
-          apiNotation: "schoolYearLevel.schoolYearLevelCode",
-          filter: this.selectedSchoolYearLevel?.schoolYearLevelCode,
-          type: "precise"
-        };
-      } else {
+      if(this.selectedSchoolYearLevel?.educationalStage === "SENIOR") {
         this.filter.push({
-          apiNotation: "schoolYearLevel.schoolYearLevelCode",
-          filter: this.selectedSchoolYearLevel?.schoolYearLevelCode,
+          apiNotation: "studentStrand.strand.strandCode",
+          filter: this.selectedStrand?.strandCode,
           type: "precise"
         });
       }
@@ -231,11 +303,10 @@ export class OpsStudentsComponent  {
             return {
               studentCode: d.studentCode,
               fullName: d.fullName,
-              lrn: d.lrn,
+              orgStudentId: d.orgStudentId,
               cardNumber: d.cardNumber,
               mobileNumber: d.mobileNumber,
               schoolYearLevel: d.schoolYearLevel.name,
-              studentCourse: d.studentCourse.course.name,
               studentSection: d.studentSection.section.sectionName,
               department: d.department.departmentName,
             } as OpsStudentsTableColumn
@@ -315,6 +386,19 @@ export class OpsStudentsComponent  {
         dialogRef.componentInstance.f["schoolYearLevelId"].setValue(this.selectedSchoolYearLevel.schoolYearLevelId);
         dialogRef.componentInstance.f["schoolYearLevelId"].markAllAsTouched();
         dialogRef.componentInstance.f["schoolYearLevelId"].markAsDirty();
+        if(this.selectedSchoolYearLevel.educationalStage === "COLLEGE") {
+          dialogRef.componentInstance.f["courseId"] = new FormControl(null, [Validators.required]);
+          dialogRef.componentInstance.f["strandId"] = new FormControl(null);
+        } else if(this.selectedSchoolYearLevel.educationalStage === "SENIOR") {
+          dialogRef.componentInstance.f["strandId"] = new FormControl(null, [Validators.required]);
+          dialogRef.componentInstance.f["courseId"] = new FormControl(null);
+        } else {
+          dialogRef.componentInstance.f["courseId"] = new FormControl(null);
+          dialogRef.componentInstance.f["strandId"] = new FormControl(null);
+        }
+      } else {
+        dialogRef.componentInstance.f["courseId"] = new FormControl(null);
+        dialogRef.componentInstance.f["strandId"] = new FormControl(null);
       }
     });
     dialogRef.afterClosed().subscribe(res=> {
