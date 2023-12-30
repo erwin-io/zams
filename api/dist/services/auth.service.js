@@ -36,6 +36,7 @@ const EmployeeTitles_1 = require("../db/entities/EmployeeTitles");
 const user_type_constant_1 = require("../common/constant/user-type.constant");
 const Parents_1 = require("../db/entities/Parents");
 const EmployeeUser_1 = require("../db/entities/EmployeeUser");
+const Notifications_1 = require("../db/entities/Notifications");
 let AuthService = class AuthService {
     constructor(userRepo, jwtService) {
         this.userRepo = userRepo;
@@ -138,7 +139,16 @@ let AuthService = class AuthService {
         if ((_a = parent === null || parent === void 0 ? void 0 : parent.updatedByUser) === null || _a === void 0 ? void 0 : _a.password) {
             delete parent.updatedByUser.password;
         }
-        return parent;
+        const totalUnreadNotif = await this.userRepo.manager.count(Notifications_1.Notifications, {
+            where: {
+                forUser: {
+                    userId: parent.user.userId,
+                    active: true,
+                },
+                isRead: false,
+            },
+        });
+        return Object.assign(Object.assign({}, parent), { totalUnreadNotif });
     }
     async getByCredentials({ userName, password }) {
         var _a, _b, _c, _d;

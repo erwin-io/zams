@@ -25,7 +25,7 @@ let TapLogsController = class TapLogsController {
     async getDetails(tapLogId) {
         const res = {};
         try {
-            res.data = await this.tapLogsService.getByCode(tapLogId);
+            res.data = await this.tapLogsService.getById(tapLogId);
             res.success = true;
             return res;
         }

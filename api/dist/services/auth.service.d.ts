@@ -18,11 +18,32 @@ export declare class AuthService {
         password: any;
         schoolCode: any;
     }): Promise<EmployeeUser>;
-    getParentsByCredentials(userName: any, password: any): Promise<Parents>;
+    getParentsByCredentials(userName: any, password: any): Promise<{
+        totalUnreadNotif: number;
+        parentId: string;
+        parentCode: string;
+        firstName: string;
+        middleInitial: string;
+        lastName: string;
+        gender: string;
+        birthDate: string;
+        mobileNumber: string;
+        email: string;
+        address: string;
+        registrationDate: Date;
+        updatedDate: Date;
+        active: boolean;
+        fullName: string;
+        linkStudentRequests: import("../db/entities/LinkStudentRequest").LinkStudentRequest[];
+        parentStudents: import("../db/entities/ParentStudent").ParentStudent[];
+        registeredByUser: Users;
+        updatedByUser: Users;
+        user: Users;
+    }>;
     getByCredentials({ userName, password }: {
         userName: any;
         password: any;
-    }): Promise<Parents | Employees | Operators>;
+    }): Promise<Operators | Employees | Parents>;
     getUserById(userId: any): Promise<Users>;
     registerEmployee(dto: RegisterEmployeeUserDto): Promise<Employees>;
     registerParent(dto: RegisterParentUserDto): Promise<Parents>;

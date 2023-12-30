@@ -30,7 +30,7 @@ export class TapLogsController {
   async getDetails(@Param("tapLogId") tapLogId: string) {
     const res = {} as ApiResponseModel<TapLogs>;
     try {
-      res.data = await this.tapLogsService.getByCode(tapLogId);
+      res.data = await this.tapLogsService.getById(tapLogId);
       res.success = true;
       return res;
     } catch (e) {

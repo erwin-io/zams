@@ -46,6 +46,7 @@ import { Parents } from "src/db/entities/Parents";
 import { RegisterParentUserDto } from "src/core/dto/auth/register-parent.dto";
 import { EmployeeUser } from "src/db/entities/EmployeeUser";
 import { EMPLOYEEROLES_ERROR_NOT_FOUND } from "src/common/constant/employees-roles.constant";
+import { Notifications } from "src/db/entities/Notifications";
 
 @Injectable()
 export class AuthService {
@@ -152,7 +153,19 @@ export class AuthService {
     if (parent?.updatedByUser?.password) {
       delete parent.updatedByUser.password;
     }
-    return parent;
+    const totalUnreadNotif = await this.userRepo.manager.count(Notifications, {
+      where: {
+        forUser: {
+          userId: parent.user.userId,
+          active: true,
+        },
+        isRead: false,
+      },
+    });
+    return {
+      ...parent,
+      totalUnreadNotif
+    };
   }
 
   async getByCredentials({userName, password}) {

@@ -67,7 +67,7 @@ let TapLogsService = class TapLogsService {
             total,
         };
     }
-    async getByCode(tapLogId) {
+    async getById(tapLogId) {
         const result = await this.tapLogsRepo.findOne({
             where: {
                 tapLogId,
@@ -75,6 +75,7 @@ let TapLogsService = class TapLogsService {
             relations: {
                 student: {
                     parentStudents: true,
+                    school: true,
                 },
                 machine: true,
             },
@@ -90,6 +91,10 @@ let TapLogsService = class TapLogsService {
             let tapLogs = await entityManager.findOne(TapLogs_1.TapLogs, {
                 where: {
                     date,
+                    status: dto.status,
+                    student: {
+                        cardNumber: dto.cardNumber,
+                    },
                     time: dto.time.toUpperCase(),
                 },
             });
@@ -149,7 +154,7 @@ let TapLogsService = class TapLogsService {
                 if (userFireBase.length > 0) {
                     const title = student === null || student === void 0 ? void 0 : student.fullName;
                     let desc;
-                    if ((dto.status = "LOG IN")) {
+                    if (dto.status === "LOG IN") {
                         desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has arrived in the school at ${dto.time}`;
                     }
                     else {
@@ -259,13 +264,14 @@ let TapLogsService = class TapLogsService {
             notifcations.push({
                 title,
                 description,
-                type: notifications_constant_1.NOTIF_TYPE.LINK_REQUEST.toString(),
+                type: notifications_constant_1.NOTIF_TYPE.STUDENT_LOG.toString(),
                 referenceId,
                 isRead: false,
                 forUser: x,
             });
         });
         await entityManager.save(Notifications_1.Notifications, notifcations);
+        await this.pusherService.sendNotif(users.map((x) => x.userId), title, description);
     }
 };
 TapLogsService = __decorate([

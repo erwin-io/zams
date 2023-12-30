@@ -72,7 +72,7 @@ export class TapLogsService {
     };
   }
 
-  async getByCode(tapLogId) {
+  async getById(tapLogId) {
     const result = await this.tapLogsRepo.findOne({
       where: {
         tapLogId,
@@ -80,6 +80,7 @@ export class TapLogsService {
       relations: {
         student: {
           parentStudents: true,
+          school: true,
         },
         machine: true,
       },
@@ -98,6 +99,10 @@ export class TapLogsService {
       let tapLogs = await entityManager.findOne(TapLogs, {
         where: {
           date,
+          status: dto.status,
+          student: {
+            cardNumber: dto.cardNumber,
+          },
           time: dto.time.toUpperCase(),
         },
       });
@@ -168,7 +173,7 @@ export class TapLogsService {
         if (userFireBase.length > 0) {
           const title = student?.fullName;
           let desc;
-          if ((dto.status = "LOG IN")) {
+          if (dto.status === "LOG IN") {
             desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
           } else {
             desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
@@ -323,12 +328,17 @@ export class TapLogsService {
       notifcations.push({
         title,
         description,
-        type: NOTIF_TYPE.LINK_REQUEST.toString(),
+        type: NOTIF_TYPE.STUDENT_LOG.toString(),
         referenceId,
         isRead: false,
         forUser: x,
       });
     });
     await entityManager.save(Notifications, notifcations);
+    await this.pusherService.sendNotif(
+      users.map((x) => x.userId),
+      title,
+      description
+    );
   }
 }
