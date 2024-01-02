@@ -99,6 +99,9 @@ export class TapLogsService {
       const date = moment(dto.date, DateConstant.DATE_LANGUAGE).format(
         "YYYY-MM-DD"
       );
+      const longDate = moment(dto.date, DateConstant.DATE_LANGUAGE).format(
+        "MMM DD, YYYY"
+      );
       let tapLog = await entityManager.findOne(TapLogs, {
         where: {
           date,
@@ -112,12 +115,7 @@ export class TapLogsService {
       if (!tapLog) {
         tapLog = new TapLogs();
 
-        const timestamp = await entityManager
-          .query(CONST_QUERYCURRENT_TIMESTAMP)
-          .then((res) => {
-            return res[0]["timestamp"];
-          });
-        tapLog.date = timestamp;
+        tapLog.date = date;
         tapLog.time = dto.time;
         tapLog.status = dto.status;
         const student = await entityManager.findOne(Students, {
@@ -223,10 +221,10 @@ export class TapLogsService {
         if (subscriptions.length > 0) {
           const title = student?.fullName;
           let desc;
-          if (dto.status === "LOG IN") {
-            desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
+          if (dto.status.toUpperCase() === "LOG IN") {
+            desc = `Your child, ${student?.fullName} has arrived in the school on ${longDate} at ${dto.time}`;
           } else {
-            desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
+            desc = `Your child, ${student?.fullName} has left the school premises on ${longDate} at ${dto.time}`;
           }
 
           await this.oneSignalNotificationService.sendToSubscriber(
@@ -254,6 +252,9 @@ export class TapLogsService {
         const date = moment(dto.date, DateConstant.DATE_LANGUAGE).format(
           "YYYY-MM-DD"
         );
+        const longDate = moment(dto.date, DateConstant.DATE_LANGUAGE).format(
+          "MMM DD, YYYY"
+        );
         let tapLog = await entityManager.findOne(TapLogs, {
           where: {
             date,
@@ -263,12 +264,7 @@ export class TapLogsService {
         if (!tapLog) {
           tapLog = new TapLogs();
 
-          const timestamp = await entityManager
-            .query(CONST_QUERYCURRENT_TIMESTAMP)
-            .then((res) => {
-              return res[0]["timestamp"];
-            });
-          tapLog.date = timestamp;
+          tapLog.date = date;
           tapLog.time = dto.time;
           tapLog.status = dto.status;
           const student = await entityManager.findOne(Students, {
@@ -380,10 +376,10 @@ export class TapLogsService {
             if (subscriptions.length > 0) {
               const title = student?.fullName;
               let desc;
-              if (dto.status === "LOG IN") {
-                desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
+              if (dto.status.toUpperCase() === "LOG IN") {
+                desc = `Your child, ${student?.fullName} has arrived in the school on ${longDate} at ${dto.time}`;
               } else {
-                desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
+                desc = `Your child, ${student?.fullName} has left the school premises on ${longDate} at ${dto.time}`;
               }
 
               await this.oneSignalNotificationService.sendToSubscriber(

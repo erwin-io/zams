@@ -91,6 +91,7 @@ let TapLogsService = class TapLogsService {
     async create(dto) {
         return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
             const date = (0, moment_1.default)(dto.date, date_constant_1.DateConstant.DATE_LANGUAGE).format("YYYY-MM-DD");
+            const longDate = (0, moment_1.default)(dto.date, date_constant_1.DateConstant.DATE_LANGUAGE).format("MMM DD, YYYY");
             let tapLog = await entityManager.findOne(TapLogs_1.TapLogs, {
                 where: {
                     date,
@@ -103,12 +104,7 @@ let TapLogsService = class TapLogsService {
             });
             if (!tapLog) {
                 tapLog = new TapLogs_1.TapLogs();
-                const timestamp = await entityManager
-                    .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
-                    .then((res) => {
-                    return res[0]["timestamp"];
-                });
-                tapLog.date = timestamp;
+                tapLog.date = date;
                 tapLog.time = dto.time;
                 tapLog.status = dto.status;
                 const student = await entityManager.findOne(Students_1.Students, {
@@ -163,11 +159,11 @@ let TapLogsService = class TapLogsService {
                 if (subscriptions.length > 0) {
                     const title = student === null || student === void 0 ? void 0 : student.fullName;
                     let desc;
-                    if (dto.status === "LOG IN") {
-                        desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has arrived in the school at ${dto.time}`;
+                    if (dto.status.toUpperCase() === "LOG IN") {
+                        desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has arrived in the school on ${longDate} at ${dto.time}`;
                     }
                     else {
-                        desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises at ${dto.time}`;
+                        desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises on ${longDate} at ${dto.time}`;
                     }
                     await this.oneSignalNotificationService.sendToSubscriber(subscriptions, title, desc);
                     await this.logNotification(parentStudents.map((x) => x.parent.user), tapLog.tapLogId, entityManager, title, desc);
@@ -181,6 +177,7 @@ let TapLogsService = class TapLogsService {
             const tapLogs = [];
             for (const dto of dtos) {
                 const date = (0, moment_1.default)(dto.date, date_constant_1.DateConstant.DATE_LANGUAGE).format("YYYY-MM-DD");
+                const longDate = (0, moment_1.default)(dto.date, date_constant_1.DateConstant.DATE_LANGUAGE).format("MMM DD, YYYY");
                 let tapLog = await entityManager.findOne(TapLogs_1.TapLogs, {
                     where: {
                         date,
@@ -189,12 +186,7 @@ let TapLogsService = class TapLogsService {
                 });
                 if (!tapLog) {
                     tapLog = new TapLogs_1.TapLogs();
-                    const timestamp = await entityManager
-                        .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
-                        .then((res) => {
-                        return res[0]["timestamp"];
-                    });
-                    tapLog.date = timestamp;
+                    tapLog.date = date;
                     tapLog.time = dto.time;
                     tapLog.status = dto.status;
                     const student = await entityManager.findOne(Students_1.Students, {
@@ -247,11 +239,11 @@ let TapLogsService = class TapLogsService {
                         if (subscriptions.length > 0) {
                             const title = student === null || student === void 0 ? void 0 : student.fullName;
                             let desc;
-                            if (dto.status === "LOG IN") {
-                                desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has arrived in the school at ${dto.time}`;
+                            if (dto.status.toUpperCase() === "LOG IN") {
+                                desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has arrived in the school on ${longDate} at ${dto.time}`;
                             }
                             else {
-                                desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises at ${dto.time}`;
+                                desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises on ${longDate} at ${dto.time}`;
                             }
                             await this.oneSignalNotificationService.sendToSubscriber(subscriptions, title, desc);
                             await this.logNotification(parentStudents.map((x) => x.parent.user), tapLog.tapLogId, entityManager, title, desc);

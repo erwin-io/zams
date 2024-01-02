@@ -100,8 +100,6 @@ export class OpsStudentFormComponent {
             mobileNumber: student.data.mobileNumber,
             cardNumber: student.data.cardNumber,
             address: student.data.address,
-            courseId: student.data.studentCourse?.course?.courseId,
-            strandId: student.data.studentStrand?.strand?.strandId,
             studentId: student.data.studentSection?.student?.studentId,
             sectionId: student.data.studentSection?.section?.sectionId,
             departmentId: student.data.department?.departmentId,
@@ -112,6 +110,16 @@ export class OpsStudentFormComponent {
           this.section = student.data?.studentSection?.section;
           this.department = student.data?.department;
           this.schoolYearLevel = student.data?.schoolYearLevel;
+          if(this.schoolYearLevel.educationalStage === "SENIOR") {
+            this.studentForm.controls["strandId"] = new FormControl(student.data.studentStrand?.strand?.strandId, [Validators.required]);
+            this.studentForm.controls["courseId"] = new FormControl(null);
+          } else if (this.schoolYearLevel.educationalStage === "COLLEGE") {
+            this.studentForm.controls["courseId"] = new FormControl(student.data.studentCourse?.course?.courseId, [Validators.required]);
+            this.studentForm.controls["strandId"] = new FormControl(null);
+          } else {
+            this.studentForm.controls["courseId"] = new FormControl(null);
+            this.studentForm.controls["strandId"] = new FormControl(null);
+          }
           this.studentForm.updateValueAndValidity();
           this.isLoading = false;
         } else {

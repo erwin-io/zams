@@ -5,7 +5,7 @@ export class SchoolYearLevels {
   schoolYearLevelId: string;
   schoolYearLevelCode: string;
   name: string;
-  educationalStage: string;
+  educationalStage: "PRIMARY" | "JUNIOR" | "SENIOR" | "COLLEGE";
   createdDate: Date;
   updatedDate: Date;
   active: boolean;

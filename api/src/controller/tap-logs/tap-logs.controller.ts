@@ -25,6 +25,22 @@ import { TapLogsService } from "src/services/tap-logs.service";
 export class TapLogsController {
   constructor(private readonly tapLogsService: TapLogsService) {}
 
+  @Post("/page")
+  //   @UseGuards(JwtAuthGuard)
+  async getPaginated(@Body() params: PaginationParamsDto) {
+    const res: ApiResponseModel<{ results: TapLogs[]; total: number }> =
+      {} as any;
+    try {
+      res.data = await this.tapLogsService.getPagination(params);
+      res.success = true;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
   @Get("/:tapLogId")
   //   @UseGuards(JwtAuthGuard)
   async getDetails(@Param("tapLogId") tapLogId: string) {

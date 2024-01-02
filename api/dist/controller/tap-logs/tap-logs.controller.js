@@ -17,10 +17,24 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const api_response_constant_1 = require("../../common/constant/api-response.constant");
 const tap_logs_create_dto_1 = require("../../core/dto/tap-logs/tap-logs.create.dto");
+const pagination_params_dto_1 = require("../../core/dto/pagination-params.dto");
 const tap_logs_service_1 = require("../../services/tap-logs.service");
 let TapLogsController = class TapLogsController {
     constructor(tapLogsService) {
         this.tapLogsService = tapLogsService;
+    }
+    async getPaginated(params) {
+        const res = {};
+        try {
+            res.data = await this.tapLogsService.getPagination(params);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
     }
     async getDetails(tapLogId) {
         const res = {};
@@ -64,6 +78,13 @@ let TapLogsController = class TapLogsController {
         }
     }
 };
+__decorate([
+    (0, common_1.Post)("/page"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [pagination_params_dto_1.PaginationParamsDto]),
+    __metadata("design:returntype", Promise)
+], TapLogsController.prototype, "getPaginated", null);
 __decorate([
     (0, common_1.Get)("/:tapLogId"),
     __param(0, (0, common_1.Param)("tapLogId")),
