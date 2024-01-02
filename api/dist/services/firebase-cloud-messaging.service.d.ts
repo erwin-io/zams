@@ -6,4 +6,5 @@ export declare class FirebaseCloudMessagingService {
     messageConfig: any;
     constructor(config: ConfigService, firebaseProvoder: FirebaseProvider);
     sendToDevice(token: any, title: any, description: any): Promise<void>;
+    firebaseSendToDevice(token: any, title: any, description: any): Promise<void>;
 }

@@ -38,6 +38,7 @@ const LinkStudentRequest_1 = require("../entities/LinkStudentRequest");
 const Strands_1 = require("../entities/Strands");
 const UserProfilePic_1 = require("../entities/UserProfilePic");
 const Files_1 = require("../entities/Files");
+const UserOneSignalSubscription_1 = require("../entities/UserOneSignalSubscription");
 let TypeOrmConfigService = class TypeOrmConfigService {
     createTypeOrmOptions() {
         const ssl = this.config.get("SSL");
@@ -75,6 +76,7 @@ let TypeOrmConfigService = class TypeOrmConfigService {
                 StudentStrand_1.StudentStrand,
                 Files_1.Files,
                 UserProfilePic_1.UserProfilePic,
+                UserOneSignalSubscription_1.UserOneSignalSubscription,
             ],
             synchronize: false,
             ssl: ssl.toLocaleLowerCase().includes("true"),

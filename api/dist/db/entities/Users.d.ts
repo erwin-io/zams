@@ -16,6 +16,7 @@ import { Sections } from "./Sections";
 import { Strands } from "./Strands";
 import { Students } from "./Students";
 import { UserFirebaseToken } from "./UserFirebaseToken";
+import { UserOneSignalSubscription } from "./UserOneSignalSubscription";
 import { UserProfilePic } from "./UserProfilePic";
 export declare class Users {
     userId: string;
@@ -58,5 +59,6 @@ export declare class Users {
     students: Students[];
     students2: Students[];
     userFirebaseTokens: UserFirebaseToken[];
+    userOneSignalSubscriptions: UserOneSignalSubscription[];
     userProfilePic: UserProfilePic;
 }

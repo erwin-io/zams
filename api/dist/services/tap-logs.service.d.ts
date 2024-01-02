@@ -5,12 +5,14 @@ import { Users } from "src/db/entities/Users";
 import { Repository, EntityManager } from "typeorm";
 import { PusherService } from "./pusher.service";
 import { FirebaseCloudMessagingService } from "./firebase-cloud-messaging.service";
+import { OneSignalNotificationService } from "./one-signal-notification.service";
 export declare class TapLogsService {
     private readonly tapLogsRepo;
     private pusherService;
     private firebaseProvoder;
     private firebaseCloudMessagingService;
-    constructor(tapLogsRepo: Repository<TapLogs>, pusherService: PusherService, firebaseProvoder: FirebaseProvider, firebaseCloudMessagingService: FirebaseCloudMessagingService);
+    private oneSignalNotificationService;
+    constructor(tapLogsRepo: Repository<TapLogs>, pusherService: PusherService, firebaseProvoder: FirebaseProvider, firebaseCloudMessagingService: FirebaseCloudMessagingService, oneSignalNotificationService: OneSignalNotificationService);
     getPagination({ pageSize, pageIndex, order, columnDef }: {
         pageSize: any;
         pageIndex: any;

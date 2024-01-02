@@ -23,6 +23,9 @@ import { TapLogsModule } from "./controller/tap-logs/tap-logs.module";
 import { MachinesModule } from "./controller/machines/machines.module";
 import { StrandsModule } from "./controller/strands/strands.module";
 import { NotificationsModule } from "./controller/notifications/notifications.module";
+import { UserOneSignalSubscriptionService } from "./services/user-one-signal-subscription.service";
+import { UserOneSignalSubscriptionModule } from "./controller/user-one-signal-subscription/user-one-signal-subscription.module";
+import { OneSignalNotificationService } from './services/one-signal-notification.service';
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
 @Module({
@@ -53,6 +56,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     TapLogsModule,
     StrandsModule,
     NotificationsModule,
+    UserOneSignalSubscriptionModule,
   ],
   providers: [AppService],
   controllers: [],

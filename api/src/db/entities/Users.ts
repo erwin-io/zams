@@ -24,6 +24,7 @@ import { Sections } from "./Sections";
 import { Strands } from "./Strands";
 import { Students } from "./Students";
 import { UserFirebaseToken } from "./UserFirebaseToken";
+import { UserOneSignalSubscription } from "./UserOneSignalSubscription";
 import { UserProfilePic } from "./UserProfilePic";
 
 @Index("u_user", ["active", "userName"], { unique: true })
@@ -182,6 +183,12 @@ export class Users {
     (userFirebaseToken) => userFirebaseToken.user
   )
   userFirebaseTokens: UserFirebaseToken[];
+
+  @OneToMany(
+    () => UserOneSignalSubscription,
+    (userOneSignalSubscription) => userOneSignalSubscription.user
+  )
+  userOneSignalSubscriptions: UserOneSignalSubscription[];
 
   @OneToOne(() => UserProfilePic, (userProfilePic) => userProfilePic.user)
   userProfilePic: UserProfilePic;

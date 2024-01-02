@@ -15,14 +15,30 @@ const typeorm_1 = require("@nestjs/typeorm");
 const firebase_provider_module_1 = require("../../core/provider/firebase/firebase-provider.module");
 const pusher_service_1 = require("../../services/pusher.service");
 const firebase_cloud_messaging_service_1 = require("../../services/firebase-cloud-messaging.service");
+const axios_1 = require("@nestjs/axios");
+const one_signal_notification_service_1 = require("../../services/one-signal-notification.service");
 let TapLogsModule = class TapLogsModule {
 };
 TapLogsModule = __decorate([
     (0, common_1.Module)({
-        imports: [firebase_provider_module_1.FirebaseProviderModule, typeorm_1.TypeOrmModule.forFeature([TapLogs_1.TapLogs])],
+        imports: [
+            firebase_provider_module_1.FirebaseProviderModule,
+            axios_1.HttpModule,
+            typeorm_1.TypeOrmModule.forFeature([TapLogs_1.TapLogs]),
+        ],
         controllers: [tap_logs_controller_1.TapLogsController],
-        providers: [tap_logs_service_1.TapLogsService, pusher_service_1.PusherService, firebase_cloud_messaging_service_1.FirebaseCloudMessagingService],
-        exports: [tap_logs_service_1.TapLogsService, pusher_service_1.PusherService, firebase_cloud_messaging_service_1.FirebaseCloudMessagingService],
+        providers: [
+            tap_logs_service_1.TapLogsService,
+            pusher_service_1.PusherService,
+            firebase_cloud_messaging_service_1.FirebaseCloudMessagingService,
+            one_signal_notification_service_1.OneSignalNotificationService,
+        ],
+        exports: [
+            tap_logs_service_1.TapLogsService,
+            pusher_service_1.PusherService,
+            firebase_cloud_messaging_service_1.FirebaseCloudMessagingService,
+            one_signal_notification_service_1.OneSignalNotificationService,
+        ],
     })
 ], TapLogsModule);
 exports.TapLogsModule = TapLogsModule;

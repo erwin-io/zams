@@ -33,6 +33,8 @@ import { Machines } from "src/db/entities/Machines";
 import { MACHINES_ERROR_NOT_FOUND } from "src/common/constant/machines.constant";
 import { FirebaseCloudMessagingService } from "./firebase-cloud-messaging.service";
 import { DateConstant } from "src/common/constant/date.constant";
+import { UserOneSignalSubscription } from "src/db/entities/UserOneSignalSubscription";
+import { OneSignalNotificationService } from "./one-signal-notification.service";
 
 @Injectable()
 export class TapLogsService {
@@ -41,7 +43,8 @@ export class TapLogsService {
     private readonly tapLogsRepo: Repository<TapLogs>,
     private pusherService: PusherService,
     private firebaseProvoder: FirebaseProvider,
-    private firebaseCloudMessagingService: FirebaseCloudMessagingService
+    private firebaseCloudMessagingService: FirebaseCloudMessagingService,
+    private oneSignalNotificationService: OneSignalNotificationService
   ) {}
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
     const skip =
@@ -96,7 +99,7 @@ export class TapLogsService {
       const date = moment(dto.date, DateConstant.DATE_LANGUAGE).format(
         "YYYY-MM-DD"
       );
-      let tapLogs = await entityManager.findOne(TapLogs, {
+      let tapLog = await entityManager.findOne(TapLogs, {
         where: {
           date,
           status: dto.status,
@@ -106,12 +109,17 @@ export class TapLogsService {
           time: dto.time.toUpperCase(),
         },
       });
-      if (!tapLogs) {
-        tapLogs = new TapLogs();
+      if (!tapLog) {
+        tapLog = new TapLogs();
 
-        tapLogs.date = date;
-        tapLogs.time = dto.time;
-        tapLogs.status = dto.status;
+        const timestamp = await entityManager
+          .query(CONST_QUERYCURRENT_TIMESTAMP)
+          .then((res) => {
+            return res[0]["timestamp"];
+          });
+        tapLog.date = timestamp;
+        tapLog.time = dto.time;
+        tapLog.status = dto.status;
         const student = await entityManager.findOne(Students, {
           where: {
             cardNumber: dto.cardNumber,
@@ -121,7 +129,7 @@ export class TapLogsService {
         if (!student) {
           throw Error(STUDENTS_ERROR_NOT_FOUND);
         }
-        tapLogs.student = student;
+        tapLog.student = student;
         const machine = await entityManager.findOne(Machines, {
           where: {
             description: dto.sender,
@@ -131,9 +139,9 @@ export class TapLogsService {
         if (!machine) {
           throw Error(MACHINES_ERROR_NOT_FOUND);
         }
-        tapLogs.machine = machine;
+        tapLog.machine = machine;
 
-        tapLogs = await entityManager.save(TapLogs, tapLogs);
+        tapLog = await entityManager.save(TapLogs, tapLog);
 
         const parentStudents = await entityManager.find(ParentStudent, {
           where: {
@@ -145,32 +153,74 @@ export class TapLogsService {
             parent: {
               user: {
                 userFirebaseTokens: true,
+                userOneSignalSubscriptions: true,
               },
             },
           },
         });
 
-        const userFireBase: UserFirebaseToken[] = [];
+        // const userFireBase: UserFirebaseToken[] = [];
+        // for (const parentStudent of parentStudents) {
+        //   if (
+        //     parentStudent.parent &&
+        //     parentStudent.parent.user &&
+        //     parentStudent.parent.user.userFirebaseTokens
+        //   ) {
+        //     for (const userFirebaseToken of parentStudent.parent.user
+        //       .userFirebaseTokens) {
+        //       if (
+        //         !userFireBase.some(
+        //           (x) => x.firebaseToken === userFirebaseToken.firebaseToken
+        //         )
+        //       ) {
+        //         userFireBase.push(userFirebaseToken);
+        //       }
+        //     }
+        //   }
+        // }
+
+        // if (userFireBase.length > 0) {
+        //   const title = student?.fullName;
+        //   let desc;
+        //   if (dto.status === "LOG IN") {
+        //     desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
+        //   } else {
+        //     desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
+        //   }
+
+        //   const sendToDeviceCalls = [];
+        //   for (const token of userFireBase) {
+        //     if (token.firebaseToken && token.firebaseToken !== "") {
+        //       sendToDeviceCalls.push(
+        //         this.firebaseCloudMessagingService.firebaseSendToDevice(
+        //           token.firebaseToken,
+        //           title,
+        //           desc
+        //         )
+        //       );
+        //     }
+        //   }
+        //   await Promise.all(sendToDeviceCalls);
+
+        const subscriptions = [];
         for (const parentStudent of parentStudents) {
           if (
             parentStudent.parent &&
             parentStudent.parent.user &&
-            parentStudent.parent.user.userFirebaseTokens
+            parentStudent.parent.user.userOneSignalSubscriptions
           ) {
-            for (const userFirebaseToken of parentStudent.parent.user
-              .userFirebaseTokens) {
+            for (const subscription of parentStudent.parent.user
+              .userOneSignalSubscriptions) {
               if (
-                !userFireBase.some(
-                  (x) => x.firebaseToken === userFirebaseToken.firebaseToken
-                )
+                !subscriptions.some((x) => x === subscription.subscriptionId)
               ) {
-                userFireBase.push(userFirebaseToken);
+                subscriptions.push(subscription.subscriptionId);
               }
             }
           }
         }
 
-        if (userFireBase.length > 0) {
+        if (subscriptions.length > 0) {
           const title = student?.fullName;
           let desc;
           if (dto.status === "LOG IN") {
@@ -179,26 +229,21 @@ export class TapLogsService {
             desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
           }
 
-          userFireBase.forEach(async (x) => {
-            if (x.firebaseToken && x.firebaseToken !== "") {
-              const res = await this.firebaseCloudMessagingService.sendToDevice(
-                x.firebaseToken,
-                title,
-                desc
-              );
-              console.log(res);
-            }
-          });
+          await this.oneSignalNotificationService.sendToSubscriber(
+            subscriptions,
+            title,
+            desc
+          );
           await this.logNotification(
             parentStudents.map((x) => x.parent.user),
-            tapLogs.tapLogId,
+            tapLog.tapLogId,
             entityManager,
             title,
             desc
           );
         }
       }
-      return tapLogs;
+      return tapLog;
     });
   }
 
@@ -218,7 +263,12 @@ export class TapLogsService {
         if (!tapLog) {
           tapLog = new TapLogs();
 
-          tapLog.date = date;
+          const timestamp = await entityManager
+            .query(CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+              return res[0]["timestamp"];
+            });
+          tapLog.date = timestamp;
           tapLog.time = dto.time;
           tapLog.status = dto.status;
           const student = await entityManager.findOne(Students, {
@@ -252,51 +302,95 @@ export class TapLogsService {
                 parent: {
                   user: {
                     userFirebaseTokens: true,
+                    userOneSignalSubscriptions: true,
                   },
                 },
               },
             });
 
-            const userFireBase: UserFirebaseToken[] = [];
+            // const userFireBase: UserFirebaseToken[] = [];
+            // for (const parentStudent of parentStudents) {
+            //   if (
+            //     parentStudent.parent &&
+            //     parentStudent.parent.user &&
+            //     parentStudent.parent.user.userFirebaseTokens
+            //   ) {
+            //     for (const userFirebaseToken of parentStudent.parent.user
+            //       .userFirebaseTokens) {
+            //       if (
+            //         !userFireBase.some(
+            //           (x) => x.firebaseToken === userFirebaseToken.firebaseToken
+            //         )
+            //       ) {
+            //         userFireBase.push(userFirebaseToken);
+            //       }
+            //     }
+            //   }
+            // }
+
+            // if (userFireBase.length > 0) {
+            //   const title = student?.fullName;
+            //   let desc;
+            //   if (dto.status === "LOG IN") {
+            //     desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
+            //   } else {
+            //     desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
+            //   }
+
+            //   userFireBase.forEach(async (x) => {
+            //     if (x.firebaseToken && x.firebaseToken !== "") {
+            //       const res =
+            //         await this.firebaseCloudMessagingService.sendToDevice(
+            //           x.firebaseToken,
+            //           title,
+            //           desc
+            //         );
+            //       console.log(res);
+            //     }
+            //   });
+            //   await this.logNotification(
+            //     parentStudents.map((x) => x.parent.user),
+            //     tapLog.tapLogId,
+            //     entityManager,
+            //     title,
+            //     desc
+            //   );
+            // }
+
+            const subscriptions = [];
             for (const parentStudent of parentStudents) {
               if (
                 parentStudent.parent &&
                 parentStudent.parent.user &&
-                parentStudent.parent.user.userFirebaseTokens
+                parentStudent.parent.user.userOneSignalSubscriptions
               ) {
-                for (const userFirebaseToken of parentStudent.parent.user
-                  .userFirebaseTokens) {
+                for (const subscription of parentStudent.parent.user
+                  .userOneSignalSubscriptions) {
                   if (
-                    !userFireBase.some(
-                      (x) => x.firebaseToken === userFirebaseToken.firebaseToken
+                    !subscriptions.some(
+                      (x) => x === subscription.subscriptionId
                     )
                   ) {
-                    userFireBase.push(userFirebaseToken);
+                    subscriptions.push(subscription.subscriptionId);
                   }
                 }
               }
             }
 
-            if (userFireBase.length > 0) {
+            if (subscriptions.length > 0) {
               const title = student?.fullName;
               let desc;
-              if ((dto.status = "LOG IN")) {
+              if (dto.status === "LOG IN") {
                 desc = `Your child, ${student?.fullName} has arrived in the school at ${dto.time}`;
               } else {
                 desc = `Your child, ${student?.fullName} has left the school premises at ${dto.time}`;
               }
 
-              userFireBase.forEach(async (x) => {
-                if (x.firebaseToken && x.firebaseToken !== "") {
-                  const res =
-                    await this.firebaseCloudMessagingService.sendToDevice(
-                      x.firebaseToken,
-                      title,
-                      desc
-                    );
-                  console.log(res);
-                }
-              });
+              await this.oneSignalNotificationService.sendToSubscriber(
+                subscriptions,
+                title,
+                desc
+              );
               await this.logNotification(
                 parentStudents.map((x) => x.parent.user),
                 tapLog.tapLogId,
@@ -324,8 +418,15 @@ export class TapLogsService {
     description: string
   ) {
     const notifcations = [];
+
+    const timestamp = await entityManager
+      .query(CONST_QUERYCURRENT_TIMESTAMP)
+      .then((res) => {
+        return res[0]["timestamp"];
+      });
     users.forEach((x) => {
       notifcations.push({
+        dateTime: timestamp,
         title,
         description,
         type: NOTIF_TYPE.STUDENT_LOG.toString(),

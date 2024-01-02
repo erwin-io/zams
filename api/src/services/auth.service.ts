@@ -587,6 +587,8 @@ export class AuthService {
           user.userName = dto.userName;
           user.password = await hash(dto.password);
           user = await entityManager.save(Users, user);
+          user.userCode = generateIndentityCode(user.userId);
+          user = await entityManager.save(Users, user);
   
           let parent = new Parents();
           parent.user = user;
@@ -655,6 +657,8 @@ export class AuthService {
           user.userType = USER_TYPE.OPERATOR;
           user.userName = dto.userName;
           user.password = await hash(dto.password);
+          user = await entityManager.save(Users, user);
+          user.userCode = generateIndentityCode(user.userId);
           user = await entityManager.save(Users, user);
   
           let operator = new Operators();

@@ -27,6 +27,7 @@ import { LinkStudentRequest } from "../entities/LinkStudentRequest";
 import { Strands } from '../entities/Strands';
 import { UserProfilePic } from '../entities/UserProfilePic';
 import { Files } from '../entities/Files';
+import { UserOneSignalSubscription } from '../entities/UserOneSignalSubscription';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -69,6 +70,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         StudentStrand,
         Files,
         UserProfilePic,
+        UserOneSignalSubscription,
       ],
       synchronize: false, // never use TRUE in production!
       ssl: ssl.toLocaleLowerCase().includes("true"),

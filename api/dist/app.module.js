@@ -55,6 +55,7 @@ const tap_logs_module_1 = require("./controller/tap-logs/tap-logs.module");
 const machines_module_1 = require("./controller/machines/machines.module");
 const strands_module_1 = require("./controller/strands/strands.module");
 const notifications_module_1 = require("./controller/notifications/notifications.module");
+const user_one_signal_subscription_module_1 = require("./controller/user-one-signal-subscription/user-one-signal-subscription.module");
 const envFilePath = (0, utils_1.getEnvPath)(`${__dirname}/common/envs`);
 let AppModule = class AppModule {
 };
@@ -87,6 +88,7 @@ AppModule = __decorate([
             tap_logs_module_1.TapLogsModule,
             strands_module_1.StrandsModule,
             notifications_module_1.NotificationsModule,
+            user_one_signal_subscription_module_1.UserOneSignalSubscriptionModule,
         ],
         providers: [app_service_1.AppService],
         controllers: [],

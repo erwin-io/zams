@@ -29,6 +29,7 @@ const Sections_1 = require("./Sections");
 const Strands_1 = require("./Strands");
 const Students_1 = require("./Students");
 const UserFirebaseToken_1 = require("./UserFirebaseToken");
+const UserOneSignalSubscription_1 = require("./UserOneSignalSubscription");
 const UserProfilePic_1 = require("./UserProfilePic");
 let Users = class Users {
 };
@@ -195,6 +196,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => UserFirebaseToken_1.UserFirebaseToken, (userFirebaseToken) => userFirebaseToken.user),
     __metadata("design:type", Array)
 ], Users.prototype, "userFirebaseTokens", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => UserOneSignalSubscription_1.UserOneSignalSubscription, (userOneSignalSubscription) => userOneSignalSubscription.user),
+    __metadata("design:type", Array)
+], Users.prototype, "userOneSignalSubscriptions", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => UserProfilePic_1.UserProfilePic, (userProfilePic) => userProfilePic.user),
     __metadata("design:type", UserProfilePic_1.UserProfilePic)

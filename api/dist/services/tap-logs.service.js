@@ -21,6 +21,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const moment_1 = __importDefault(require("moment"));
 const notifications_constant_1 = require("../common/constant/notifications.constant");
 const students_constant_1 = require("../common/constant/students.constant");
+const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const top_logs_constant_1 = require("../common/constant/top-logs.constant");
 const utils_1 = require("../common/utils/utils");
 const firebase_provider_1 = require("../core/provider/firebase/firebase-provider");
@@ -34,12 +35,14 @@ const Machines_1 = require("../db/entities/Machines");
 const machines_constant_1 = require("../common/constant/machines.constant");
 const firebase_cloud_messaging_service_1 = require("./firebase-cloud-messaging.service");
 const date_constant_1 = require("../common/constant/date.constant");
+const one_signal_notification_service_1 = require("./one-signal-notification.service");
 let TapLogsService = class TapLogsService {
-    constructor(tapLogsRepo, pusherService, firebaseProvoder, firebaseCloudMessagingService) {
+    constructor(tapLogsRepo, pusherService, firebaseProvoder, firebaseCloudMessagingService, oneSignalNotificationService) {
         this.tapLogsRepo = tapLogsRepo;
         this.pusherService = pusherService;
         this.firebaseProvoder = firebaseProvoder;
         this.firebaseCloudMessagingService = firebaseCloudMessagingService;
+        this.oneSignalNotificationService = oneSignalNotificationService;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -88,7 +91,7 @@ let TapLogsService = class TapLogsService {
     async create(dto) {
         return await this.tapLogsRepo.manager.transaction(async (entityManager) => {
             const date = (0, moment_1.default)(dto.date, date_constant_1.DateConstant.DATE_LANGUAGE).format("YYYY-MM-DD");
-            let tapLogs = await entityManager.findOne(TapLogs_1.TapLogs, {
+            let tapLog = await entityManager.findOne(TapLogs_1.TapLogs, {
                 where: {
                     date,
                     status: dto.status,
@@ -98,11 +101,16 @@ let TapLogsService = class TapLogsService {
                     time: dto.time.toUpperCase(),
                 },
             });
-            if (!tapLogs) {
-                tapLogs = new TapLogs_1.TapLogs();
-                tapLogs.date = date;
-                tapLogs.time = dto.time;
-                tapLogs.status = dto.status;
+            if (!tapLog) {
+                tapLog = new TapLogs_1.TapLogs();
+                const timestamp = await entityManager
+                    .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+                    .then((res) => {
+                    return res[0]["timestamp"];
+                });
+                tapLog.date = timestamp;
+                tapLog.time = dto.time;
+                tapLog.status = dto.status;
                 const student = await entityManager.findOne(Students_1.Students, {
                     where: {
                         cardNumber: dto.cardNumber,
@@ -112,7 +120,7 @@ let TapLogsService = class TapLogsService {
                 if (!student) {
                     throw Error(students_constant_1.STUDENTS_ERROR_NOT_FOUND);
                 }
-                tapLogs.student = student;
+                tapLog.student = student;
                 const machine = await entityManager.findOne(Machines_1.Machines, {
                     where: {
                         description: dto.sender,
@@ -122,8 +130,8 @@ let TapLogsService = class TapLogsService {
                 if (!machine) {
                     throw Error(machines_constant_1.MACHINES_ERROR_NOT_FOUND);
                 }
-                tapLogs.machine = machine;
-                tapLogs = await entityManager.save(TapLogs_1.TapLogs, tapLogs);
+                tapLog.machine = machine;
+                tapLog = await entityManager.save(TapLogs_1.TapLogs, tapLog);
                 const parentStudents = await entityManager.find(ParentStudent_1.ParentStudent, {
                     where: {
                         student: {
@@ -134,24 +142,25 @@ let TapLogsService = class TapLogsService {
                         parent: {
                             user: {
                                 userFirebaseTokens: true,
+                                userOneSignalSubscriptions: true,
                             },
                         },
                     },
                 });
-                const userFireBase = [];
+                const subscriptions = [];
                 for (const parentStudent of parentStudents) {
                     if (parentStudent.parent &&
                         parentStudent.parent.user &&
-                        parentStudent.parent.user.userFirebaseTokens) {
-                        for (const userFirebaseToken of parentStudent.parent.user
-                            .userFirebaseTokens) {
-                            if (!userFireBase.some((x) => x.firebaseToken === userFirebaseToken.firebaseToken)) {
-                                userFireBase.push(userFirebaseToken);
+                        parentStudent.parent.user.userOneSignalSubscriptions) {
+                        for (const subscription of parentStudent.parent.user
+                            .userOneSignalSubscriptions) {
+                            if (!subscriptions.some((x) => x === subscription.subscriptionId)) {
+                                subscriptions.push(subscription.subscriptionId);
                             }
                         }
                     }
                 }
-                if (userFireBase.length > 0) {
+                if (subscriptions.length > 0) {
                     const title = student === null || student === void 0 ? void 0 : student.fullName;
                     let desc;
                     if (dto.status === "LOG IN") {
@@ -160,16 +169,11 @@ let TapLogsService = class TapLogsService {
                     else {
                         desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises at ${dto.time}`;
                     }
-                    userFireBase.forEach(async (x) => {
-                        if (x.firebaseToken && x.firebaseToken !== "") {
-                            const res = await this.firebaseCloudMessagingService.sendToDevice(x.firebaseToken, title, desc);
-                            console.log(res);
-                        }
-                    });
-                    await this.logNotification(parentStudents.map((x) => x.parent.user), tapLogs.tapLogId, entityManager, title, desc);
+                    await this.oneSignalNotificationService.sendToSubscriber(subscriptions, title, desc);
+                    await this.logNotification(parentStudents.map((x) => x.parent.user), tapLog.tapLogId, entityManager, title, desc);
                 }
             }
-            return tapLogs;
+            return tapLog;
         });
     }
     async createBatch(dtos) {
@@ -185,7 +189,12 @@ let TapLogsService = class TapLogsService {
                 });
                 if (!tapLog) {
                     tapLog = new TapLogs_1.TapLogs();
-                    tapLog.date = date;
+                    const timestamp = await entityManager
+                        .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+                        .then((res) => {
+                        return res[0]["timestamp"];
+                    });
+                    tapLog.date = timestamp;
                     tapLog.time = dto.time;
                     tapLog.status = dto.status;
                     const student = await entityManager.findOne(Students_1.Students, {
@@ -217,38 +226,34 @@ let TapLogsService = class TapLogsService {
                                 parent: {
                                     user: {
                                         userFirebaseTokens: true,
+                                        userOneSignalSubscriptions: true,
                                     },
                                 },
                             },
                         });
-                        const userFireBase = [];
+                        const subscriptions = [];
                         for (const parentStudent of parentStudents) {
                             if (parentStudent.parent &&
                                 parentStudent.parent.user &&
-                                parentStudent.parent.user.userFirebaseTokens) {
-                                for (const userFirebaseToken of parentStudent.parent.user
-                                    .userFirebaseTokens) {
-                                    if (!userFireBase.some((x) => x.firebaseToken === userFirebaseToken.firebaseToken)) {
-                                        userFireBase.push(userFirebaseToken);
+                                parentStudent.parent.user.userOneSignalSubscriptions) {
+                                for (const subscription of parentStudent.parent.user
+                                    .userOneSignalSubscriptions) {
+                                    if (!subscriptions.some((x) => x === subscription.subscriptionId)) {
+                                        subscriptions.push(subscription.subscriptionId);
                                     }
                                 }
                             }
                         }
-                        if (userFireBase.length > 0) {
+                        if (subscriptions.length > 0) {
                             const title = student === null || student === void 0 ? void 0 : student.fullName;
                             let desc;
-                            if ((dto.status = "LOG IN")) {
+                            if (dto.status === "LOG IN") {
                                 desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has arrived in the school at ${dto.time}`;
                             }
                             else {
                                 desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises at ${dto.time}`;
                             }
-                            userFireBase.forEach(async (x) => {
-                                if (x.firebaseToken && x.firebaseToken !== "") {
-                                    const res = await this.firebaseCloudMessagingService.sendToDevice(x.firebaseToken, title, desc);
-                                    console.log(res);
-                                }
-                            });
+                            await this.oneSignalNotificationService.sendToSubscriber(subscriptions, title, desc);
                             await this.logNotification(parentStudents.map((x) => x.parent.user), tapLog.tapLogId, entityManager, title, desc);
                         }
                     }
@@ -260,8 +265,14 @@ let TapLogsService = class TapLogsService {
     }
     async logNotification(users, referenceId, entityManager, title, description) {
         const notifcations = [];
+        const timestamp = await entityManager
+            .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+            return res[0]["timestamp"];
+        });
         users.forEach((x) => {
             notifcations.push({
+                dateTime: timestamp,
                 title,
                 description,
                 type: notifications_constant_1.NOTIF_TYPE.STUDENT_LOG.toString(),
@@ -280,7 +291,8 @@ TapLogsService = __decorate([
     __metadata("design:paramtypes", [typeorm_2.Repository,
         pusher_service_1.PusherService,
         firebase_provider_1.FirebaseProvider,
-        firebase_cloud_messaging_service_1.FirebaseCloudMessagingService])
+        firebase_cloud_messaging_service_1.FirebaseCloudMessagingService,
+        one_signal_notification_service_1.OneSignalNotificationService])
 ], TapLogsService);
 exports.TapLogsService = TapLogsService;
 //# sourceMappingURL=tap-logs.service.js.map
