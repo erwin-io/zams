@@ -29,6 +29,13 @@ export class OneSignalNotificationService {
             contents: {
               en: description,
             },
+            android_sound: this.config.get<string>("ONE_SIGNAL_NOTIF_A_SOUND"),
+            android_channel_id: this.config.get<string>(
+              "ONE_SIGNAL_NOTIF_A_CHANNEL_ID"
+            ),
+            existing_android_channel_id: this.config.get<string>(
+              "ONE_SIGNAL_NOTIF_A_EXISTING_CHANNEL_ID"
+            ),
           },
           {
             responseType: "json",
