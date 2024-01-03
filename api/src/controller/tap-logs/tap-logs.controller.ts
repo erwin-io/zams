@@ -6,8 +6,9 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from "@nestjs/common";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
 import {
   DELETE_SUCCESS,
   SAVING_SUCCESS,
@@ -56,6 +57,50 @@ export class TapLogsController {
     }
   }
 
+  @Get("getStudentsTapsByParentCode/:parentCode")
+  @ApiQuery({ name: "date", required: true, type: Date })
+  //   @UseGuards(JwtAuthGuard)
+  async getStudentsTapsByParentCode(
+    @Param("parentCode") parentCode: string,
+    @Query("date") date = new Date()
+  ) {
+    const res = {} as ApiResponseModel<any>;
+    try {
+      res.data = await this.tapLogsService.getStudentsTapsByParentCode(
+        parentCode,
+        date
+      );
+      res.success = true;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
+  @Get("getStudentsTapsByStudentCode/:studentCode")
+  @ApiQuery({ name: "date", required: true, type: Date })
+  //   @UseGuards(JwtAuthGuard)
+  async getStudentsTapsByStudentCode(
+    @Param("studentCode") studentCode: string,
+    @Query("date") date = new Date()
+  ) {
+    const res = {} as ApiResponseModel<any>;
+    try {
+      res.data = await this.tapLogsService.getStudentsTapsByStudentCode(
+        studentCode,
+        date
+      );
+      res.success = true;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
   @Post("")
   //   @UseGuards(JwtAuthGuard)
   async create(@Body() tapLogsDto: CreateTapLogDto) {
@@ -71,7 +116,6 @@ export class TapLogsController {
       return res;
     }
   }
-
 
   @ApiBody({
     isArray: true,

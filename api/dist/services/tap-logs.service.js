@@ -70,6 +70,67 @@ let TapLogsService = class TapLogsService {
             total,
         };
     }
+    async getStudentsTapsByParentCode(parentCode, date) {
+        date = (0, moment_1.default)(date).format("YYYY-MM-DD");
+        const res = await this.tapLogsRepo.manager.query(`
+      Select 
+      tl."StudentId" AS "studentId",  
+      MAX(s."StudentCode") AS "studentCode",
+      MAX(s."FirstName") AS "firstName",
+      MAX(s."MiddleInitial") AS "middleInitial",
+      MAX(s."LastName") AS "lastName",
+      MAX(s."CardNumber") AS "cardNumber",
+      MAX(s."MobileNumber") AS "mobileNumber",
+      MAX(s."Email") AS "email",
+      MAX(s."Address") AS "address",
+      MAX(s."RegistrationDate") AS "registrationDate",
+      MAX(s."FullName") AS "fullName",
+      array_to_json(array_agg(t)) AS "logs" from (
+        select "TapLogId" as "tapLogId", "Status" as "status", "Time" as "time",
+        ((CONCAT("Date",' ',"Time")::timestamp WITH TIME ZONE AT TIME ZONE 'Asia/Manila') AT TIME ZONE 'Asia/Manila'::text) as "dateTime" 
+        from dbo."TapLogs"
+      ) t 
+      LEFT JOIN dbo."TapLogs" tl ON t."tapLogId" = tl."TapLogId"
+      LEFT JOIN dbo."ParentStudent" ps ON tl."StudentId" = ps."StudentId"
+      LEFT JOIN dbo."Students" s ON ps."StudentId" = s."StudentId"
+      LEFT JOIN dbo."Parents" p ON ps."ParentId" = ps."ParentId"
+      WHERE tl."Date" = '${date}'
+      AND p."ParentCode" = '${parentCode}'
+      GROUP BY tl."StudentId"
+      ORDER BY tl."StudentId"
+    `);
+        return res.map((x) => {
+            x.logs.sort((a, b) => {
+                return new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime();
+            });
+            const log = x.logs.length > 1 ? x.logs[x.logs.length - 1] : x.logs[0];
+            x.status = log.status;
+            x.recentTapTime = log.time;
+            x.arrivedTime = x.logs[0].time;
+            return x;
+        });
+    }
+    async getStudentsTapsByStudentCode(studentCode, date) {
+        date = (0, moment_1.default)(date).format("YYYY-MM-DD");
+        const res = await this.tapLogsRepo.manager.query(`
+      Select 
+      tl."TapLogId" AS "tapLogId",
+      tl."Status" AS "status",
+      tl."Time" AS "time",
+      t."DateTime" AS "date"
+      from (
+      select "TapLogId" as "tapLogId",
+      ((CONCAT("Date",' ',"Time")::timestamp WITH TIME ZONE AT TIME ZONE 'Asia/Manila') AT TIME ZONE 'Asia/Manila'::text) as "DateTime" 
+      from dbo."TapLogs"
+      ) t 
+      LEFT JOIN dbo."TapLogs" tl ON t."tapLogId" = tl."TapLogId"
+      LEFT JOIN dbo."Students" s ON tl."StudentId" = s."StudentId"
+      WHERE s."StudentCode" = '${studentCode}'
+      AND tl."Date" = '${date}'
+      ORDER BY t."DateTime" ASC
+    `);
+        return res;
+    }
     async getById(tapLogId) {
         const result = await this.tapLogsRepo.findOne({
             where: {

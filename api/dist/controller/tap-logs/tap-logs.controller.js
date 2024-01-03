@@ -49,6 +49,32 @@ let TapLogsController = class TapLogsController {
             return res;
         }
     }
+    async getStudentsTapsByParentCode(parentCode, date = new Date()) {
+        const res = {};
+        try {
+            res.data = await this.tapLogsService.getStudentsTapsByParentCode(parentCode, date);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
+    async getStudentsTapsByStudentCode(studentCode, date = new Date()) {
+        const res = {};
+        try {
+            res.data = await this.tapLogsService.getStudentsTapsByStudentCode(studentCode, date);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
     async create(tapLogsDto) {
         const res = {};
         try {
@@ -92,6 +118,24 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TapLogsController.prototype, "getDetails", null);
+__decorate([
+    (0, common_1.Get)("getStudentsTapsByParentCode/:parentCode"),
+    (0, swagger_1.ApiQuery)({ name: "date", required: true, type: Date }),
+    __param(0, (0, common_1.Param)("parentCode")),
+    __param(1, (0, common_1.Query)("date")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], TapLogsController.prototype, "getStudentsTapsByParentCode", null);
+__decorate([
+    (0, common_1.Get)("getStudentsTapsByStudentCode/:studentCode"),
+    (0, swagger_1.ApiQuery)({ name: "date", required: true, type: Date }),
+    __param(0, (0, common_1.Param)("studentCode")),
+    __param(1, (0, common_1.Query)("date")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], TapLogsController.prototype, "getStudentsTapsByStudentCode", null);
 __decorate([
     (0, common_1.Post)(""),
     __param(0, (0, common_1.Body)()),

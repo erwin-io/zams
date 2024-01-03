@@ -11,6 +11,8 @@ export declare class TapLogsController {
         total: number;
     }>>;
     getDetails(tapLogId: string): Promise<ApiResponseModel<TapLogs>>;
+    getStudentsTapsByParentCode(parentCode: string, date?: Date): Promise<ApiResponseModel<any>>;
+    getStudentsTapsByStudentCode(studentCode: string, date?: Date): Promise<ApiResponseModel<any>>;
     create(tapLogsDto: CreateTapLogDto): Promise<ApiResponseModel<TapLogs>>;
     createBatch(tapLogsDtos: CreateTapLogDto[]): Promise<ApiResponseModel<any[]>>;
 }

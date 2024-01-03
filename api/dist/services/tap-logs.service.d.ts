@@ -22,6 +22,8 @@ export declare class TapLogsService {
         results: TapLogs[];
         total: number;
     }>;
+    getStudentsTapsByParentCode(parentCode: any, date: any): Promise<any[]>;
+    getStudentsTapsByStudentCode(studentCode: any, date: any): Promise<TapLogs[]>;
     getById(tapLogId: any): Promise<TapLogs>;
     create(dto: CreateTapLogDto): Promise<TapLogs>;
     createBatch(dtos: CreateTapLogDto[]): Promise<any[]>;
