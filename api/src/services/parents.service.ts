@@ -90,6 +90,9 @@ export class ParentsService {
             studentCourse: {
               course: true,
             },
+            studentStrand: {
+              strand: true,
+            },
             schoolYearLevel: true,
           },
         },
