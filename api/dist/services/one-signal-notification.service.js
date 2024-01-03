@@ -19,14 +19,17 @@ let OneSignalNotificationService = class OneSignalNotificationService {
         this.httpService = httpService;
         this.config = config;
     }
-    async sendToSubscriber(subscriptionIds, title, description) {
+    async sendToSubscriber(subscriptionIds, type, referenceId, title, description) {
         const url = this.config.get("ONE_SIGNAL_NOTIF_URL");
         const apiKey = this.config.get("ONE_SIGNAL_API_KEY");
         const result = await (0, rxjs_1.firstValueFrom)(this.httpService
             .post(url, {
             app_id: this.config.get("ONE_SIGNAL_APP_ID"),
             include_subscription_ids: subscriptionIds,
-            data: {},
+            data: {
+                type,
+                referenceId,
+            },
             big_picture: this.config.get("ONE_SIGNAL_NOTIF_IMAGE"),
             headings: {
                 en: title,

@@ -32,12 +32,14 @@ const Parents_1 = require("../db/entities/Parents");
 const ParentStudent_1 = require("../db/entities/ParentStudent");
 const parents_constant_1 = require("../common/constant/parents.constant");
 const firebase_provider_1 = require("../core/provider/firebase/firebase-provider");
-const UserFirebaseToken_1 = require("../db/entities/UserFirebaseToken");
+const one_signal_notification_service_1 = require("./one-signal-notification.service");
+const UserOneSignalSubscription_1 = require("../db/entities/UserOneSignalSubscription");
 let LinkStudentRequestService = class LinkStudentRequestService {
-    constructor(linkStudentRequestRepo, pusherService, firebaseProvoder) {
+    constructor(linkStudentRequestRepo, pusherService, firebaseProvoder, oneSignalNotificationService) {
         this.linkStudentRequestRepo = linkStudentRequestRepo;
         this.pusherService = pusherService;
         this.firebaseProvoder = firebaseProvoder;
+        this.oneSignalNotificationService = oneSignalNotificationService;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -257,23 +259,18 @@ let LinkStudentRequestService = class LinkStudentRequestService {
                     updatedByUser: true,
                 },
             });
-            const userFireBase = await entityManager.find(UserFirebaseToken_1.UserFirebaseToken, {
+            const notifTitle = notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_APPROVED;
+            const notifDesc = "Request to Link Student " +
+                ((_a = linkStudentRequest.student) === null || _a === void 0 ? void 0 : _a.fullName) +
+                " was approved!";
+            const subscriptions = await this.linkStudentRequestRepo.manager.find(UserOneSignalSubscription_1.UserOneSignalSubscription, {
                 where: {
                     user: {
-                        userId: (_b = (_a = linkStudentRequest === null || linkStudentRequest === void 0 ? void 0 : linkStudentRequest.requestedByParent) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.userId,
+                        userId: (_c = (_b = linkStudentRequest === null || linkStudentRequest === void 0 ? void 0 : linkStudentRequest.requestedByParent) === null || _b === void 0 ? void 0 : _b.user) === null || _c === void 0 ? void 0 : _c.userId,
                     },
                 },
             });
-            const notifTitle = notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_APPROVED;
-            const notifDesc = "Request to Link Student " +
-                ((_c = linkStudentRequest.student) === null || _c === void 0 ? void 0 : _c.fullName) +
-                " was approved!";
-            userFireBase.forEach(async (x) => {
-                if (x.firebaseToken && x.firebaseToken !== "") {
-                    const res = await this.firebaseSendToDevice(x.firebaseToken, notifTitle, notifDesc);
-                    console.log(res);
-                }
-            });
+            await this.oneSignalNotificationService.sendToSubscriber(subscriptions.map((x) => x.subscriptionId), notifications_constant_1.NOTIF_TYPE.LINK_REQUEST.toString(), linkStudentRequest.linkStudentRequestCode, notifTitle, notifDesc);
             delete linkStudentRequest.requestedByParent.user.password;
             delete linkStudentRequest.updatedByUser.password;
             await this.logNotification(linkStudentRequest.requestedByParent.user, linkStudentRequest.linkStudentRequestCode, entityManager, notifTitle, notifDesc);
@@ -334,23 +331,18 @@ let LinkStudentRequestService = class LinkStudentRequestService {
                     updatedByUser: true,
                 },
             });
-            const userFireBase = await entityManager.find(UserFirebaseToken_1.UserFirebaseToken, {
+            const notifTitle = notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_REJECTED;
+            const notifDesc = "Request to Link Student " +
+                ((_a = linkStudentRequest.student) === null || _a === void 0 ? void 0 : _a.fullName) +
+                " was rejected!";
+            const subscriptions = await this.linkStudentRequestRepo.manager.find(UserOneSignalSubscription_1.UserOneSignalSubscription, {
                 where: {
                     user: {
-                        userId: (_b = (_a = linkStudentRequest === null || linkStudentRequest === void 0 ? void 0 : linkStudentRequest.requestedByParent) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.userId,
+                        userId: (_c = (_b = linkStudentRequest === null || linkStudentRequest === void 0 ? void 0 : linkStudentRequest.requestedByParent) === null || _b === void 0 ? void 0 : _b.user) === null || _c === void 0 ? void 0 : _c.userId,
                     },
                 },
             });
-            const notifTitle = notifications_constant_1.NOTIF_TITLE.LINK_REQUEST_REJECTED;
-            const notifDesc = "Request to Link Student " +
-                ((_c = linkStudentRequest.student) === null || _c === void 0 ? void 0 : _c.fullName) +
-                " was rejected!";
-            userFireBase.forEach(async (x) => {
-                if (x.firebaseToken && x.firebaseToken !== "") {
-                    const res = await this.firebaseSendToDevice(x.firebaseToken, notifTitle, notifDesc);
-                    console.log(res);
-                }
-            });
+            await this.oneSignalNotificationService.sendToSubscriber(subscriptions, notifications_constant_1.NOTIF_TYPE.LINK_REQUEST.toString(), linkStudentRequest.linkStudentRequestCode, notifTitle, notifDesc);
             delete linkStudentRequest.requestedByParent.user.password;
             delete linkStudentRequest.updatedByUser.password;
             await this.logNotification(linkStudentRequest.requestedByParent.user, linkStudentRequest.linkStudentRequestCode, entityManager, notifTitle, notifDesc);
@@ -424,34 +416,14 @@ let LinkStudentRequestService = class LinkStudentRequestService {
         await entityManager.save(Notifications_1.Notifications, notifcation);
         await this.pusherService.sendNotif([user.userId], title, description);
     }
-    async firebaseSendToDevice(token, title, description) {
-        return await this.firebaseProvoder.app
-            .messaging()
-            .sendToDevice(token, {
-            notification: {
-                title: title,
-                body: description,
-                sound: "notif_alert",
-            },
-        }, {
-            priority: "high",
-            timeToLive: 60 * 24,
-            android: { sound: "notif_alert" },
-        })
-            .then((response) => {
-            console.log("Successfully sent message:", response);
-        })
-            .catch((error) => {
-            throw new common_1.HttpException(`Error sending notif! ${error.message}`, common_1.HttpStatus.BAD_REQUEST);
-        });
-    }
 };
 LinkStudentRequestService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(LinkStudentRequest_1.LinkStudentRequest)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         pusher_service_1.PusherService,
-        firebase_provider_1.FirebaseProvider])
+        firebase_provider_1.FirebaseProvider,
+        one_signal_notification_service_1.OneSignalNotificationService])
 ], LinkStudentRequestService);
 exports.LinkStudentRequestService = LinkStudentRequestService;
 //# sourceMappingURL=link-student-request.service.js.map

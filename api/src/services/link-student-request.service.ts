@@ -30,6 +30,8 @@ import { PARENTS_ERROR_NOT_FOUND } from "src/common/constant/parents.constant";
 import { FirebaseProvider } from "src/core/provider/firebase/firebase-provider";
 import { MessagingDevicesResponse } from "firebase-admin/lib/messaging/messaging-api";
 import { UserFirebaseToken } from "src/db/entities/UserFirebaseToken";
+import { OneSignalNotificationService } from "./one-signal-notification.service";
+import { UserOneSignalSubscription } from "src/db/entities/UserOneSignalSubscription";
 
 @Injectable()
 export class LinkStudentRequestService {
@@ -37,7 +39,8 @@ export class LinkStudentRequestService {
     @InjectRepository(LinkStudentRequest)
     private readonly linkStudentRequestRepo: Repository<LinkStudentRequest>,
     private pusherService: PusherService,
-    private firebaseProvoder: FirebaseProvider
+    private firebaseProvoder: FirebaseProvider,
+    private oneSignalNotificationService: OneSignalNotificationService
   ) {}
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
     const skip =
@@ -291,28 +294,47 @@ export class LinkStudentRequestService {
             updatedByUser: true,
           },
         });
-        const userFireBase = await entityManager.find(UserFirebaseToken, {
-          where: {
-            user: {
-              userId: linkStudentRequest?.requestedByParent?.user?.userId,
-            },
-          },
-        });
         const notifTitle = NOTIF_TITLE.LINK_REQUEST_APPROVED;
         const notifDesc =
           "Request to Link Student " +
           linkStudentRequest.student?.fullName +
           " was approved!";
-        userFireBase.forEach(async (x) => {
-          if (x.firebaseToken && x.firebaseToken !== "") {
-            const res = await this.firebaseSendToDevice(
-              x.firebaseToken,
-              notifTitle,
-              notifDesc
-            );
-            console.log(res);
+
+        // const userFireBase = await entityManager.find(UserFirebaseToken, {
+        //   where: {
+        //     user: {
+        //       userId: linkStudentRequest?.requestedByParent?.user?.userId,
+        //     },
+        //   },
+        // });
+        // userFireBase.forEach(async (x) => {
+        //   if (x.firebaseToken && x.firebaseToken !== "") {
+        //     const res = await this.firebaseSendToDevice(
+        //       x.firebaseToken,
+        //       notifTitle,
+        //       notifDesc
+        //     );
+        //     console.log(res);
+        //   }
+        // });
+
+        const subscriptions = await this.linkStudentRequestRepo.manager.find(
+          UserOneSignalSubscription,
+          {
+            where: {
+              user: {
+                userId: linkStudentRequest?.requestedByParent?.user?.userId,
+              },
+            },
           }
-        });
+        );
+        await this.oneSignalNotificationService.sendToSubscriber(
+          subscriptions.map((x) => x.subscriptionId),
+          NOTIF_TYPE.LINK_REQUEST.toString(),
+          linkStudentRequest.linkStudentRequestCode,
+          notifTitle,
+          notifDesc
+        );
         delete linkStudentRequest.requestedByParent.user.password;
         delete linkStudentRequest.updatedByUser.password;
         await this.logNotification(
@@ -391,28 +413,45 @@ export class LinkStudentRequestService {
             updatedByUser: true,
           },
         });
-        const userFireBase = await entityManager.find(UserFirebaseToken, {
-          where: {
-            user: {
-              userId: linkStudentRequest?.requestedByParent?.user?.userId,
-            },
-          },
-        });
         const notifTitle = NOTIF_TITLE.LINK_REQUEST_REJECTED;
         const notifDesc =
           "Request to Link Student " +
           linkStudentRequest.student?.fullName +
           " was rejected!";
-        userFireBase.forEach(async (x) => {
-          if (x.firebaseToken && x.firebaseToken !== "") {
-            const res = await this.firebaseSendToDevice(
-              x.firebaseToken,
-              notifTitle,
-              notifDesc
-            );
-            console.log(res);
+        // const userFireBase = await entityManager.find(UserFirebaseToken, {
+        //   where: {
+        //     user: {
+        //       userId: linkStudentRequest?.requestedByParent?.user?.userId,
+        //     },
+        //   },
+        // });
+        // userFireBase.forEach(async (x) => {
+        //   if (x.firebaseToken && x.firebaseToken !== "") {
+        //     const res = await this.firebaseSendToDevice(
+        //       x.firebaseToken,
+        //       notifTitle,
+        //       notifDesc
+        //     );
+        //     console.log(res);
+        //   }
+        // });
+        const subscriptions = await this.linkStudentRequestRepo.manager.find(
+          UserOneSignalSubscription,
+          {
+            where: {
+              user: {
+                userId: linkStudentRequest?.requestedByParent?.user?.userId,
+              },
+            },
           }
-        });
+        );
+        await this.oneSignalNotificationService.sendToSubscriber(
+          subscriptions,
+          NOTIF_TYPE.LINK_REQUEST.toString(),
+          linkStudentRequest.linkStudentRequestCode,
+          notifTitle,
+          notifDesc
+        );
         delete linkStudentRequest.requestedByParent.user.password;
         delete linkStudentRequest.updatedByUser.password;
         await this.logNotification(
@@ -514,32 +553,32 @@ export class LinkStudentRequestService {
     await this.pusherService.sendNotif([user.userId], title, description);
   }
 
-  async firebaseSendToDevice(token, title, description) {
-    return await this.firebaseProvoder.app
-      .messaging()
-      .sendToDevice(
-        token,
-        {
-          notification: {
-            title: title,
-            body: description,
-            sound: "notif_alert",
-          },
-        },
-        {
-          priority: "high",
-          timeToLive: 60 * 24,
-          android: { sound: "notif_alert" },
-        }
-      )
-      .then((response: MessagingDevicesResponse) => {
-        console.log("Successfully sent message:", response);
-      })
-      .catch((error) => {
-        throw new HttpException(
-          `Error sending notif! ${error.message}`,
-          HttpStatus.BAD_REQUEST
-        );
-      });
-  }
+  // async firebaseSendToDevice(token, title, description) {
+  //   return await this.firebaseProvoder.app
+  //     .messaging()
+  //     .sendToDevice(
+  //       token,
+  //       {
+  //         notification: {
+  //           title: title,
+  //           body: description,
+  //           sound: "notif_alert",
+  //         },
+  //       },
+  //       {
+  //         priority: "high",
+  //         timeToLive: 60 * 24,
+  //         android: { sound: "notif_alert" },
+  //       }
+  //     )
+  //     .then((response: MessagingDevicesResponse) => {
+  //       console.log("Successfully sent message:", response);
+  //     })
+  //     .catch((error) => {
+  //       throw new HttpException(
+  //         `Error sending notif! ${error.message}`,
+  //         HttpStatus.BAD_REQUEST
+  //       );
+  //     });
+  // }
 }

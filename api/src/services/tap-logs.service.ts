@@ -292,6 +292,8 @@ export class TapLogsService {
 
           await this.oneSignalNotificationService.sendToSubscriber(
             subscriptions,
+            NOTIF_TYPE.STUDENT_LOG.toString(),
+            tapLog.tapLogId,
             title,
             desc
           );
@@ -447,6 +449,8 @@ export class TapLogsService {
 
               await this.oneSignalNotificationService.sendToSubscriber(
                 subscriptions,
+                NOTIF_TYPE.STUDENT_LOG.toString(),
+                tapLog.tapLogId,
                 title,
                 desc
               );

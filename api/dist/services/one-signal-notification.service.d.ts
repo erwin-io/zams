@@ -4,5 +4,5 @@ export declare class OneSignalNotificationService {
     private readonly httpService;
     private readonly config;
     constructor(httpService: HttpService, config: ConfigService);
-    sendToSubscriber(subscriptionIds: any[], title: any, description: any): Promise<any>;
+    sendToSubscriber(subscriptionIds: any[], type: any, referenceId: any, title: any, description: any): Promise<any>;
 }

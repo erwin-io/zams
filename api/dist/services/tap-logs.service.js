@@ -226,7 +226,7 @@ let TapLogsService = class TapLogsService {
                     else {
                         desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises on ${longDate} at ${dto.time}`;
                     }
-                    await this.oneSignalNotificationService.sendToSubscriber(subscriptions, title, desc);
+                    await this.oneSignalNotificationService.sendToSubscriber(subscriptions, notifications_constant_1.NOTIF_TYPE.STUDENT_LOG.toString(), tapLog.tapLogId, title, desc);
                     await this.logNotification(parentStudents.map((x) => x.parent.user), tapLog.tapLogId, entityManager, title, desc);
                 }
             }
@@ -306,7 +306,7 @@ let TapLogsService = class TapLogsService {
                             else {
                                 desc = `Your child, ${student === null || student === void 0 ? void 0 : student.fullName} has left the school premises on ${longDate} at ${dto.time}`;
                             }
-                            await this.oneSignalNotificationService.sendToSubscriber(subscriptions, title, desc);
+                            await this.oneSignalNotificationService.sendToSubscriber(subscriptions, notifications_constant_1.NOTIF_TYPE.STUDENT_LOG.toString(), tapLog.tapLogId, title, desc);
                             await this.logNotification(parentStudents.map((x) => x.parent.user), tapLog.tapLogId, entityManager, title, desc);
                         }
                     }

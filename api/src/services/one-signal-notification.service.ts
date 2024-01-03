@@ -11,7 +11,13 @@ export class OneSignalNotificationService {
     private readonly config: ConfigService
   ) {}
 
-  async sendToSubscriber(subscriptionIds: any[], title, description) {
+  async sendToSubscriber(
+    subscriptionIds: any[],
+    type,
+    referenceId,
+    title,
+    description
+  ) {
     const url = this.config.get<string>("ONE_SIGNAL_NOTIF_URL");
     const apiKey = this.config.get<string>("ONE_SIGNAL_API_KEY");
     const result = await firstValueFrom(
@@ -21,7 +27,10 @@ export class OneSignalNotificationService {
           {
             app_id: this.config.get<string>("ONE_SIGNAL_APP_ID"),
             include_subscription_ids: subscriptionIds,
-            data: {},
+            data: {
+              type,
+              referenceId,
+            },
             big_picture: this.config.get<string>("ONE_SIGNAL_NOTIF_IMAGE"),
             headings: {
               en: title,
