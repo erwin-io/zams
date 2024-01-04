@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { SpinnerVisibilityService } from 'ng-http-loader';
+import { Spinkit, SpinnerVisibilityService } from 'ng-http-loader';
 import { Subscription, forkJoin } from 'rxjs';
 import { Employees } from 'src/app/model/employees';
 import { Departments } from 'src/app/model/departments';
@@ -24,6 +24,8 @@ import { SelectSchoolYearLevelDialogComponent } from 'src/app/shared/select-scho
   styleUrls: ['./ops-sections-form.component.scss']
 })
 export class OpsSectionFormComponent {
+
+  public spinkit = Spinkit;
   sectionCode;
   isNew = false;
   error;
@@ -82,6 +84,9 @@ export class OpsSectionFormComponent {
             schoolYearLevelId: section.data.schoolYearLevel?.schoolYearLevelId,
             departmentId: section.data.department?.departmentId,
           });
+          this.adviserEmployee = section.data?.adviserEmployee;
+          this.schoolYearLevel = section.data?.schoolYearLevel;
+          this.department = section.data?.department;
           this.sectionForm.updateValueAndValidity();
           this.isLoading = false;
         } else {

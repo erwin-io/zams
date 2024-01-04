@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { Router, ResolveEnd, ActivatedRouteSnapshot, RouterEvent, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, ActivatedRoute } from '@angular/router';
+import { Spinkit } from 'ng-http-loader';
 import { filter } from 'rxjs';
 import { Employees } from 'src/app/model/employees';
 import { Operators } from 'src/app/model/operators';
@@ -18,6 +19,7 @@ import { AlertDialogComponent } from 'src/app/shared/alert-dialog/alert-dialog.c
   styleUrls: ['./operations.component.scss']
 })
 export class OpsComponent {
+  public spinkit = Spinkit;
   appName = "";
   title = "";
   loading = false;

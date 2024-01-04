@@ -262,6 +262,7 @@ export class OpsSectionsComponent {
         disableClose: true,
         panelClass: "form-dialog"
       });
+      dialogRef.componentInstance.school = this.selectedSchool;
       dialogRef.componentInstance.sectionCode = data.sectionCode;
       dialogRef.componentInstance.currentOperatorCode = this.currentOperatorCode;
       dialogRef.componentInstance.schoolYearLevel = this.selectedSchoolYearLevel && this.selectedSchoolYearLevel?.schoolYearLevelCode ? this.selectedSchoolYearLevel : null;
