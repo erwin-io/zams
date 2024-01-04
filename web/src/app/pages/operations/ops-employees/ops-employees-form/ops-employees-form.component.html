@@ -14,36 +14,6 @@
           fxFlex="100"
           style="gap: 16px">
           <div
-          fxFlex="100"
-          fxLayout="column"
-          fxLayout.gt-sm="row"
-          style="gap: 16px">
-            <mat-form-field
-              appearance="outline"
-              fxFlex="33.33%"
-              class="cell"
-              [ngClass.gt-sm]="{ isLargeScreen: true }"
-              appearance="outline">
-              <mat-label>Employee Title</mat-label>
-              <input
-                readonly
-                matInput
-                [value]="employeeTitle?.name"
-                placeholder="Employee Title"/>
-                <mat-icon
-                  class="icon-right"
-                  style="cursor: pointer;"
-                  matSuffix
-                  matTooltip="Search Employee Title"
-                  (click)="showSelectEmployeeTitleDialog()">
-                  search
-                </mat-icon>
-            </mat-form-field>
-            <span
-              style="color: #f44336;font-size: 14px!important;"
-              *ngIf="f['employeeTitleId'].touched && f['employeeTitleId'].dirty && f['employeeTitleId'].errors">Please select Employee Title</span>
-          </div>
-          <div
           fxLayout="column"
           fxFlex="100">
             <mat-form-field
@@ -66,6 +36,36 @@
             <span
               style="color: #f44336;font-size: 14px!important;"
               *ngIf="f['departmentId'].touched && f['departmentId'].dirty && f['departmentId'].errors">Please select Department</span>
+          </div>
+          <div
+          fxFlex="100"
+          fxLayout="column"
+          fxLayout.gt-sm="row"
+          style="gap: 16px">
+            <mat-form-field
+              appearance="outline"
+              fxFlex="50%"
+              class="cell"
+              [ngClass.gt-sm]="{ isLargeScreen: true }"
+              appearance="outline">
+              <mat-label>Employee Title</mat-label>
+              <input
+                readonly
+                matInput
+                [value]="employeeTitle?.name"
+                placeholder="Employee Title"/>
+                <mat-icon
+                  class="icon-right"
+                  style="cursor: pointer;"
+                  matSuffix
+                  matTooltip="Search Employee Title"
+                  (click)="showSelectEmployeeTitleDialog()">
+                  search
+                </mat-icon>
+            </mat-form-field>
+            <span
+              style="color: #f44336;font-size: 14px!important;"
+              *ngIf="f['employeeTitleId'].touched && f['employeeTitleId'].dirty && f['employeeTitleId'].errors">Please select Employee Title</span>
           </div>
           <mat-form-field
             appearance="outline"

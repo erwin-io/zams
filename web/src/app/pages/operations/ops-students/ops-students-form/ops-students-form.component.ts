@@ -339,6 +339,7 @@ export class OpsStudentFormComponent {
       selected: true
     }
     dialogRef.componentInstance.schoolCode = this.school?.schoolCode;
+    dialogRef.componentInstance.schoolYearLevelCode = this.schoolYearLevel?.schoolYearLevelCode;
     dialogRef.afterClosed().subscribe((res:Sections)=> {
       console.log(res);
       if(res) {

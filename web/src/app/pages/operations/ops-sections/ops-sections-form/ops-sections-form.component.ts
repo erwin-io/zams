@@ -241,6 +241,7 @@ export class OpsSectionFormComponent {
       selected: true
     }
     dialogRef.componentInstance.schoolCode = this.school?.schoolCode;
+    dialogRef.componentInstance.departmentCode = this.department?.departmentCode;
     dialogRef.afterClosed().subscribe((res:Employees)=> {
       console.log(res);
       if(res) {

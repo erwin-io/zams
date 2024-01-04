@@ -29,6 +29,7 @@ export class  SelectSectionDialogComponent {
   order = { sectionName: "ASC" } as any;
   filterSectionName = "";
   schoolCode;
+  schoolYearLevelCode;
   @ViewChild('paginator', {static: false}) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -63,7 +64,11 @@ export class  SelectSectionDialogComponent {
     const filter: any[] = [
       {
         apiNotation: "school.schoolCode",
-        filter: this.schoolCode,
+        filter: this.schoolCode
+      },
+      {
+        apiNotation: "schoolYearLevel.schoolYearLevelCode",
+        filter: this.schoolYearLevelCode
       },
       {
         apiNotation: "sectionName",

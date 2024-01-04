@@ -19,7 +19,7 @@
           fxFlex="100">
             <mat-form-field
               appearance="outline">
-              <mat-label>Department &nbsp;</mat-label>
+              <mat-label>Department </mat-label>
               <input
                 matInput
                 readonly
@@ -44,7 +44,7 @@
           fxFlex="100">
             <mat-form-field
               appearance="outline">
-              <mat-label>School year level &nbsp;</mat-label>
+              <mat-label>School year level </mat-label>
               <input
                 matInput
                 readonly
@@ -70,7 +70,7 @@
           *ngIf="schoolYearLevel && schoolYearLevel?.educationalStage === 'COLLEGE'">
             <mat-form-field
               appearance="outline">
-              <mat-label>Course &nbsp;</mat-label>
+              <mat-label>Course </mat-label>
               <input
                 matInput
                 readonly
@@ -96,7 +96,7 @@
           *ngIf="schoolYearLevel && schoolYearLevel?.educationalStage === 'SENIOR'">
             <mat-form-field
               appearance="outline">
-              <mat-label>Strand &nbsp;</mat-label>
+              <mat-label>Strand </mat-label>
               <input
                 matInput
                 readonly
@@ -121,7 +121,7 @@
             fxFlex="100">
             <mat-form-field
               appearance="outline">
-              <mat-label>Section &nbsp;</mat-label>
+              <mat-label>Section </mat-label>
               <input
                 matInput
                 readonly
@@ -144,10 +144,10 @@
           <mat-form-field
             appearance="outline"
             [ngClass.gt-sm]="{ isLargeScreen: true }">
-            <mat-label>Student Id&nbsp;</mat-label>
+            <mat-label>{{schoolYearLevel?.educationalStage !== 'COLLEGE' ? 'Student Id or LRN' : 'Student Id'}}</mat-label>
             <input
               matInput
-              placeholder="Student Id"
+              placeholder="{{schoolYearLevel?.educationalStage !== 'COLLEGE' ? 'Student Id or LRN' : 'Student Id'}}"
               formControlName="orgStudentId"
             />
             <mat-error
@@ -155,7 +155,7 @@
               >{{
                 (getError("orgStudentId") &&
                 getError("orgStudentId")["required"]
-                  ? "Please enter Student Id"
+                  ? "Please enter " + (schoolYearLevel?.educationalStage !== "COLLEGE" ? "Student Id or LRN" : "Student Id")
                   : "")
               }}</mat-error
             >
@@ -163,7 +163,7 @@
           <mat-form-field
             appearance="outline"
             [ngClass.gt-sm]="{ isLargeScreen: true }">
-            <mat-label>First Name&nbsp;</mat-label>
+            <mat-label>First Name</mat-label>
             <input
               matInput
               placeholder="First Name"
@@ -186,7 +186,7 @@
           <mat-form-field
             appearance="outline"
             [ngClass.gt-sm]="{ isLargeScreen: true }">
-            <mat-label>Middle Initial&nbsp;</mat-label>
+            <mat-label>Middle Initial</mat-label>
             <input
               matInput
               placeholder="Middle Initial"
@@ -209,7 +209,7 @@
           <mat-form-field
             appearance="outline"
             [ngClass.gt-sm]="{ isLargeScreen: true }">
-            <mat-label>Last Name &nbsp;</mat-label>
+            <mat-label>Last Name </mat-label>
             <input
               matInput
               placeholder="Last Name"
@@ -232,7 +232,7 @@
           <mat-form-field
             appearance="outline"
             [ngClass.gt-sm]="{ isLargeScreen: true }">
-            <mat-label>Mobile number &nbsp;</mat-label>
+            <mat-label>Mobile number </mat-label>
             <input
               matInput
               placeholder="Mobile number"
@@ -255,7 +255,7 @@
           <mat-form-field
             appearance="outline"
             [ngClass.gt-sm]="{ isLargeScreen: true }">
-            <mat-label>Card number &nbsp;</mat-label>
+            <mat-label>Card number </mat-label>
             <input
               matInput
               placeholder="Card number"
@@ -281,7 +281,7 @@
             class="cell"
             [ngClass.gt-sm]="{ isLargeScreen: true }"
             class="readonly">
-            <mat-label>Address &nbsp;</mat-label>
+            <mat-label>Address </mat-label>
             <textarea
               matInput
               placeholder="Address"

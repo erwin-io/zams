@@ -30,6 +30,7 @@ export class  SelectEmployeeDialogComponent {
   order = { fullName: "ASC" } as any;
   filterFullName = "";
   schoolCode;
+  departmentCode;
   @ViewChild('paginator', {static: false}) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -64,7 +65,11 @@ export class  SelectEmployeeDialogComponent {
     const filter: any[] = [
       {
         apiNotation: "school.schoolCode",
-        filter: this.schoolCode,
+        filter: this.schoolCode
+      },
+      {
+        apiNotation: "department.departmentCode",
+        filter: this.departmentCode
       },
       {
         apiNotation: "fullName",
